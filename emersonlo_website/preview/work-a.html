@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emerson Lo — Work (Version A · Editorial)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lacquer&family=Merriweather:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shell.css">
+<style>
+/* ============================================================
+   VERSION A — editorial two-column, tiles near full-bleed,
+   caption sits under the tile. Closest to the reference shots.
+   ============================================================ */
+
+.work { padding: 10px 40px 40px; }
+
+.work__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 4px 30px;
+}
+
+.work__count { font-size: 12.5px; letter-spacing: .2em; color: var(--gray); }
+
+/* two independent columns = true editorial flow, no dead rows */
+.grid { display: flex; gap: 26px; align-items: flex-start; }
+
+.col { flex: 1 1 0; display: flex; flex-direction: column; gap: 74px; min-width: 0; }
+
+.col--b { margin-top: 104px; }
+
+.tile { display: block; text-decoration: none; color: inherit; }
+
+.tile__vis {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg, #EFEFEC);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.tile__vis::after {           /* slow light sweep, barely there */
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(45% 45% at 30% 20%, rgba(255,255,255,.5), transparent 70%);
+  opacity: .8;
+  transition: transform 1.2s cubic-bezier(.22,1,.36,1);
+  pointer-events: none;
+}
+
+.tile:hover .tile__vis::after { transform: translate(8%, 6%); }
+
+.ratio-wide  { aspect-ratio: 4 / 3; }
+.ratio-tall  { aspect-ratio: 5 / 6; }
+.ratio-short { aspect-ratio: 16 / 10; }
+
+.tile__art {
+  max-width: 82%;
+  max-height: 78%;
+  border-radius: 10px;
+  display: block;
+  box-shadow: 0 18px 44px rgba(20,22,20,.16);
+  transition: transform .8s cubic-bezier(.22,1,.36,1);
+}
+
+.tile:hover .tile__art { transform: translateY(-6px) scale(1.014); }
+
+/* three phones, fanned */
+.phones {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  transition: transform .8s cubic-bezier(.22,1,.36,1);
+}
+
+.phones img {
+  width: 152px;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(20,22,20,.18);
+  transition: transform .7s cubic-bezier(.22,1,.36,1);
+}
+
+.phones img:nth-child(1) { transform: translateY(14px) rotate(-2.5deg); }
+.phones img:nth-child(3) { transform: translateY(14px) rotate(2.5deg); }
+
+.tile:hover .phones img:nth-child(1) { transform: translateY(4px) rotate(-4deg); }
+.tile:hover .phones img:nth-child(2) { transform: translateY(-8px); }
+.tile:hover .phones img:nth-child(3) { transform: translateY(4px) rotate(4deg); }
+
+.tile__meta { padding: 20px 4px 0; }
+
+.tile__eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #9A9D99;
+  margin: 0 0 10px;
+}
+
+.tile__title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 1.16;
+  letter-spacing: -.01em;
+  margin: 0 0 8px;
+  color: #23261F;
+  width: fit-content;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size .5s cubic-bezier(.22,1,.36,1);
+}
+
+.tile:hover .tile__title { background-size: 100% 1px; }
+
+.tile__sub {
+  font-size: 17.5px;
+  line-height: 1.45;
+  letter-spacing: -.01em;
+  color: #5E625D;
+  margin: 0;
+  max-width: 46ch;
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__mark">ERL</div>
+
+  <div class="nav__links">
+    <a class="nav__link" href="#" aria-current="page">Home</a>
+    <a class="nav__link" href="#">About</a>
+    <a class="nav__link" href="#">Resume/CV</a>
+  </div>
+
+  <div class="nav__rule"></div>
+
+  <div class="nav__section">
+    <p class="nav__label">My Work</p>
+    <div class="nav__work">
+      <a href="#hackdavis"><span class="nav__swatch sw-hackdavis"></span><span>HackDavis</span></a>
+      <a href="#pikspot"><span class="nav__swatch sw-pikspot"></span><span>Pikspot</span></a>
+      <a href="#jvmc"><span class="nav__swatch sw-jvmc"></span><span>Joan Viteri<br>Memorial Clinic</span></a>
+      <a href="#jass"><span class="nav__swatch sw-jass"></span><span>Japanese American<br>Student Society</span></a>
+    </div>
+  </div>
+
+  <div class="nav__rule"></div>
+
+  <div class="nav__section">
+    <p class="nav__label">Contact</p>
+    <div class="nav__contact">
+      <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.45-2.2 2.96V21H9z"/></svg></a>
+      <a href="#" aria-label="Email"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1zm9 8L4.2 7.3v10.2h15.6V7.3z"/></svg></a>
+      <a href="#" aria-label="Phone"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.6a1 1 0 01-.25 1z"/></svg></a>
+    </div>
+  </div>
+
+  <div class="nav__spacer"></div>
+</nav>
+
+<main class="main">
+
+  <section class="hero">
+    <div class="hero__wash">Designer</div>
+    <div class="hero__inner">
+      <h1 class="hero__name">Emerson Lo</h1>
+      <p class="hero__desc">A designer passionate about delivering user-centric experiences, utilizing cognitive science to drive real world impact through thoughtful and engaging designs.</p>
+      <span class="hero__status"><span class="hero__dot"></span> Open to new opportunities</span>
+    </div>
+  </section>
+
+  <section class="work" data-parallax-end id="work">
+    <div class="work__head">
+      <p class="sec-head" style="margin:0">Selected Work</p>
+      <span class="work__count">04</span>
+    </div>
+
+    <div class="grid">
+     <div class="col col--a">
+
+      <a class="tile reveal" id="hackdavis" href="#">
+        <div class="tile__vis ratio-wide" style="--bg:#2A1B4D">
+          <img class="tile__art" src="../images/hackdavis-hero.png" alt="HackDavis site">
+        </div>
+        <div class="tile__meta">
+          <p class="tile__eyebrow">HackDavis — 2026</p>
+          <h3 class="tile__title">HackDavis 2026</h3>
+          <p class="tile__sub">Designing the front door for California's largest collegiate hackathon.</p>
+        </div>
+      </a>
+
+      <a class="tile reveal" id="jvmc" href="#">
+        <div class="tile__vis ratio-short" style="--bg:#E4F0EC">
+          <img class="tile__art" src="../images/jvmc-hero.png" alt="Joan Viteri Memorial Clinic site">
+        </div>
+        <div class="tile__meta">
+          <p class="tile__eyebrow">Joan Viteri Memorial Clinic — 2025</p>
+          <h3 class="tile__title">Care, findable in a minute</h3>
+          <p class="tile__sub">Rebuilding a volunteer-run clinic's site around the two questions patients actually arrive with.</p>
+        </div>
+      </a>
+
+     </div>
+     <div class="col col--b">
+
+      <a class="tile reveal" id="pikspot" href="#" data-delay="60">
+        <div class="tile__vis ratio-tall" style="--bg:#E7EFF8">
+          <div class="phones">
+            <img src="../images/pikspot-1.png" alt="Pikspot home">
+            <img src="../images/pikspot-2.png" alt="Pikspot event">
+            <img src="../images/pikspot-3.png" alt="Pikspot profile">
+          </div>
+        </div>
+        <div class="tile__meta">
+          <p class="tile__eyebrow">Senior Project — 2025</p>
+          <h3 class="tile__title">Pikspot</h3>
+          <p class="tile__sub">A photo-challenge app that turns an ordinary walk into a shared visual archive of a place.</p>
+        </div>
+      </a>
+
+      <a class="tile reveal" id="jass" href="#" data-delay="60">
+        <div class="tile__vis ratio-short" style="--bg:#F2E5EA">
+          <img class="tile__art" src="../images/jass-hero.png" alt="JASS site">
+        </div>
+        <div class="tile__meta">
+          <p class="tile__eyebrow">JASS @ UC Davis — 2024</p>
+          <h3 class="tile__title">Japanese American Student Society</h3>
+          <p class="tile__sub">A cultural org's home page, rebuilt around events, cabinet, and belonging.</p>
+        </div>
+      </a>
+
+     </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>© 2026 Emerson Lo</span>
+    <span>Version A — Editorial</span>
+  </footer>
+
+</main>
+
+<script src="shell.js"></script>
+</body>
+</html>

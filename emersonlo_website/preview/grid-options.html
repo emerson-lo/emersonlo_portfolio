@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Background grid — options</title>
+<link href="https://fonts.googleapis.com/css2?family=Lacquer&family=Merriweather:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #23261F;
+  --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { padding: 30px 30px 44px; }
+
+.head { margin: 0 0 6px; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #8A8D8A; }
+.sub  { margin: 0 0 26px; font-size: 14px; color: #6E726D; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+
+.opt { border: 1px solid #E6E6E2; }
+
+.opt__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 14px;
+  border-bottom: 1px solid #E6E6E2;
+  background: #fff;
+}
+
+.opt__name { font-size: 13.5px; font-weight: 600; letter-spacing: -.01em; }
+.opt__spec { font-family: var(--mono); font-size: 10.5px; color: #9A9D99; }
+
+/* the demo surface — hero-like content sitting on each background */
+.stage { padding: 34px 30px 38px; }
+
+.stage h2 {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -.045em;
+  margin: 0 0 12px;
+  line-height: 1;
+}
+
+.stage p { font-size: 15px; line-height: 1.45; color: #4A4E4A; margin: 0 0 18px; max-width: 34ch; }
+
+.card {
+  height: 92px;
+  background: #E7EFF8;
+  margin-top: 20px;
+}
+
+.note { font-size: 12px; color: #8A8D8A; margin: 0; }
+
+
+/* ============ 1 · HŌGAN — plain fine grid ============ */
+.g1 {
+  background-color: #fff;
+  background-image:
+    linear-gradient(to right,  #F2F2EF 1px, transparent 1px),
+    linear-gradient(to bottom, #F2F2EF 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* ============ 2 · DOT GRID — Kokuyo style ============ */
+.g2 {
+  background-color: #fff;
+  background-image: radial-gradient(#E4E4DF 1px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+/* ============ 3 · GENKŌ YŌSHI — manuscript squares ============ */
+.g3 {
+  background-color: #fff;
+  background-image:
+    linear-gradient(to right,  #EFEFEA 1px, transparent 1px),
+    linear-gradient(to bottom, #EFEFEA 1px, transparent 1px),
+    radial-gradient(#EDEDE7 1px, transparent 1.2px);
+  background-size: 46px 46px, 46px 46px, 46px 46px;
+  background-position: 0 0, 0 0, 23px 23px;
+}
+
+/* ============ 4 · SECTIONED — fine grid + heavier 5th ============ */
+.g4 {
+  background-color: #fff;
+  background-image:
+    linear-gradient(to right,  #EAEAE5 1px, transparent 1px),
+    linear-gradient(to bottom, #EAEAE5 1px, transparent 1px),
+    linear-gradient(to right,  #F4F4F1 1px, transparent 1px),
+    linear-gradient(to bottom, #F4F4F1 1px, transparent 1px);
+  background-size: 110px 110px, 110px 110px, 22px 22px, 22px 22px;
+}
+
+/* detail strip: the same four at 3× so the texture is legible in a screenshot */
+.zooms { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 30px; }
+.zoom { border: 1px solid #E6E6E2; height: 150px; }
+.zoom__cap { font-family: var(--mono); font-size: 10.5px; color: #9A9D99; padding: 7px 10px; border-top: 1px solid #E6E6E2; }
+
+.z1 { background-color:#fff; background-image: linear-gradient(to right,#F2F2EF 3px,transparent 3px), linear-gradient(to bottom,#F2F2EF 3px,transparent 3px); background-size: 66px 66px; }
+.z2 { background-color:#fff; background-image: radial-gradient(#E4E4DF 3px, transparent 3.6px); background-size: 72px 72px; }
+.z3 { background-color:#fff; background-image: linear-gradient(to right,#EFEFEA 3px,transparent 3px), linear-gradient(to bottom,#EFEFEA 3px,transparent 3px), radial-gradient(#EDEDE7 3px, transparent 3.6px); background-size: 138px 138px,138px 138px,138px 138px; background-position: 0 0,0 0,69px 69px; }
+.z4 { background-color:#fff; background-image: linear-gradient(to right,#EAEAE5 3px,transparent 3px), linear-gradient(to bottom,#EAEAE5 3px,transparent 3px), linear-gradient(to right,#F4F4F1 3px,transparent 3px), linear-gradient(to bottom,#F4F4F1 3px,transparent 3px); background-size: 330px 330px,330px 330px,66px 66px,66px 66px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="head">Background grid — four options</p>
+  <p class="sub">Shown at true size on hero-weight type. Bottom row is the same four at 3× magnification, so the texture is readable in a screenshot.</p>
+
+  <div class="grid2">
+
+    <div class="opt">
+      <div class="opt__label"><span class="opt__name">1 · Hōgan — plain grid</span><span class="opt__spec">22px · #F2F2EF</span></div>
+      <div class="stage g1">
+        <h2>Emerson Lo</h2>
+        <p>A designer passionate about delivering user-centric experiences, utilizing cognitive science to drive real world impact.</p>
+        <p class="note">Squarest and most "graph paper". Reads as structure.</p>
+        <div class="card"></div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt__label"><span class="opt__name">2 · Dot grid</span><span class="opt__spec">24px · #E4E4DF</span></div>
+      <div class="stage g2">
+        <h2>Emerson Lo</h2>
+        <p>A designer passionate about delivering user-centric experiences, utilizing cognitive science to drive real world impact.</p>
+        <p class="note">Quietest of the four. Depth without any ruling.</p>
+        <div class="card"></div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt__label"><span class="opt__name">3 · Genkō yōshi — manuscript</span><span class="opt__spec">46px + centre dot</span></div>
+      <div class="stage g3">
+        <h2>Emerson Lo</h2>
+        <p>A designer passionate about delivering user-centric experiences, utilizing cognitive science to drive real world impact.</p>
+        <p class="note">Bigger cells with a centre tick — the manuscript-paper feel.</p>
+        <div class="card"></div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <div class="opt__label"><span class="opt__name">4 · Sectioned grid</span><span class="opt__spec">22px + 110px rule</span></div>
+      <div class="stage g4">
+        <h2>Emerson Lo</h2>
+        <p>A designer passionate about delivering user-centric experiences, utilizing cognitive science to drive real world impact.</p>
+        <p class="note">Fine grid with a heavier line every fifth. Most depth.</p>
+        <div class="card"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="zooms">
+    <div><div class="zoom z1"></div><p class="zoom__cap">1 · hōgan @3×</p></div>
+    <div><div class="zoom z2"></div><p class="zoom__cap">2 · dot @3×</p></div>
+    <div><div class="zoom z3"></div><p class="zoom__cap">3 · genkō yōshi @3×</p></div>
+    <div><div class="zoom z4"></div><p class="zoom__cap">4 · sectioned @3×</p></div>
+  </div>
+
+</div>
+</body>
+</html>

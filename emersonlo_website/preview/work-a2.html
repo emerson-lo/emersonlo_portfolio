@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emerson Lo — Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lacquer&family=Merriweather:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Emerson Lo — home / work
+   Slim icon rail + edge-to-edge bento.
+   ============================================================ */
+
+:root {
+  --ink: #23261F;
+  --ink-soft: #4A4E4A;
+  --gray: #8A8D8A;
+  --hair: #E6E6E2;          /* the thin rule beside the nav */
+  --paper: #FFFFFF;
+  --green: #4CC46A;
+  --nav-w: 64px;
+  --gutter: 14px;
+  --foot-h: 440px;
+
+  --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --mark: "Lacquer", var(--sans);
+  --serif: "Merriweather", "Times New Roman", serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   PAPER — genkō yōshi grid.  Whole feature lives in this block.
+   To remove: delete `data-paper="grid"` from the <body> tag.
+   ============================================================ */
+
+:root {
+  --dot: #E4E4DF;
+  --cell: 24px;
+}
+
+/* the grid belongs to the page sheet only — rail and footer stay plain */
+body[data-paper="grid"] .main {
+  background-color: var(--paper);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
+  background-size: var(--cell) var(--cell);
+  /* anchored to the viewport so the ruling stays put while the sheet
+     slides over the footer */
+  background-attachment: fixed;
+}
+
+/* =========================== NAV =========================== */
+
+.nav {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--nav-w);
+  background: var(--paper);
+  border-right: 1px solid var(--hair);
+  /* 32px of air above the mark, matched by the 32px below it */
+  padding: 32px 0 22px;
+  /* safety net: on a short window the rail scrolls instead of
+     burying the toggle below the fold */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 50;
+  transition: width .5s cubic-bezier(.22,1,.36,1),
+              box-shadow .5s cubic-bezier(.22,1,.36,1);
+}
+
+/* ---- expanded rail ---- */
+
+.nav--open {
+  width: 232px;
+  align-items: flex-start;
+  box-shadow: 24px 0 44px -26px rgba(20,22,20,.18);
+}
+
+/* the mark grows and centres across the full panel */
+.nav--open .nav__mark {
+  width: 100%;
+  text-align: center;
+  padding: 0;
+  font-size: 30px;
+}
+
+/* rules span the panel, inset the same 22px on both sides */
+.nav--open .nav__sep {
+  width: calc(100% - 44px);
+  margin-left: 22px;
+}
+
+/* the hover pill becomes a plain standing label */
+.nav--open .nv__label {
+  opacity: 1;
+  transform: translate(0, -50%);
+  background: none;
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0;
+  left: calc(100% + 4px);
+  transition-delay: .12s;
+  white-space: normal;        /* long project names wrap instead of overflowing */
+  width: 148px;
+  line-height: 1.28;
+}
+
+.nav--open .nv:hover .nv__label,
+.nav--open .nv[aria-current="page"] .nv__label { color: var(--ink); }
+.nav--open .nv--hint .nv__label { color: #ADB0AD; }
+
+/* toggle */
+.nav__toggle {
+  width: 64px;
+  height: 38px;
+  margin-top: 14px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: #B8BBB7;
+  transition: color .22s ease;
+}
+
+.nav__toggle:hover { color: var(--ink); }
+
+.nav__toggle svg {
+  width: 17px; height: 17px;
+  fill: none; stroke: currentColor;
+  stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform .5s cubic-bezier(.22,1,.36,1);
+}
+
+.nav--open .nav__toggle svg { transform: rotate(180deg); }
+
+.nav__mark {
+  font-family: var(--mark);
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: .02em;
+  transition: font-size .5s cubic-bezier(.22,1,.36,1);
+}
+
+/* the icon column keeps a fixed 64px width, so nothing shifts
+   sideways when the rail widens — only the labels arrive */
+.nav__group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 64px;
+  flex: none;
+}
+
+.nav::-webkit-scrollbar { display: none; }
+
+.nav__links { margin-top: 32px; gap: 4px; }
+
+/* hairline between the pages and the work shortcuts */
+.nav__sep {
+  width: 22px;
+  height: 1px;
+  background: var(--hair);
+  margin: 20px 0;
+  transition: width .5s cubic-bezier(.22,1,.36,1),
+              margin-left .5s cubic-bezier(.22,1,.36,1);
+}
+
+/* every section is separated by the same 20px + rule + 20px */
+
+/* --- one hit target: icon or swatch, plus its hover label --- */
+
+.nv {
+  position: relative;
+  width: 42px;
+  height: 38px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  color: #A4A7A3;
+  transition: color .22s ease;
+}
+
+.nv:hover, .nv[aria-current="page"] { color: var(--ink); }
+
+/* the "these are previous works" marker — a label, not a link */
+.nv--hint { color: #C6C9C5; cursor: default; height: 34px; }
+.nv--hint:hover { color: #C6C9C5; }
+.nv--hint:hover .nv__label { opacity: 1; transform: translate(0, -50%); }
+.nv--hint svg { width: 15px; height: 15px; }
+
+.nv svg {
+  width: 18px; height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nv--contact svg { fill: currentColor; stroke: none; width: 15px; height: 15px; }
+
+/* work shortcut = the project's gradient chip */
+.nv__chip {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  transition: transform .35s cubic-bezier(.22,1,.36,1);
+}
+
+.nv:hover .nv__chip { transform: scale(1.22) rotate(-6deg); }
+
+.c-hackdavis { background: linear-gradient(140deg, #B7D94A, #6FBF3A); }
+.c-pikspot   { background: linear-gradient(140deg, #B9D8F5, #8FBEEC); }
+.c-jvmc      { background: linear-gradient(140deg, #1E7A63, #10604E); }
+.c-jass      { background: linear-gradient(140deg, #E8607F, #2B2B54); }
+.c-bitewise  { background: linear-gradient(140deg, #E0B25C, #8A5A22); }
+
+/* --- hover label --- */
+.nv__label {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #1B1E19;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-4px, -50%);
+  transition: opacity .2s ease, transform .32s cubic-bezier(.22,1,.36,1);
+  z-index: 60;
+}
+
+.nv:hover .nv__label,
+.nv:focus-visible .nv__label {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* =========================== MAIN =========================== */
+
+/* the page moves over rather than hiding under the open rail.
+   It is also the opaque sheet that slides over the footer, so it
+   needs a background of its own and a z-index above it. */
+.main {
+  position: relative;
+  z-index: 1;
+  margin-left: var(--nav-w);
+  margin-bottom: var(--foot-h);
+  background: var(--paper);
+  transition: margin-left .5s cubic-bezier(.22,1,.36,1);
+}
+
+.nav--open ~ .main { margin-left: 232px; }
+
+.hero {
+  position: relative;
+  min-height: 100vh;          /* first screen holds the hero and nothing else */
+  display: flex;
+  align-items: center;
+  /* indented from the rail — the work grid stays flush to the edges */
+  padding: 80px var(--gutter) 88px 74px;
+}
+
+/* ---- sonder: ink artwork over the page ---- */
+
+/* The falling figure — DORMANT. The markup is removed, this rule and its
+   scroll handler in shell.js are kept intact. To bring it back, drop
+   <img class="diver" src="../images/art-diver.jpg" alt="" aria-hidden="true">
+   in as the first child of <main>. Nothing else needs changing. */
+.diver {
+  position: fixed;
+  top: 9%;
+  right: 9%;
+  width: clamp(170px, 18.5vw, 300px);
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: multiply;     /* the jpg's white ground disappears */
+  opacity: .92;
+  will-change: transform, opacity;
+}
+
+/* a press-grain wash, hero only, so the work tiles stay clean */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .3;              /* eased back now the grid carries the texture */
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 1;
+  border-left: 1px solid var(--hair);
+  padding-left: 40px;
+  max-width: 880px;
+  will-change: transform;
+}
+
+/* name now sits in the site's own typeface — same family as the
+   description directly beneath it, just much heavier and tighter */
+.hero__name {
+  font-family: var(--mark);        /* same hand as the ERL logo */
+  font-weight: 400;
+  font-size: clamp(50px, 5.6vw, 88px);
+  line-height: 1.0;
+  letter-spacing: -.045em;
+  margin: 0 0 26px;
+}
+
+.hero__desc {
+  font-size: clamp(19px, 1.8vw, 28px);
+  line-height: 1.34;
+  letter-spacing: -.02em;
+  margin: 0 0 30px;
+  max-width: 680px;
+}
+
+.hero__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #3E9B57;
+}
+
+.hero__dot { width: 11px; height: 11px; border-radius: 50%; background: var(--green); position: relative; }
+.hero__dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--green); animation: pulse 2.6s ease-out infinite; }
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: .55; }
+  70%,100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* =========================== WORK =========================== */
+
+.work { padding: 0 var(--gutter) 40px; }
+
+.work__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 2px 22px;
+}
+
+.sec-head, .work__count {
+  font-size: 11.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  font-weight: 500;
+  margin: 0;
+}
+
+.grid { display: flex; gap: 22px; align-items: flex-start; }
+.col { flex: 1 1 0; display: flex; flex-direction: column; gap: 60px; min-width: 0; }
+
+.tile { display: block; text-decoration: none; color: inherit; }
+
+.tile__vis {
+  position: relative;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--bg, #EFEFEC);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.tile__vis::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(45% 45% at 30% 20%, rgba(255,255,255,.45), transparent 70%);
+  transition: transform 1.2s cubic-bezier(.22,1,.36,1);
+  pointer-events: none;
+}
+
+.tile:hover .tile__vis::after { transform: translate(8%, 6%); }
+
+.r-wide  { aspect-ratio: 4 / 3; }
+.r-tall  { aspect-ratio: 1 / 1; }
+.r-short { aspect-ratio: 16 / 10; }
+
+/* flat artwork — square corners */
+.tile__art {
+  max-width: 82%;
+  max-height: 78%;
+  border-radius: 0;
+  box-shadow: 0 18px 44px rgba(20,22,20,.16);
+  transition: transform .8s cubic-bezier(.22,1,.36,1);
+}
+
+.tile:hover .tile__art { transform: translateY(-6px) scale(1.014); }
+
+/* video artwork behaves like the stills — centred, square corners */
+.tile__media {
+  max-width: 82%;
+  max-height: 78%;
+  border-radius: 0;
+  display: block;
+  box-shadow: 0 18px 44px rgba(20,22,20,.16);
+  transition: transform .8s cubic-bezier(.22,1,.36,1);
+}
+
+.tile:hover .tile__media { transform: translateY(-6px) scale(1.014); }
+
+.phones { display: flex; gap: 16px; align-items: center; }
+
+.phones img {
+  width: 148px;
+  border-radius: 15px;
+  box-shadow: 0 16px 40px rgba(20,22,20,.2);
+  transition: transform .7s cubic-bezier(.22,1,.36,1);
+}
+
+.phones img:nth-child(1) { transform: translateY(14px) rotate(-2.5deg); }
+.phones img:nth-child(3) { transform: translateY(14px) rotate(2.5deg); }
+.tile:hover .phones img:nth-child(1) { transform: translateY(4px) rotate(-4deg); }
+.tile:hover .phones img:nth-child(2) { transform: translateY(-8px); }
+.tile:hover .phones img:nth-child(3) { transform: translateY(4px) rotate(4deg); }
+
+.tile__meta { padding: 16px 2px 0; }
+
+.tile__title {
+  font-family: var(--mark);        /* same hand as the ERL logo */
+  font-weight: 400;
+  font-size: 27px;
+  letter-spacing: .01em;
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+
+/* only the name takes the hover underline — not the year */
+.tile__name {
+  display: inline;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size .5s cubic-bezier(.22,1,.36,1);
+}
+
+.tile:hover .tile__name { background-size: 100% 1px; }
+
+/* the year, set as the old eyebrow line was */
+.tile__year {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #9A9D99;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.tile__sub {
+  font-size: 17px;
+  line-height: 1.45;
+  letter-spacing: -.01em;
+  color: #5E625D;
+  margin: 0;
+  max-width: 46ch;
+}
+
+/* =========================== misc =========================== */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* ---- the footer lies under the page and is uncovered as you reach
+   the bottom. Fixed, so the sheet above simply slides off it. ---- */
+
+.foot {
+  position: fixed;
+  left: var(--nav-w);
+  right: 0;
+  bottom: 0;
+  height: var(--foot-h);
+  z-index: 0;
+  overflow: hidden;
+  background: var(--paper);
+  border-top: 1px solid var(--hair);
+  color: var(--gray);
+  padding: 64px 56px 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: left .5s cubic-bezier(.22,1,.36,1);
+}
+
+.nav--open ~ .foot { left: 232px; }
+
+.foot__art {
+  position: absolute;
+  right: 2%;
+  bottom: 0;
+  width: clamp(280px, 31vw, 480px);
+  opacity: .30;
+  mix-blend-mode: multiply;   /* the white ground drops away, figures stay */
+  pointer-events: none;
+  user-select: none;
+}
+
+.foot__inner { position: relative; z-index: 1; max-width: 620px; }
+
+.foot__lead {
+  font-size: clamp(30px, 3.3vw, 50px);
+  font-weight: 700;
+  letter-spacing: -.04em;
+  line-height: 1.05;
+  color: var(--ink);
+  margin: 0 0 26px;
+}
+
+.foot__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  color: #3E9B57;
+  margin: 0 0 18px;
+}
+
+.foot__links { display: flex; gap: 26px; flex-wrap: wrap; margin: 0 0 44px; }
+
+.foot__links a {
+  font-size: 15px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  padding-bottom: 3px;
+  transition: background-size .45s cubic-bezier(.22,1,.36,1), color .25s ease;
+}
+
+.foot__links a:hover { color: var(--ink); background-size: 100% 1px; }
+
+.foot__base {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--gray);
+  border-top: 1px solid var(--hair);
+  padding-top: 22px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+</style>
+</head>
+<body data-paper="grid">
+
+<nav class="nav">
+  <div class="nav__mark">ERL</div>
+
+  <div class="nav__group nav__links">
+    <a class="nv" href="#" aria-current="page">
+      <svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>
+      <span class="nv__label">Home</span>
+    </a>
+    <a class="nv" href="#">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6"/></svg>
+      <span class="nv__label">About</span>
+    </a>
+    <a class="nv" href="#">
+      <svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg>
+      <span class="nv__label">Resume/CV</span>
+    </a>
+  </div>
+
+  <div class="nav__sep"></div>
+
+  <div class="nav__group nav__work">
+    <span class="nv nv--hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V5.5a1.5 1.5 0 0 1 1.5-1.5h4a1.5 1.5 0 0 1 1.5 1.5V7"/></svg>
+      <span class="nv__label">My Work</span>
+    </span>
+    <a class="nv" href="#hackdavis"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
+    <a class="nv" href="#pikspot"><span class="nv__chip c-pikspot"></span><span class="nv__label">Pikspot</span></a>
+    <a class="nv" href="#jvmc"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri Memorial Clinic</span></a>
+    <a class="nv" href="#jass"><span class="nv__chip c-jass"></span><span class="nv__label">Japanese American Student Society</span></a>
+    <a class="nv" href="#bitewise"><span class="nv__chip c-bitewise"></span><span class="nv__label">Bitewise</span></a>
+  </div>
+
+  <div class="nav__sep"></div>
+
+  <div class="nav__group nav__contact">
+    <a class="nv nv--contact" href="#"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.45-2.2 2.96V21H9z"/></svg><span class="nv__label">LinkedIn</span></a>
+    <a class="nv nv--contact" href="#"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1zm9 8L4.2 7.3v10.2h15.6V7.3z"/></svg><span class="nv__label">Email</span></a>
+    <a class="nv nv--contact" href="#"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.6a1 1 0 01-.25 1z"/></svg><span class="nv__label">Phone</span></a>
+  </div>
+
+  <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Expand navigation">
+    <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+</nav>
+
+<main class="main">
+
+  <section class="hero">
+    <div class="hero__inner">
+      <h1 class="hero__name">Emerson Lo</h1>
+      <p class="hero__desc">A designer passionate about delivering user-centric experiences, utilizing cognitive science to drive real world impact through thoughtful and engaging designs.</p>
+    </div>
+  </section>
+
+  <section class="work" data-parallax-end id="work">
+    <div class="work__head">
+      <p class="sec-head">My Work</p>
+    </div>
+
+    <div class="grid">
+      <div class="col">
+
+        <a class="tile reveal" id="hackdavis" href="#">
+          <div class="tile__vis r-short" style="--bg:#2A1B4D">
+            <video class="tile__media" src="../images/hackdavis.mp4"
+                   poster="../images/hackdavis-hero.png"
+                   muted loop playsinline preload="metadata"></video>
+          </div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">HackDavis</span><span class="tile__year">2026</span></h3>
+            <p class="tile__sub">Designing the front door for California's largest collegiate hackathon.</p>
+          </div>
+        </a>
+
+        <a class="tile reveal" id="jvmc" href="#">
+          <div class="tile__vis r-short" style="--bg:#E4F0EC">
+            <img class="tile__art" src="../images/jvmc-hero.png" alt="Joan Viteri Memorial Clinic site">
+          </div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
+            <p class="tile__sub">Rebuilding a volunteer-run clinic's site around the two questions patients actually arrive with.</p>
+          </div>
+        </a>
+
+        <a class="tile reveal" id="bitewise" href="#">
+          <div class="tile__vis r-tall" style="--bg:#1A1712">
+            <div class="phones">
+              <img src="../images/bitewise-1.png" alt="Bitewise welcome">
+              <img src="../images/bitewise-2.png" alt="Bitewise recipe">
+              <img src="../images/bitewise-3.png" alt="Bitewise results">
+            </div>
+          </div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
+            <p class="tile__sub">Budget and diet-aware cooking, from a restriction filter to a two-tap grocery run.</p>
+          </div>
+        </a>
+
+      </div>
+      <div class="col">
+
+        <a class="tile reveal" id="pikspot" href="#" data-delay="60">
+          <div class="tile__vis r-tall" style="--bg:#E7EFF8">
+            <div class="phones">
+              <img src="../images/pikspot-1.png" alt="Pikspot home">
+              <img src="../images/pikspot-2.png" alt="Pikspot event">
+              <img src="../images/pikspot-3.png" alt="Pikspot profile">
+            </div>
+          </div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
+            <p class="tile__sub">A photo-challenge app that turns an ordinary walk into a shared visual archive of a place.</p>
+          </div>
+        </a>
+
+        <a class="tile reveal" id="jass" href="#" data-delay="60">
+          <div class="tile__vis r-wide" style="--bg:#F2E5EA">
+            <img class="tile__art" src="../images/jass-hero.png" alt="JASS site">
+          </div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">Japanese American Student Society</span><span class="tile__year">2024</span></h3>
+            <p class="tile__sub">A cultural org's home page, rebuilt around events, cabinet, and belonging.</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <img class="foot__art" src="../images/art-bench.jpg" alt="" aria-hidden="true">
+
+  <div class="foot__inner">
+    <p class="foot__lead">Let's make something worth sitting with.</p>
+    <p class="foot__status"><span class="hero__dot"></span> Open to new opportunities</p>
+    <div class="foot__links">
+      <a href="mailto:emersonrylo@gmail.com">emersonrylo@gmail.com</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Resume/CV</a>
+    </div>
+  </div>
+
+  <div class="foot__base">
+    <span>Emerson Lo</span>
+    <span>2026</span>
+  </div>
+</footer>
+
+<script>
+  /* tile video plays only while the tile is hovered */
+  document.querySelectorAll('.tile').forEach(function (tile) {
+    var v = tile.querySelector('video');
+    if (!v) return;
+    tile.addEventListener('mouseenter', function () {
+      var p = v.play();
+      if (p && p.catch) p.catch(function () {});   /* no source yet: keep the poster */
+    });
+    tile.addEventListener('mouseleave', function () { v.pause(); });
+  });
+
+  /* the rail expands to show every label at once */
+  (function () {
+    var nav = document.querySelector('.nav');
+    var btn = document.querySelector('.nav__toggle');
+    if (!nav || !btn) return;
+    btn.addEventListener('click', function () {
+      var open = nav.classList.toggle('nav--open');
+      btn.setAttribute('aria-expanded', open);
+      btn.setAttribute('aria-label', open ? 'Collapse navigation' : 'Expand navigation');
+    });
+    if (new URLSearchParams(location.search).has('open')) btn.click();
+  })();
+
+  /* screenshot aid: ?shorthero collapses the hero so the whole page,
+     footer included, fits in one frame */
+  if (new URLSearchParams(location.search).has('shorthero')) {
+    document.querySelector('.hero').style.minHeight = '240px';
+  }
+
+  /* ?paper=off strips the grid for a side-by-side look */
+  if (new URLSearchParams(location.search).get('paper') === 'off') {
+    document.body.removeAttribute('data-paper');
+  }
+
+  /* screenshot aid: ?peek=0,4 forces those nav labels open */
+  (function () {
+    var peek = new URLSearchParams(location.search).get('peek');
+    if (!peek) return;
+    var items = document.querySelectorAll('.nv');
+    peek.split(',').forEach(function (i) {
+      var l = items[+i] && items[+i].querySelector('.nv__label');
+      if (l) { l.style.opacity = 1; l.style.transform = 'translate(0,-50%)'; }
+    });
+  })();
+</script>
+<script src="shell.js"></script>
+</body>
+</html>
