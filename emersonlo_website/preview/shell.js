@@ -55,6 +55,19 @@
 
   if (reduce) return;
 
+  /* ---- metal drift: pause the two blurred hero layers once they've
+     scrolled off screen instead of compositing them forever ---- */
+  (function () {
+    var hero = document.querySelector('.hero');
+    if (!hero || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        hero.classList.toggle('is-in-view', e.isIntersecting);
+      });
+    });
+    io.observe(hero);
+  })();
+
   /* ---- case study tiles: a light scroll parallax ----
      Each tile drifts a few px toward its resting position as it
      approaches the vertical centre of the viewport, and drifts back
@@ -92,48 +105,4 @@
     apply();
   })();
 
-  /* ---- parallax: hero only, ends where the work section begins ---- */
-  var wash = document.querySelector('.hero__wash');
-  var heroInner = document.querySelector('.hero__inner');
-  var work = document.querySelector('[data-parallax-end]');
-  var diver = document.querySelector('.diver');
-  if (!wash && !heroInner && !diver) return;
-
-  var y = 0, target = 0, raf = null;
-
-  function measure() {
-    target = window.scrollY;
-    if (!raf) raf = requestAnimationFrame(tick);
-  }
-
-  function tick() {
-    raf = null;
-    y += (target - y) * 0.12;
-    if (Math.abs(target - y) < 0.15) y = target;
-
-    var limit = work ? work.offsetTop : window.innerHeight;
-    var p = Math.min(y / limit, 1);
-
-    if (wash) wash.style.transform = 'translate3d(0,' + (p * -150).toFixed(2) + 'px,0)';
-    if (heroInner) {
-      heroInner.style.transform = 'translate3d(0,' + (p * 60).toFixed(2) + 'px,0)';
-      heroInner.style.opacity = (1 - p * 0.55).toFixed(3);
-    }
-
-    /* The figure is its own parallax layer: it tracks raw scroll rather
-       than hero progress, at a rate above 1, so it keeps sinking past
-       the page instead of stopping where the hero ends. It drifts a
-       little sideways too — the depth cue that sells the fall. */
-    if (diver) {
-      diver.style.transform =
-        'translate3d(' + (y * -0.05).toFixed(1) + 'px,' + (y * 0.46).toFixed(1) + 'px,0)' +
-        ' rotate(' + (y * 0.016).toFixed(2) + 'deg)';
-      diver.style.opacity = (0.92 * (1 - Math.max(0, (p - 0.45) / 0.55))).toFixed(3);
-    }
-
-    if (y !== target) raf = requestAnimationFrame(tick);
-  }
-
-  window.addEventListener('scroll', measure, { passive: true });
-  measure();
 })();

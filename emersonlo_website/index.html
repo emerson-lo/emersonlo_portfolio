@@ -71,7 +71,7 @@ body {
    ============================================================ */
 
 body {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5' fill='%234CC46A'/%3E%3C/svg%3E") 7 7, auto;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='9' cy='9' r='6.5' fill='%234CC46A'/%3E%3C/svg%3E") 9 9, auto;
 }
 
 /* anything clickable gets a bigger dot, so the hover affordance the
@@ -79,6 +79,17 @@ body {
 a, button, .nv, .tile, [role="button"],
 .nav__toggle, .nv--hint {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='9' fill='%234CC46A'/%3E%3C/svg%3E") 12 12, pointer;
+}
+
+/* a quick, static "press" state — swaps to a slightly bigger dot while
+   the mouse button is down, so the click itself feels acknowledged */
+body:active {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='11' cy='11' r='8.5' fill='%234CC46A'/%3E%3C/svg%3E") 11 11, auto;
+}
+
+a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
+.nav__toggle:active, .nv--hint:active {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Ccircle cx='15' cy='15' r='12' fill='%234CC46A'/%3E%3C/svg%3E") 15 15, pointer;
 }
 
 /* a coarse pointer has no cursor to restyle, and forcing one there
@@ -212,6 +223,7 @@ body[data-paper="grid"] .foot {
   font-size: 20px;
   line-height: 1;
   letter-spacing: .02em;
+  text-shadow: 0 0 18px rgba(110,113,108,.45);
   transition: font-size .5s cubic-bezier(.22,1,.36,1);
 }
 
@@ -342,24 +354,6 @@ body[data-paper="grid"] .foot {
   padding: 80px var(--gutter) 88px 74px;
 }
 
-/* ---- sonder: ink artwork over the page ---- */
-
-/* The falling figure — DORMANT. The markup is removed, this rule and its
-   scroll handler in shell.js are kept intact. To bring it back, drop
-   <img class="diver" src="../images/art-diver.jpg" alt="" aria-hidden="true">
-   in as the first child of <main>. Nothing else needs changing. */
-.diver {
-  position: fixed;
-  top: 9%;
-  right: 9%;
-  width: clamp(170px, 18.5vw, 300px);
-  z-index: 2;
-  pointer-events: none;
-  mix-blend-mode: multiply;     /* the jpg's white ground disappears */
-  opacity: .92;
-  will-change: transform, opacity;
-}
-
 /* a press-grain wash, hero only, so the work tiles stay clean */
 .hero::after {
   content: "";
@@ -369,34 +363,6 @@ body[data-paper="grid"] .foot {
   opacity: .3;              /* eased back now the grid carries the texture */
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
-}
-
-.hero__inner {
-  position: relative;
-  z-index: 1;
-  border-left: 1px solid var(--hair);
-  padding-left: 40px;
-  max-width: 880px;
-  will-change: transform;
-}
-
-/* name now sits in the site's own typeface — same family as the
-   description directly beneath it, just much heavier and tighter */
-.hero__name {
-  font-family: var(--mark);        /* same hand as the ERL logo */
-  font-weight: 400;
-  font-size: clamp(50px, 5.6vw, 88px);
-  line-height: 1.0;
-  letter-spacing: -.045em;
-  margin: 0 0 26px;
-}
-
-.hero__desc {
-  font-size: clamp(19px, 1.8vw, 28px);
-  line-height: 1.34;
-  letter-spacing: -.02em;
-  margin: 0 0 30px;
-  max-width: 680px;
 }
 
 .hero__status {
@@ -469,10 +435,7 @@ body[data-paper="grid"] .foot {
   max-height: 78%;
   border-radius: 0;
   box-shadow: 0 18px 44px rgba(20,22,20,.16);
-  transition: transform .8s cubic-bezier(.22,1,.36,1);
 }
-
-.tile:hover .tile__art { transform: translateY(-6px) scale(1.014); }
 
 /* video artwork behaves like the stills — centred, square corners */
 .tile__media {
@@ -481,10 +444,7 @@ body[data-paper="grid"] .foot {
   border-radius: 0;
   display: block;
   box-shadow: 0 18px 44px rgba(20,22,20,.16);
-  transition: transform .8s cubic-bezier(.22,1,.36,1);
 }
-
-.tile:hover .tile__media { transform: translateY(-6px) scale(1.014); }
 
 .phones { display: flex; gap: 16px; align-items: center; }
 
@@ -492,14 +452,10 @@ body[data-paper="grid"] .foot {
   width: 112px;
   border-radius: 15px;
   box-shadow: 0 16px 40px rgba(20,22,20,.2);
-  transition: transform .7s cubic-bezier(.22,1,.36,1);
 }
 
 .phones img:nth-child(1) { transform: translateY(14px) rotate(-2.5deg); }
 .phones img:nth-child(3) { transform: translateY(14px) rotate(2.5deg); }
-.tile:hover .phones img:nth-child(1) { transform: translateY(4px) rotate(-4deg); }
-.tile:hover .phones img:nth-child(2) { transform: translateY(-8px); }
-.tile:hover .phones img:nth-child(3) { transform: translateY(4px) rotate(4deg); }
 
 .tile__meta { padding: 16px 2px 0; }
 
@@ -542,7 +498,7 @@ body[data-paper="grid"] .foot {
   letter-spacing: -.01em;
   color: #5E625D;
   margin: 0;
-  max-width: 46ch;
+  white-space: nowrap;
 }
 
 /* =========================== misc =========================== */
@@ -655,22 +611,6 @@ body[data-paper="grid"] .foot {
 
 .nav--open ~ .hero--sign { margin-left: 232px; }
 
-/* a blurred, mirrored copy of the same photo, sitting behind the sharp
-   one. .sign__fade washes a wide band back to paper on the left — this
-   gives that band grain to dissolve into instead of a flat white void,
-   using the mountain shot's own texture rather than unrelated content */
-.sign__bg-fill {
-  position: absolute;
-  inset: 0;
-  background-image: url("images/mountain.png");
-  background-size: cover;
-  background-position: 65% 80%;
-  filter: blur(30px);
-  opacity: .85;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-}
-
 /* artwork set into the hero — full-bleed photo, printed into the paper
    via multiply so its whites vanish and only the linework/shadow reads.
    Mirrored so the hooded figure sits away from the headline text and
@@ -702,53 +642,6 @@ body[data-paper="grid"] .foot {
     linear-gradient(to right, rgba(255,255,255,.78) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 64%, var(--paper) 100%),
     linear-gradient(to top, var(--paper) 0%, rgba(255,255,255,0) 28%);
 }
-
-.sign__head {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 56px;
-  padding-right: 56px;
-}
-
-.sign__name {
-  font-family: var(--mark);          /* same hand as the ERL logo */
-  font-size: clamp(46px, 6.2vw, 104px);
-  font-weight: 400;
-  letter-spacing: .01em;
-  line-height: .96;
-  margin: 0;
-}
-
-.sign__desc {
-  font-size: clamp(15px, 1.4vw, 22px);
-  line-height: 1.34;
-  letter-spacing: -.01em;
-  color: #8A8D8A;
-  max-width: 32ch;
-  margin: 6px 0 0;
-  flex: none;
-}
-
-.sign__art { position: relative; z-index: 1; margin: auto 0; }
-.sign__art svg { display: block; width: 100%; height: auto; }
-
-.pc {
-  animation: pc-in .85s cubic-bezier(.22,1,.36,1) backwards;
-  animation-delay: var(--d, 0ms);
-}
-
-@keyframes pc-in {
-  from { opacity: 0; translate: 0 30px; }
-  to   { opacity: 1; translate: 0 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pc { opacity: 1; animation: none; translate: none; }
-}
-
 
 /* ============================================================
    HERO SCENE — the plates, and the detection boxes over them
@@ -975,6 +868,11 @@ body[data-paper="grid"] .foot {
   .metal__sheen { animation: none; }
 }
 
+/* the drift keeps two full-bleed blurred layers compositing every
+   frame — cheap while the hero is on screen, wasted once the visitor
+   has scrolled past it. shell.js toggles this via IntersectionObserver. */
+.hero:not(.is-in-view) .metal__sheen { animation-play-state: paused; }
+
 .row {
   position: relative;
   display: flex;
@@ -1058,10 +956,11 @@ body.is-handoff .row--name .big { visibility: hidden; }
 .big {
   font-family: var(--mark);
   font-weight: 400;
-  font-size: clamp(60px, 8.6vw, 156px);
+  font-size: clamp(54px, 7.8vw, 142px);
   line-height: .86;
   letter-spacing: .005em;
-  color: var(--ink);
+  color: #6E716C;
+  text-shadow: 0 0 18px rgba(110,113,108,.45);
   margin: 0;
   white-space: nowrap;
 }
@@ -1156,7 +1055,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
 <!-- loading screen; removed from the DOM once the hand-off finishes -->
 <div class="boot" id="boot" aria-hidden="true">
   <div class="boot__stage" id="bootStage">
-    <span class="boot__clip"><span class="boot__word" id="bootWord">Emerson.Lo</span></span>
+    <span class="boot__clip"><span class="boot__word" id="bootWord">Emerson Lo</span></span>
   </div>
 </div>
 
@@ -1213,14 +1112,13 @@ body.is-handoff .row--name .big { visibility: hidden; }
     <span class="metal__shadow"></span>
   </div>
 
-  <div class="sign__bg-fill" aria-hidden="true"></div>
   <img class="sign__bg" src="images/mountain.png" alt="" aria-hidden="true">
   <div class="sign__fade" aria-hidden="true"></div>
 
   <div class="rows">
 
     <div class="row row--name" style="--d:0ms">
-      <h1 class="big" data-boot-target>Emerson.Lo</h1>
+      <h1 class="big" data-boot-target>Emerson Lo</h1>
       <p class="note note--r">Delivering user-centric experiences</p>
     </div>
 
@@ -1264,7 +1162,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">HackDavis</span><span class="tile__year">2026</span></h3>
-            <p class="tile__sub">Designing the front door for one of California's largest collegiate hackathon.</p>
+            <p class="tile__sub">The front door for one of California's largest hackathons.</p>
           </div>
         </a>
 
@@ -1274,7 +1172,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
-            <p class="tile__sub">Rebuilding a volunteer-run clinic's site around the two questions patients actually arrive with.</p>
+            <p class="tile__sub">Rebuilt around the two questions patients actually arrive with.</p>
           </div>
         </a>
 
@@ -1288,7 +1186,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
-            <p class="tile__sub">Budget and diet-aware cooking, from a restriction filter to a two-tap grocery run.</p>
+            <p class="tile__sub">Diet-aware cooking, from a filter to a two-tap grocery run.</p>
           </div>
         </a>
 
@@ -1305,7 +1203,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
-            <p class="tile__sub">A photo-challenge app that turns an ordinary walk into a shared visual archive of a place.</p>
+            <p class="tile__sub">A photo-challenge app that turns a walk into a shared archive.</p>
           </div>
         </a>
 
@@ -1315,7 +1213,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Japanese American Student Society</span><span class="tile__year">2024</span></h3>
-            <p class="tile__sub">A cultural org's home page, rebuilt around events, cabinet, and belonging.</p>
+            <p class="tile__sub">A cultural org's home page, built around events and belonging.</p>
           </div>
         </a>
 
@@ -1538,7 +1436,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
   var EASE_REVEAL = 'cubic-bezier(.22,1,.36,1)';
   var EASE_TRAVEL = 'cubic-bezier(.65,0,.2,1)';
-  var SMALL_PX    = 20;      /* how large the name reads on the loader */
+  var SMALL_PX    = 32;      /* how large the name reads on the loader */
 
   function finish() {
     body.classList.remove('is-booting', 'is-handoff');
