@@ -51,6 +51,8 @@
 
 * { box-sizing: border-box; }
 
+html, body { overflow-x: hidden; max-width: 100%; }
+
 body {
   margin: 0;
   background: var(--paper);
@@ -98,28 +100,6 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   body,
   a, button, .nv, .tile, [role="button"],
   .nav__toggle, .nv--hint { cursor: auto; }
-}
-
-/* ============================================================
-   PAPER — genkō yōshi grid.  Whole feature lives in this block.
-   To remove: delete `data-paper="grid"` from the <body> tag.
-   ============================================================ */
-
-:root {
-  --dot: #E4E4DF;
-  --cell: 24px;
-}
-
-/* the grid runs on the hero, the sheet and the footer — rail stays plain */
-body[data-paper="grid"] .main,
-body[data-paper="grid"] .hero--sign,
-body[data-paper="grid"] .foot {
-  background-color: var(--paper);
-  background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
-  background-size: var(--cell) var(--cell);
-  /* anchored to the viewport so the ruling stays put while the sheet
-     slides over the footer */
-  background-attachment: fixed;
 }
 
 /* =========================== NAV =========================== */
@@ -223,7 +203,6 @@ body[data-paper="grid"] .foot {
   font-size: 20px;
   line-height: 1;
   letter-spacing: .02em;
-  text-shadow: 0 0 18px rgba(110,113,108,.45);
   transition: font-size .5s cubic-bezier(.22,1,.36,1);
 }
 
@@ -354,7 +333,10 @@ body[data-paper="grid"] .foot {
   padding: 80px var(--gutter) 88px 74px;
 }
 
-/* a press-grain wash, hero only, so the work tiles stay clean */
+/* a press-grain wash, hero only, so the work tiles stay clean.
+   Baked to a static tile — the old inline <feTurbulence> had to be
+   rasterized by the filter engine at first paint, which landed right
+   on top of the boot animation. */
 .hero::after {
   content: "";
   position: absolute;
@@ -362,7 +344,8 @@ body[data-paper="grid"] .foot {
   pointer-events: none;
   opacity: .3;              /* eased back now the grid carries the texture */
   mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+  background-image: url("images/grain.jpg");
+  background-size: 180px 180px;
 }
 
 .hero__status {
@@ -587,9 +570,10 @@ body[data-paper="grid"] .foot {
 .nav--open ~ .hero--sign { margin-left: 232px; }
 
 /* the nav-open reflow already forces this subtree to re-layout every
-   frame; pausing the blurred drift stops a second expensive repaint
-   (filter re-rasterize) from stacking on top of it for the duration */
-.nav--open ~ .hero--sign .metal__sheen { animation-play-state: paused; }
+   frame; pausing the blurred drift and the word carousel stops two more
+   expensive repaints from stacking on top of it for the duration */
+.nav--open ~ .hero--sign .metal__sheen,
+.nav--open ~ .hero--sign .roll__track { animation-play-state: paused; }
 
 /* artwork set into the hero — printed into the paper via multiply so
    its whites vanish and only the pencil linework/shadow reads.
@@ -780,12 +764,13 @@ body[data-paper="grid"] .foot {
    Built from text alone (the reference recording never arrived
    whole); nudge --metal-shadow first before touching anything else.
 
-   THE DIAL: --metal-shadow, 0 → 1.
-     0   = near-white, soft-focus, high blur — pearl / oil-slick
-     1   = darker, tighter, more saturated pull-back — hard chrome
-   Everything else (blur radius, saturation, brightness, the dark
-   rim) is derived from this one number. Confined to the hero's
-   edges by a mask, so the centre stays clean behind the type.
+   THE DIAL: --metal-shadow, 0 → 1. Fades the pearl sheen out and
+   darkens the shadow rim beneath it as it turns up. A second
+   "hard chrome" material used to cross-fade in at the top of the
+   dial, but it never left opacity 0 in practice, so it's gone —
+   it cost a full blurred, animating layer for zero visible output.
+   Confined to the hero's edges by a mask, so the centre stays
+   clean behind the type.
    ============================================================ */
 
 :root {
@@ -798,6 +783,10 @@ body[data-paper="grid"] .foot {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  /* promotes this to its own GPU layer from first paint, so the blurred,
+     blend-mode, masked content inside gets rasterized once up front
+     instead of at the exact instant the boot handoff fades it in */
+  will-change: opacity;
   -webkit-mask-image: radial-gradient(120% 100% at 56% 36%, transparent 52%, #000 100%);
           mask-image: radial-gradient(120% 100% at 56% 36%, transparent 52%, #000 100%);
 }
@@ -819,13 +808,6 @@ body[data-paper="grid"] .foot {
     #ffffff 0deg, #e9f0ff 42deg, #fce8f4 92deg, #e7fbf3 142deg,
     #fff6e2 192deg, #ece6ff 244deg, #ffffff 300deg, #ffffff 360deg);
   opacity: calc(.4 - var(--metal-shadow) * .4);
-}
-
-.metal__sheen--chrome {
-  background: conic-gradient(from 205deg at 72% 12%,
-    #f4f6f8 0deg, #2a2e33 32deg, #14161a 80deg, #3b424a 118deg,
-    #0e0f11 160deg, #4a5058 210deg, #1a1c1f 260deg, #eef0f2 300deg, #f4f6f8 360deg);
-  opacity: calc(var(--metal-shadow) * .85);
 }
 
 /* the dark rim underneath the sheen — the actual "shadow" that
@@ -860,9 +842,9 @@ body[data-paper="grid"] .foot {
   gap: clamp(24px, 6vw, 90px);
   padding-bottom: clamp(20px, 2.6vw, 38px);
   border-bottom: 1px solid #E4E4E1;    /* very thin divider */
-  transition: opacity .9s cubic-bezier(.22,1,.36,1),
-              translate .9s cubic-bezier(.22,1,.36,1),
-              border-color .6s ease;
+  transition: opacity .55s cubic-bezier(.22,1,.36,1),
+              translate .55s cubic-bezier(.22,1,.36,1),
+              border-color .4s ease;
   transition-delay: var(--d, 0ms);
 }
 
@@ -884,7 +866,11 @@ body[data-paper="grid"] .foot {
   z-index: 200;
   background: #EDEDEA;
   pointer-events: none;
-  transition: background-color 1s cubic-bezier(.65,0,.2,1);
+  /* matches the 750ms travel duration below — is-clearing fires at the
+     same instant travel starts, and finish() removes this element the
+     instant travel ends, so a longer fade here gets truncated mid-flight
+     (an abrupt snap) right as every other handoff fade is also starting */
+  transition: background-color .75s cubic-bezier(.65,0,.2,1);
 }
 
 .boot.is-clearing { background-color: rgba(237,237,234,0); }
@@ -907,15 +893,26 @@ body[data-paper="grid"] .foot {
 
 /* --- what the page looks like while the loader is up --- */
 
-body.is-booting .nav,
 body.is-booting .metal,
 body.is-booting .main,
 body.is-booting .foot { opacity: 0; }
 
-body.is-booting .nav,
-body.is-booting .metal,
-body.is-booting .main,
-body.is-booting .foot { transition: opacity .9s ease .15s; }
+/* the "Delivering user-centric experiences" line sat visible the whole
+   time the name was still travelling in — it now holds back and
+   reveals together with the rest of the hero's text */
+body.is-booting .row--name .note { opacity: 0; translate: 0 24px; }
+.row--name .note {
+  transition: opacity .55s cubic-bezier(.22,1,.36,1) .1s,
+              translate .55s cubic-bezier(.22,1,.36,1) .1s;
+}
+
+/* staggered rather than simultaneous: .metal is a cold first paint
+   (its blurred layers never rendered while hidden at opacity 0), so
+   it goes first and alone; .main/.foot follow a beat later so their
+   own paint work doesn't land in the exact same frame as .metal's */
+body.is-booting .metal { transition: opacity .55s ease .08s; }
+body.is-booting .main  { transition: opacity .5s ease .18s; }
+body.is-booting .foot  { transition: opacity .5s ease .26s; }
 
 body.is-booting .row--sub { opacity: 0; translate: 0 24px; }
 
@@ -939,7 +936,6 @@ body.is-handoff .row--name .big { visibility: hidden; }
   line-height: .86;
   letter-spacing: .005em;
   color: #6E716C;
-  text-shadow: 0 0 18px rgba(110,113,108,.45);
   margin: 0;
   white-space: nowrap;
 }
@@ -964,9 +960,24 @@ body.is-handoff .row--name .big { visibility: hidden; }
   vertical-align: bottom;
 }
 
+/* Runs entirely on the compositor: one CSS animation on a promoted
+   layer, no JS timer touching inline styles frame to frame. */
 .roll__track {
   display: block;
-  transition: transform .78s cubic-bezier(.22,1,.36,1);
+  will-change: transform;
+  animation: roll-words 10.4s cubic-bezier(.22,1,.36,1) infinite;
+}
+
+/* four words plus a duplicate of the first. The track steps down one
+   word-height at a time — holding ~1.8s, sliding ~0.8s — and the
+   trailing duplicate means 100% and 0% render identically, so the
+   loop restart is invisible without any snap-back bookkeeping. */
+@keyframes roll-words {
+  0%,  17.5% { transform: translate3d(0, 0, 0); }
+  25%, 42.5% { transform: translate3d(0, -1.06em, 0); }
+  50%, 67.5% { transform: translate3d(0, -2.12em, 0); }
+  75%, 92.5% { transform: translate3d(0, -3.18em, 0); }
+  100%       { transform: translate3d(0, -4.24em, 0); }
 }
 
 .roll__word {
@@ -977,8 +988,12 @@ body.is-handoff .row--name .big { visibility: hidden; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .roll__track { transition: none; }
+  .roll__track { animation: none; }
 }
+
+/* same IntersectionObserver hook the metal drift uses — the carousel
+   stops costing anything once the hero is scrolled past */
+.hero:not(.is-in-view) .roll__track { animation-play-state: paused; }
 
 </style>
 </head>
@@ -1084,7 +1099,6 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
   <div class="metal" aria-hidden="true">
     <span class="metal__sheen metal__sheen--pearl"></span>
-    <span class="metal__sheen metal__sheen--chrome"></span>
     <span class="metal__shadow"></span>
   </div>
 
@@ -1098,7 +1112,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <p class="note note--r">Delivering user-centric experiences</p>
     </div>
 
-    <div class="row row--sub" style="--d:140ms">
+    <div class="row row--sub" style="--d:90ms">
       <span class="big roll" aria-label="Product designer">
         <span class="roll__track">
           <span class="roll__word">Product</span>
@@ -1111,7 +1125,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <p class="note note--r">Los Angeles, California</p>
     </div>
 
-    <div class="row row--last row--sub" style="--d:280ms">
+    <div class="row row--last row--sub" style="--d:170ms">
       <span class="big">Designer</span>
       <p class="hero__status"><span class="hero__dot"></span> Open to new opportunities</p>
     </div>
@@ -1242,11 +1256,6 @@ body.is-handoff .row--name .big { visibility: hidden; }
     document.querySelector('.hero').style.minHeight = '240px';
   }
 
-  /* ?paper=off strips the grid for a side-by-side look */
-  if (new URLSearchParams(location.search).get('paper') === 'off') {
-    document.body.removeAttribute('data-paper');
-  }
-
   /* screenshot aid: ?peek=0,4 forces those nav labels open */
   (function () {
     var peek = new URLSearchParams(location.search).get('peek');
@@ -1347,33 +1356,6 @@ body.is-handoff .row--name .big { visibility: hidden; }
 })();
 </script>
 <script>
-/* the hero word rolls through the disciplines */
-(function () {
-  var track = document.querySelector('.roll__track');
-  if (!track) return;
-  var words = track.children.length;          /* last one duplicates the first */
-  var i = 0;
-
-  function step() {
-    i += 1;
-    track.style.transition = '';
-    track.style.transform = 'translateY(' + (-i * 1.06) + 'em)';
-    if (i === words - 1) {
-      /* landed on the duplicate — snap back with no transition */
-      setTimeout(function () {
-        track.style.transition = 'none';
-        track.style.transform = 'translateY(0)';
-        i = 0;
-      }, 820);
-    }
-  }
-
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    setInterval(step, 2600);
-  }
-})();
-</script>
-<script>
 /* ============================================================
    BOOT SEQUENCE — loading screen → landing page, one motion.
    ============================================================ */
@@ -1443,25 +1425,31 @@ body.is-handoff .row--name .big { visibility: hidden; }
       /* 1 — the name is masked in from below */
       var reveal = word.animate(
         [{ translate: '0 105%' }, { translate: '0 0' }],
-        { duration: 900, easing: EASE_REVEAL, fill: 'both' }
+        { duration: 550, easing: EASE_REVEAL, fill: 'both' }
       );
 
       reveal.finished.then(function () {
-        return new Promise(function (res) { setTimeout(res, 220); });
+        return new Promise(function (res) { setTimeout(res, 120); });
       }).then(function () {
-        /* 2 — it grows and travels to its place in the hero, while the
-           page and the rest of the rows come in underneath it */
-        body.classList.remove('is-booting');
-        body.classList.add('is-handoff');
+        /* 2 — the name grows and travels to its place in the hero.
+           The loader's ground clears with it, but the heavy hero
+           layers stay hidden: fading a masked, blurred, blend-mode
+           stack at the same time as this FLIP is what stalls the
+           main thread. */
         boot.classList.add('is-clearing');
+        body.classList.add('is-handoff');
 
         var travel = stage.animate(
           [{ transform: from }, { transform: 'none' }],
-          { duration: 1200, easing: EASE_TRAVEL, fill: 'both' }
+          { duration: 750, easing: EASE_TRAVEL, fill: 'both' }
         );
 
         return travel.finished;
       }).then(function () {
+        /* 3 — the name has landed. finish() drops is-booting, which
+           starts the .nav/.metal/.main/.foot fade — now with the main
+           thread to itself, and the real name swaps in under the
+           travelling copy at the identical spot, so the cut is unseen. */
         clearTimeout(bail);
         finish();
       }).catch(finish);

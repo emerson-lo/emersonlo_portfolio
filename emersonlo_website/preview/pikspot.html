@@ -362,7 +362,9 @@ a, button, .nv, [role="button"],
 
 .meta {
   border-top: 1px solid var(--hair);
-  padding: clamp(40px, 6vh, 64px) clamp(30px, 5vw, 78px) clamp(70px, 10vh, 110px);
+  /* bottom value matches .prompt/.research's own padding-bottom, so the
+     gap before every numbered section (Overview → 01 → 02) is identical */
+  padding: clamp(40px, 6vh, 64px) clamp(30px, 5vw, 78px) clamp(80px, 12vh, 130px);
   text-align: center;
 }
 
@@ -378,7 +380,7 @@ a, button, .nv, [role="button"],
   font-size: 12.5px;
   letter-spacing: .18em;
   text-transform: uppercase;
-  color: var(--gray-soft);
+  color: #7B8FC7;
   margin: 0 0 12px;
 }
 
@@ -439,6 +441,14 @@ a, button, .nv, [role="button"],
 
 .prompt__accent { color: #7B8FC7; font-weight: 500; }
 
+.pin-result__heading {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--ink);
+  margin: 0 0 18px;
+}
+
 /* --- research / competitive analysis --- */
 
 .research {
@@ -450,18 +460,17 @@ a, button, .nv, [role="button"],
 .research__heading {
   font-family: var(--serif);
   font-style: italic;
-  font-weight: 700;
-  font-size: clamp(24px, 2.4vw, 30px);
+  font-weight: 600;
+  font-size: 20px;
   color: var(--ink);
   margin: 0 0 18px;
 }
 
 .research__body {
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--ink-soft);
   margin: 0 0 48px;
-  max-width: 62em;
 }
 
 .research__body strong { font-weight: 700; color: var(--ink); }
@@ -496,6 +505,8 @@ a, button, .nv, [role="button"],
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 36px clamp(24px, 6vw, 90px);
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 .pc-card__title {
@@ -506,7 +517,7 @@ a, button, .nv, [role="button"],
 }
 
 .pc-card__pro, .pc-card__con {
-  font-size: 15.5px;
+  font-size: 15px;
   color: var(--ink-soft);
   margin: 0 0 8px;
   display: flex;
@@ -515,6 +526,56 @@ a, button, .nv, [role="button"],
 
 @media (max-width: 640px) {
   .pc-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Pinterest deep-dive: the FigJam sticky-note board --- */
+
+.pin-board-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  text-align: left;
+  /* matches .pin-board-wrap's own padding, so this sits flush with the
+     left edge of the sticky notes inside it rather than the section's */
+  margin: 0 0 20px clamp(14px, 2.4vw, 24px);
+}
+
+/* separates this from the pros/cons grid above it — noticeably less
+   than the gap between 01/02/etc, since this isn't a new numbered
+   section, just a second block of content within "02. Research" */
+.pin-board-title--spaced { margin-top: 56px; }
+
+.pin-board-wrap {
+  border-radius: 10px;
+  padding: clamp(14px, 2.4vw, 24px);
+  margin: 0 0 56px;
+}
+
+/* no gap of our own: each note's SVG already carries ~10px of
+   transparent margin on every side for its drop shadow, which is
+   exactly the spacing the original board had between notes */
+.pin-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: 0;
+}
+
+.pin-col { display: flex; flex-direction: column; }
+
+.sticky {
+  display: block;
+  width: 82%;
+  height: auto;
+  opacity: .82;
+}
+
+@media (max-width: 900px) {
+  .pin-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 520px) {
+  .pin-board { grid-template-columns: 1fr; }
 }
 
 /* --- entrance, matching the landing page's restraint --- */
@@ -633,7 +694,7 @@ a, button, .nv, [role="button"],
   </section>
 
   <section class="prompt">
-    <p class="prompt__label">Problem Statement</p>
+    <p class="prompt__label">01. Problem Statement</p>
 
     <p class="prompt__cue">What exactly was our prompt?</p>
     <p class="prompt__body">For photographers, finding the perfect location can be just as important as gathering the equipment. Yet, discovering unique, hidden, or niche photography spots can be time-consuming and difficult.</p>
@@ -643,7 +704,7 @@ a, button, .nv, [role="button"],
   </section>
 
   <section class="research">
-    <p class="prompt__label">01. Research</p>
+    <p class="prompt__label">02. Research</p>
     <h2 class="research__heading">Competitive Analysis</h2>
     <p class="research__body">Our research began by first conducting a competitive analysis. Each member was tasked to look at one of four photo-sharing platforms which include <strong>VSCO</strong>, <strong>Flicker</strong>, <strong>Pinterest</strong>, and <strong>Instagram</strong> to better understand their <a class="research__link" href="#pros-cons">pros and cons</a>.</p>
 
@@ -671,6 +732,45 @@ a, button, .nv, [role="button"],
         <p class="pc-card__con"><span class="dot dot--con"></span>High pressure to perform</p>
       </div>
     </div>
+
+    <p class="pin-board-title pin-board-title--spaced">My competitive analysis on Pinterest (FigJam)</p>
+
+    <div class="pin-board-wrap">
+      <div class="pin-board">
+        <div class="pin-col">
+          <img class="sticky" src="images/sticky/pin-goal.svg" width="149" height="171" loading="lazy"
+               alt="Goal: Discover ideas and inspirations (fashion, food, home decor). Save and organize content into boards. Keep up with trends. Promote products for your business. Event planning.">
+          <img class="sticky" src="images/sticky/pin-navigation.svg" width="149" height="171" loading="lazy"
+               alt="Navigation: Nav is simple and intuitive. Greeted with a screen full of pictures of your own interest. Click on the picture to learn more. Side nav bar has 4 buttons, home, post, noti, and messaging.">
+          <img class="sticky" src="images/sticky/pin-visual.svg" width="149" height="158" loading="lazy"
+               alt="Visual: Uneven grid style format that showcases pictures of various interests. Rounded edges throughout creates a very welcoming vibe. Minimalistic.">
+        </div>
+        <div class="pin-col">
+          <img class="sticky" src="images/sticky/pin-target-base.svg" width="149" height="149" loading="lazy"
+               alt="Target Base: Gen Z, younger millennials, greater female user base. Business owners promote on the app.">
+          <img class="sticky" src="images/sticky/pin-attention.svg" width="149" height="149" loading="lazy"
+               alt="Attention: Main focus of the app is to present images that align with people's interests.">
+          <img class="sticky" src="images/sticky/pin-cta.svg" width="149" height="158" loading="lazy"
+               alt="CTA: When hovering over a picture, theres a save and share button. Save button is bigger and red to make it more noticeable. Also a &quot;...&quot; button for additional options.">
+        </div>
+        <div class="pin-col">
+          <img class="sticky" src="images/sticky/pin-opportunity.svg" width="149" height="197" loading="lazy"
+               alt="Opportunity: Short form videos that align with users interests and hobbies. Appeals towards younger GEN Z people who are used to Tiktok, Reels, etc. Expand E-Commerce. Very limited as of now.">
+          <img class="sticky" src="images/sticky/pin-threats.svg" width="149" height="171" loading="lazy"
+               alt="Threats: A lot of apps are incorporating short form videos which Pinterest doesn't have. Might deter users from using the app. Pinterest's main feature is essentially Google images.">
+        </div>
+        <div class="pin-col">
+          <img class="sticky" src="images/sticky/pin-weaknesses.svg" width="149" height="171" loading="lazy"
+               alt="Weaknesses: Algorithm is too sensitive. Click on one picture and a lot of your feed changes. Images are scattered all over the place, not really organized.">
+          <img class="sticky" src="images/sticky/pin-strengths.svg" width="149" height="210" loading="lazy"
+               alt="Strengths: Image driven app. Clean layout focused on high quality images. The user intent is high. Users come with a purpose (research and planning). Pins stay discoverable for months or years, unlike time-sensitive posts on IG or tiktok.">
+        </div>
+      </div>
+    </div>
+
+    <p class="prompt__cue">Competitive Analysis Results</p>
+    <h3 class="pin-result__heading">So&hellip; what does each platform have to offer?</h3>
+    <p class="research__body">Every successful product has one standout feature, something polished, seamless, and unique. Since there are countless amounts of photo apps, we realized that our app needed the same defining element. But, what would that element be? How would it set us apart? This question stayed with us throughout our research and carried on into our ideation phase.</p>
   </section>
 
 </main>
