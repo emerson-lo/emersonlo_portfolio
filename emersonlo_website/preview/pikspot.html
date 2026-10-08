@@ -273,7 +273,7 @@ a, button, .nv, [role="button"],
 .hero {
   position: relative;
   overflow: hidden;
-  padding: clamp(90px, 15vh, 170px) clamp(30px, 5vw, 78px) clamp(70px, 11vh, 130px);
+  padding: clamp(190px, 32vh, 330px) clamp(30px, 5vw, 78px) clamp(70px, 11vh, 130px);
 }
 
 /* the faded blue glow, kept from the reference — it sits behind the
@@ -312,7 +312,7 @@ a, button, .nv, [role="button"],
 .hero__inner { position: relative; z-index: 1; max-width: 640px; }
 
 .hero__year {
-  font-size: 15px;
+  font-size: 17px;
   letter-spacing: .16em;
   color: var(--gray-soft);
   margin: 0 0 10px;
@@ -321,7 +321,7 @@ a, button, .nv, [role="button"],
 .hero__title {
   font-family: var(--serif);
   font-weight: 300;
-  font-size: clamp(52px, 6.4vw, 96px);
+  font-size: clamp(60px, 7.4vw, 112px);
   line-height: 1.02;
   letter-spacing: -.015em;
   margin: 0 0 22px;
@@ -329,7 +329,7 @@ a, button, .nv, [role="button"],
 }
 
 .hero__lede {
-  font-size: clamp(16px, 1.35vw, 20px);
+  font-size: clamp(19px, 1.6vw, 24px);
   line-height: 1.5;
   color: var(--gray);
   margin: 0 0 38px;
@@ -339,13 +339,13 @@ a, button, .nv, [role="button"],
 .hero__actions { display: flex; flex-wrap: wrap; gap: 14px; }
 
 .btn {
-  font-size: 15.5px;
+  font-size: 17.5px;
   letter-spacing: -.01em;
   color: var(--ink-soft);
   text-decoration: none;
   border: 1px solid #CFCFC9;
   border-radius: 999px;
-  padding: 12px 22px;
+  padding: 16px 28px;
   background: rgba(255,255,255,.5);
   transition: background .25s ease, border-color .25s ease,
               color .25s ease, transform .4s cubic-bezier(.22,1,.36,1);
@@ -362,12 +362,16 @@ a, button, .nv, [role="button"],
 
 .meta {
   border-top: 1px solid var(--hair);
-  margin: 0 clamp(30px, 5vw, 78px);
-  padding: clamp(40px, 6vh, 64px) 0 clamp(70px, 10vh, 110px);
+  padding: clamp(40px, 6vh, 64px) clamp(30px, 5vw, 78px) clamp(70px, 10vh, 110px);
+  text-align: center;
+}
+
+.meta__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(34px, 5vh, 56px) clamp(24px, 4vw, 60px);
   max-width: 1180px;
+  margin: 0 auto;
 }
 
 .meta__label {
@@ -386,11 +390,131 @@ a, button, .nv, [role="button"],
 }
 
 @media (max-width: 900px) {
-  .meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .meta__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 560px) {
-  .meta { grid-template-columns: 1fr; }
+  .meta__grid { grid-template-columns: 1fr; }
+}
+
+/* --- prompt / problem statement --- */
+
+.prompt {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(30px, 5vw, 78px) clamp(80px, 12vh, 130px);
+}
+
+.prompt__label {
+  font-size: 12.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gray-soft);
+  margin: 0 0 28px;
+}
+
+.prompt__cue {
+  font-style: italic;
+  font-size: 14px;
+  color: var(--gray);
+  margin: 0 0 8px;
+}
+
+.prompt__body {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 36px;
+}
+
+.prompt__hmw {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(22px, 2.6vw, 30px);
+  line-height: 1.45;
+  color: var(--ink);
+  margin: 0;
+}
+
+.prompt__accent { color: #7B8FC7; font-weight: 500; }
+
+/* --- research / competitive analysis --- */
+
+.research {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(30px, 5vw, 78px) clamp(80px, 12vh, 130px);
+}
+
+.research__heading {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(24px, 2.4vw, 30px);
+  color: var(--ink);
+  margin: 0 0 18px;
+}
+
+.research__body {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 48px;
+  max-width: 62em;
+}
+
+.research__body strong { font-weight: 700; color: var(--ink); }
+
+.research__link {
+  color: #7B8FC7;
+  text-decoration-color: rgba(123,143,199,.4);
+}
+
+.pc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 32px;
+}
+
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.dot--pro { background: #3FAE5C; }
+.dot--con { background: #E24C4C; }
+
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 36px clamp(24px, 6vw, 90px);
+}
+
+.pc-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+
+.pc-card__pro, .pc-card__con {
+  font-size: 15.5px;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .pc-grid { grid-template-columns: 1fr; }
 }
 
 /* --- entrance, matching the landing page's restraint --- */
@@ -461,20 +585,19 @@ a, button, .nv, [role="button"],
 <main class="main">
 
   <header class="hero">
-    <div class="hero__glow" aria-hidden="true"></div>
-    <img class="hero__device" src="images/pikspot-hero-phone.png" alt="An iPhone showing the Pikspot app">
     <div class="hero__inner">
       <p class="hero__year rise" style="--d:0ms">2025</p>
       <h1 class="hero__title rise" style="--d:80ms">Pikspot</h1>
       <p class="hero__lede rise" style="--d:160ms">Chasing adventures through spontaneous photography</p>
       <div class="hero__actions rise" style="--d:240ms">
-        <a class="btn" href="#">View Prototype</a>
+        <a class="btn" href="https://www.figma.com/proto/wPXX58P0pZhD61IaQTYuFi/Pikspot-Prototype?page-id=0%3A1&node-id=1-4683&viewport=1903%2C1175%2C0.17&t=fsdhYA7rXJ38Cijh-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=1%3A5776" target="_blank" rel="noopener">View Prototype</a>
         <a class="btn" href="#skip-to-the-end">Skip to the End</a>
       </div>
     </div>
   </header>
 
   <section class="meta" id="overview">
+   <div class="meta__grid">
 
     <div>
       <p class="meta__label">Role</p>
@@ -506,6 +629,48 @@ a, button, .nv, [role="button"],
       <p class="meta__value">15 Minutes</p>
     </div>
 
+   </div>
+  </section>
+
+  <section class="prompt">
+    <p class="prompt__label">Problem Statement</p>
+
+    <p class="prompt__cue">What exactly was our prompt?</p>
+    <p class="prompt__body">For photographers, finding the perfect location can be just as important as gathering the equipment. Yet, discovering unique, hidden, or niche photography spots can be time-consuming and difficult.</p>
+
+    <p class="prompt__cue">For that reason, we asked&hellip;</p>
+    <p class="prompt__hmw"><span class="prompt__accent">How might we</span> design an app that can make discovering unique photo spots and sharing hidden gems effortless for <span class="prompt__accent">photographers?</span></p>
+  </section>
+
+  <section class="research">
+    <p class="prompt__label">01. Research</p>
+    <h2 class="research__heading">Competitive Analysis</h2>
+    <p class="research__body">Our research began by first conducting a competitive analysis. Each member was tasked to look at one of four photo-sharing platforms which include <strong>VSCO</strong>, <strong>Flicker</strong>, <strong>Pinterest</strong>, and <strong>Instagram</strong> to better understand their <a class="research__link" href="#pros-cons">pros and cons</a>.</p>
+
+    <p class="pc-head" id="pros-cons"><span class="dot dot--pro"></span>Pros &amp; <span class="dot dot--con"></span>Cons</p>
+
+    <div class="pc-grid">
+      <div class="pc-card">
+        <h3 class="pc-card__title">Pinterest</h3>
+        <p class="pc-card__pro"><span class="dot dot--pro"></span>Image-driven app curated for each user</p>
+        <p class="pc-card__con"><span class="dot dot--con"></span>Low-user generated originality</p>
+      </div>
+      <div class="pc-card">
+        <h3 class="pc-card__title">Flicker</h3>
+        <p class="pc-card__pro"><span class="dot dot--pro"></span>High Quality photo sharing</p>
+        <p class="pc-card__con"><span class="dot dot--con"></span>Limited playfulness</p>
+      </div>
+      <div class="pc-card">
+        <h3 class="pc-card__title">VSCO</h3>
+        <p class="pc-card__pro"><span class="dot dot--pro"></span>Aesthetically pleasing content that's curated</p>
+        <p class="pc-card__con"><span class="dot dot--con"></span>Weak social interaction</p>
+      </div>
+      <div class="pc-card">
+        <h3 class="pc-card__title">Instagram</h3>
+        <p class="pc-card__pro"><span class="dot dot--pro"></span>Most popular method of sharing photos</p>
+        <p class="pc-card__con"><span class="dot dot--con"></span>High pressure to perform</p>
+      </div>
+    </div>
   </section>
 
 </main>

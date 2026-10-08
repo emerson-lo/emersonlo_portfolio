@@ -71,25 +71,25 @@ body {
    ============================================================ */
 
 body {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='9' cy='9' r='6.5' fill='%234CC46A'/%3E%3C/svg%3E") 9 9, auto;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='9' cy='9' r='6.5' fill='%2314FFB4'/%3E%3C/svg%3E") 9 9, auto;
 }
 
 /* anything clickable gets a bigger dot, so the hover affordance the
    pointer used to carry isn't lost */
 a, button, .nv, .tile, [role="button"],
 .nav__toggle, .nv--hint {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='9' fill='%234CC46A'/%3E%3C/svg%3E") 12 12, pointer;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='9' fill='%2314FFB4'/%3E%3C/svg%3E") 12 12, pointer;
 }
 
 /* a quick, static "press" state — swaps to a slightly bigger dot while
    the mouse button is down, so the click itself feels acknowledged */
 body:active {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='11' cy='11' r='8.5' fill='%234CC46A'/%3E%3C/svg%3E") 11 11, auto;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='11' cy='11' r='8.5' fill='%2314FFB4'/%3E%3C/svg%3E") 11 11, auto;
 }
 
 a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 .nav__toggle:active, .nv--hint:active {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Ccircle cx='15' cy='15' r='12' fill='%234CC46A'/%3E%3C/svg%3E") 15 15, pointer;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Ccircle cx='15' cy='15' r='12' fill='%2314FFB4'/%3E%3C/svg%3E") 15 15, pointer;
 }
 
 /* a coarse pointer has no cursor to restyle, and forcing one there
@@ -141,8 +141,8 @@ body[data-paper="grid"] .foot {
   flex-direction: column;
   align-items: center;
   z-index: 50;
-  transition: width .5s cubic-bezier(.22,1,.36,1),
-              box-shadow .5s cubic-bezier(.22,1,.36,1);
+  transition: width .3s cubic-bezier(.22,1,.36,1),
+              box-shadow .3s cubic-bezier(.22,1,.36,1);
 }
 
 /* ---- expanded rail ---- */
@@ -247,8 +247,8 @@ body[data-paper="grid"] .foot {
   height: 1px;
   background: var(--hair);
   margin: 20px 0;
-  transition: width .5s cubic-bezier(.22,1,.36,1),
-              margin-left .5s cubic-bezier(.22,1,.36,1);
+  transition: width .3s cubic-bezier(.22,1,.36,1),
+              margin-left .3s cubic-bezier(.22,1,.36,1);
 }
 
 /* every section is separated by the same 20px + rule + 20px */
@@ -340,7 +340,7 @@ body[data-paper="grid"] .foot {
   margin-left: var(--nav-w);
   margin-bottom: var(--foot-h);
   background: var(--paper);
-  transition: margin-left .5s cubic-bezier(.22,1,.36,1);
+  transition: margin-left .3s cubic-bezier(.22,1,.36,1);
 }
 
 .nav--open ~ .main { margin-left: 232px; }
@@ -417,9 +417,12 @@ body[data-paper="grid"] .foot {
 
 .tile__vis {
   position: relative;
+  width: 90%;
+  margin: 0 auto;
   border-radius: 3px;
   overflow: hidden;
-  background: var(--bg, #EFEFEC);
+  background: var(--paper);
+  border: 1px solid var(--hair);
   display: grid;
   place-items: center;
   isolation: isolate;
@@ -429,35 +432,7 @@ body[data-paper="grid"] .foot {
 .r-tall  { aspect-ratio: 3 / 2; }
 .r-short { aspect-ratio: 16 / 10; }
 
-/* flat artwork — square corners */
-.tile__art {
-  max-width: 82%;
-  max-height: 78%;
-  border-radius: 0;
-  box-shadow: 0 18px 44px rgba(20,22,20,.16);
-}
-
-/* video artwork behaves like the stills — centred, square corners */
-.tile__media {
-  max-width: 82%;
-  max-height: 78%;
-  border-radius: 0;
-  display: block;
-  box-shadow: 0 18px 44px rgba(20,22,20,.16);
-}
-
-.phones { display: flex; gap: 16px; align-items: center; }
-
-.phones img {
-  width: 112px;
-  border-radius: 15px;
-  box-shadow: 0 16px 40px rgba(20,22,20,.2);
-}
-
-.phones img:nth-child(1) { transform: translateY(14px) rotate(-2.5deg); }
-.phones img:nth-child(3) { transform: translateY(14px) rotate(2.5deg); }
-
-.tile__meta { padding: 16px 2px 0; }
+.tile__meta { padding: 16px 5% 0; }
 
 .tile__title {
   font-family: var(--mark);        /* same hand as the ERL logo */
@@ -529,7 +504,7 @@ body[data-paper="grid"] .foot {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  transition: left .5s cubic-bezier(.22,1,.36,1);
+  transition: left .3s cubic-bezier(.22,1,.36,1);
 }
 
 .nav--open ~ .foot { left: 232px; }
@@ -606,27 +581,31 @@ body[data-paper="grid"] .foot {
   padding: 74px 0 0 60px;
   background: var(--paper);
   margin-left: var(--nav-w);
-  transition: margin-left .5s cubic-bezier(.22,1,.36,1);
+  transition: margin-left .3s cubic-bezier(.22,1,.36,1);
 }
 
 .nav--open ~ .hero--sign { margin-left: 232px; }
 
-/* artwork set into the hero — full-bleed photo, printed into the paper
-   via multiply so its whites vanish and only the linework/shadow reads.
-   Mirrored so the hooded figure sits away from the headline text and
-   the plainer hillside/sky lands at the left edge, where .sign__fade
-   washes it out — that blends far more easily than the figure would.
+/* the nav-open reflow already forces this subtree to re-layout every
+   frame; pausing the blurred drift stops a second expensive repaint
+   (filter re-rasterize) from stacking on top of it for the duration */
+.nav--open ~ .hero--sign .metal__sheen { animation-play-state: paused; }
+
+/* artwork set into the hero — printed into the paper via multiply so
+   its whites vanish and only the pencil linework/shadow reads.
+   Shifted right (object-position) so the blade sits in the gap
+   between the headline and the right-aligned notes, clear of both,
+   and left unmirrored so the kanji and blade lettering stay legible.
    scale(1.08) gives the slight rotate room to clear the corners
-   without exposing bare paper at the edges — cover already fits the
-   unrotated box exactly, with no slack to spare. */
+   without exposing bare paper at the edges. */
 .sign__bg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: 65% 80%;
-  transform: scaleX(-1) rotate(-3deg) scale(1.08);
+  object-fit: contain;
+  object-position: 70% 60%;
+  transform: rotate(-3deg) scale(1.2);
   mix-blend-mode: multiply;
   pointer-events: none;
   user-select: none;
@@ -1017,16 +996,14 @@ body.is-handoff .row--name .big { visibility: hidden; }
       try { sessionStorage.setItem('elo:t', '1'); sessionStorage.removeItem('elo:t'); return true; }
       catch (e) { return false; }
     })();
-    var SEEN_KEY = 'elo:intro-seen';
     var SCROLL_KEY = 'elo:scrollY:' + location.pathname;
-    var seenIntro = canStore && sessionStorage.getItem(SEEN_KEY);
 
     var q = new URLSearchParams(location.search);
     /* a page opened in a background tab has its animations frozen, so the
        intro would be spent unseen — skip straight to the landing page.
-       Once the intro has played this session, later loads (eg. hitting
-       "back" from a case study) skip it too, instead of replaying it. */
-    var skip = seenIntro || q.has('static') || q.has('only') || document.hidden ||
+       Every other load (including a reload, or hitting "back" from a
+       case study) replays the intro from the start. */
+    var skip = q.has('static') || q.has('only') || document.hidden ||
                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (skip) {
@@ -1041,7 +1018,6 @@ body.is-handoff .row--name .big { visibility: hidden; }
          load needs this — the boot FLIP animation assumes scroll 0. */
       window.scrollTo(0, 0);
       document.body.classList.add('is-booting');
-      if (canStore) sessionStorage.setItem(SEEN_KEY, '1');
     }
 
     if (canStore) {
@@ -1112,7 +1088,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
     <span class="metal__shadow"></span>
   </div>
 
-  <img class="sign__bg" src="images/mountain.png" alt="" aria-hidden="true">
+  <img class="sign__bg" src="images/bustersword.jpg" alt="" aria-hidden="true">
   <div class="sign__fade" aria-hidden="true"></div>
 
   <div class="rows">
@@ -1155,11 +1131,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <div class="col">
 
         <a class="tile" id="hackdavis" href="#">
-          <div class="tile__vis r-short" style="--bg:#2A1B4D">
-            <video class="tile__media" src="images/hackdavis.mp4"
-                   poster="images/hackdavis-hero.png"
-                   muted loop playsinline preload="metadata"></video>
-          </div>
+          <div class="tile__vis r-short"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">HackDavis</span><span class="tile__year">2026</span></h3>
             <p class="tile__sub">The front door for one of California's largest hackathons.</p>
@@ -1167,9 +1139,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
         </a>
 
         <a class="tile" id="jvmc" href="#">
-          <div class="tile__vis r-short" style="--bg:#E4F0EC">
-            <img class="tile__art" src="images/jvmc-hero.png" alt="Joan Viteri Memorial Clinic site">
-          </div>
+          <div class="tile__vis r-short"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
             <p class="tile__sub">Rebuilt around the two questions patients actually arrive with.</p>
@@ -1177,13 +1147,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
         </a>
 
         <a class="tile" id="bitewise" href="#">
-          <div class="tile__vis r-tall" style="--bg:#1A1712">
-            <div class="phones">
-              <img src="images/bitewise-1.png" alt="Bitewise welcome">
-              <img src="images/bitewise-2.png" alt="Bitewise recipe">
-              <img src="images/bitewise-3.png" alt="Bitewise results">
-            </div>
-          </div>
+          <div class="tile__vis r-tall"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
             <p class="tile__sub">Diet-aware cooking, from a filter to a two-tap grocery run.</p>
@@ -1194,13 +1158,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <div class="col">
 
         <a class="tile" id="pikspot" href="preview/pikspot.html">
-          <div class="tile__vis r-tall" style="--bg:#E7EFF8">
-            <div class="phones">
-              <img src="images/pikspot-1.png" alt="Pikspot home">
-              <img src="images/pikspot-2.png" alt="Pikspot event">
-              <img src="images/pikspot-3.png" alt="Pikspot profile">
-            </div>
-          </div>
+          <div class="tile__vis r-tall"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
             <p class="tile__sub">A photo-challenge app that turns a walk into a shared archive.</p>
@@ -1208,9 +1166,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
         </a>
 
         <a class="tile" id="jass" href="#">
-          <div class="tile__vis r-wide" style="--bg:#F2E5EA">
-            <img class="tile__art" src="images/jass-hero.png" alt="JASS site">
-          </div>
+          <div class="tile__vis r-wide"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Japanese American Student Society</span><span class="tile__year">2024</span></h3>
             <p class="tile__sub">A cultural org's home page, built around events and belonging.</p>
