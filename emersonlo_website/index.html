@@ -39,7 +39,7 @@
   --hair: #E6E6E2;          /* the thin rule beside the nav */
   --paper: #FFFFFF;
   --green: #4CC46A;
-  --nav-w: 64px;
+  --nav-w: 56px;
   --gutter: 14px;
   --foot-h: 440px;
 
@@ -128,7 +128,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 /* ---- expanded rail ---- */
 
 .nav--open {
-  width: 232px;
+  width: 208px;
   align-items: flex-start;
   box-shadow: 24px 0 44px -26px rgba(20,22,20,.18);
 }
@@ -173,7 +173,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 /* toggle */
 .nav__toggle {
-  width: 64px;
+  width: 56px;
   height: 38px;
   margin-top: 14px;
   flex: none;
@@ -206,13 +206,13 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   transition: font-size .5s cubic-bezier(.22,1,.36,1);
 }
 
-/* the icon column keeps a fixed 64px width, so nothing shifts
-   sideways when the rail widens — only the labels arrive */
+/* the icon column keeps a fixed width matching --nav-w, so nothing
+   shifts sideways when the rail widens — only the labels arrive */
 .nav__group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 64px;
+  width: 56px;
   flex: none;
 }
 
@@ -322,7 +322,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   transition: margin-left .3s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .main { margin-left: 232px; }
+.nav--open ~ .main { margin-left: 208px; }
 
 .hero {
   position: relative;
@@ -490,7 +490,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   transition: left .3s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .foot { left: 232px; }
+.nav--open ~ .foot { left: 208px; }
 
 .foot__art {
   position: absolute;
@@ -567,7 +567,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   transition: margin-left .3s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .hero--sign { margin-left: 232px; }
+.nav--open ~ .hero--sign { margin-left: 208px; }
 
 /* the nav-open reflow already forces this subtree to re-layout every
    frame; pausing the blurred drift and the word carousel stops two more

@@ -29,7 +29,7 @@
   --gray-soft: #A8ABA7;
   --hair: #DFDFDB;
   --paper: #F2F2F0;
-  --nav-w: 64px;
+  --nav-w: 56px;
 
   --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   --mark: "Sentient", var(--serif);
@@ -93,7 +93,7 @@ a, button, .nv, [role="button"],
 }
 
 .nav--open {
-  width: 232px;
+  width: 208px;
   align-items: flex-start;
   box-shadow: 24px 0 44px -26px rgba(20,22,20,.18);
 }
@@ -132,7 +132,7 @@ a, button, .nv, [role="button"],
 .nav--open .nv--hint .nv__label { color: #ADB0AD; }
 
 .nav__toggle {
-  width: 64px;
+  width: 56px;
   height: 38px;
   margin-top: 14px;
   flex: none;
@@ -173,7 +173,7 @@ a, button, .nv, [role="button"],
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 64px;
+  width: 56px;
   flex: none;
 }
 
@@ -268,7 +268,7 @@ a, button, .nv, [role="button"],
   transition: margin-left .5s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .main { margin-left: 232px; }
+.nav--open ~ .main { margin-left: 208px; }
 
 .hero {
   position: relative;
@@ -441,14 +441,6 @@ a, button, .nv, [role="button"],
 
 .prompt__accent { color: #7B8FC7; font-weight: 500; }
 
-.pin-result__heading {
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 1.3;
-  color: var(--ink);
-  margin: 0 0 18px;
-}
-
 /* --- research / competitive analysis --- */
 
 .research {
@@ -474,11 +466,6 @@ a, button, .nv, [role="button"],
 }
 
 .research__body strong { font-weight: 700; color: var(--ink); }
-
-.research__link {
-  color: #7B8FC7;
-  text-decoration-color: rgba(123,143,199,.4);
-}
 
 .pc-head {
   display: flex;
@@ -528,22 +515,36 @@ a, button, .nv, [role="button"],
   .pc-grid { grid-template-columns: 1fr; }
 }
 
-/* --- Pinterest deep-dive: the FigJam sticky-note board --- */
+/* separates a new sub-block of "02. Research" from the one above it —
+   noticeably less than the gap between numbered sections */
+.research-sub { margin-top: 56px; }
 
-.pin-board-title {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--ink-soft);
-  text-align: left;
-  /* matches .pin-board-wrap's own padding, so this sits flush with the
-     left edge of the sticky notes inside it rather than the section's */
-  margin: 0 0 20px clamp(14px, 2.4vw, 24px);
+/* --- user survey: chart + findings side by side --- */
+
+.survey-results {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(24px, 5vw, 64px);
+  margin-top: 36px;
 }
 
-/* separates this from the pros/cons grid above it — noticeably less
-   than the gap between 01/02/etc, since this isn't a new numbered
-   section, just a second block of content within "02. Research" */
-.pin-board-title--spaced { margin-top: 56px; }
+.survey-results__chart {
+  width: 150px;
+  height: auto;
+  flex: none;
+}
+
+.survey-results__text { flex: 1; min-width: 0; }
+
+@media (max-width: 560px) {
+  .survey-results { flex-direction: column; align-items: flex-start; }
+}
+
+/* --- Pinterest deep-dive: the FigJam sticky-note board --- */
+
+/* matches .pin-board-wrap's own padding, so this sits flush with the
+   left edge of the sticky notes inside it rather than the section's */
+.pin-board-cue { margin-left: clamp(14px, 2.4vw, 24px); }
 
 .pin-board-wrap {
   border-radius: 10px;
@@ -705,8 +706,9 @@ a, button, .nv, [role="button"],
 
   <section class="research">
     <p class="prompt__label">02. Research</p>
-    <h2 class="research__heading">Competitive Analysis</h2>
-    <p class="research__body">Our research began by first conducting a competitive analysis. Each member was tasked to look at one of four photo-sharing platforms which include <strong>VSCO</strong>, <strong>Flicker</strong>, <strong>Pinterest</strong>, and <strong>Instagram</strong> to better understand their <a class="research__link" href="#pros-cons">pros and cons</a>.</p>
+    <p class="prompt__cue">Competitive Analysis</p>
+    <h2 class="research__heading">Where are photographers already looking?</h2>
+    <p class="research__body">Our research began by first conducting a competitive analysis. Each member was tasked to look at one of four photo-sharing platforms which include <strong>VSCO</strong>, <strong>Flicker</strong>, <strong>Pinterest</strong>, and <strong>Instagram</strong> to better understand their pros and cons.</p>
 
     <p class="pc-head" id="pros-cons"><span class="dot dot--pro"></span>Pros &amp; <span class="dot dot--con"></span>Cons</p>
 
@@ -733,7 +735,7 @@ a, button, .nv, [role="button"],
       </div>
     </div>
 
-    <p class="pin-board-title pin-board-title--spaced">My competitive analysis on Pinterest (FigJam)</p>
+    <p class="prompt__cue research-sub pin-board-cue">My competitive analysis on Pinterest (FigJam)</p>
 
     <div class="pin-board-wrap">
       <div class="pin-board">
@@ -769,8 +771,22 @@ a, button, .nv, [role="button"],
     </div>
 
     <p class="prompt__cue">Competitive Analysis Results</p>
-    <h3 class="pin-result__heading">So&hellip; what does each platform have to offer?</h3>
+    <h3 class="research__heading">So&hellip; what does each platform have to offer?</h3>
     <p class="research__body">Every successful product has one standout feature, something polished, seamless, and unique. Since there are countless amounts of photo apps, we realized that our app needed the same defining element. But, what would that element be? How would it set us apart? This question stayed with us throughout our research and carried on into our ideation phase.</p>
+
+    <p class="prompt__cue research-sub">User Surveys</p>
+    <h3 class="research__heading">What do users actually prefer?</h3>
+    <p class="research__body">To understand how people discover photo spots, we surveyed 50+ individuals aged 18&ndash;25 about their inspiration sources, equipment, and sharing habits. You can check out our survey by clicking <a class="prompt__accent" href="#">here!</a></p>
+
+    <div class="survey-results">
+      <img class="survey-results__chart" src="images/piechart.svg" width="224" height="330" loading="lazy"
+           alt="Pie chart: 67% of respondents explore spontaneously, 20% plan ahead, 13% other.">
+      <div class="survey-results__text">
+        <p class="prompt__cue">User Survey Results</p>
+        <h3 class="research__heading">Key Insights for the future!</h3>
+        <p class="research__body">67% of people prefer discovering photo spots spontaneously, while 20% plan ahead. In-person exploration was the top method (73%) over social media (27%). <strong>Key insight:</strong> spontaneous, real-world discovery felt more exciting and inspiring to young people than searching online.</p>
+      </div>
+    </div>
   </section>
 
 </main>
