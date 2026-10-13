@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Emerson Lo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f%5B%5D=sentient@400,500,700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   About — placeholder page.
+   Carries a simplified, always-open copy of the home page's rail
+   (same tokens, same left edge) so it reads as the same site; the
+   real content goes in <main> when it's written.
+   ============================================================ */
+
+:root {
+  --ink: #23261F;
+  --ink-soft: #4A4E4A;
+  --gray: #8A8D8A;
+  --hair: #E6E6E2;
+  --paper: #FFFFFF;
+  --nav-w: 208px;
+  --edge: 28px;            /* the rail's shared left edge, as on the home page */
+
+  --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --serif: "Merriweather", "Times New Roman", serif;
+  --mark: "Sentient", var(--serif);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================== NAV =========================== */
+
+.nav {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--nav-w);
+  padding: 32px 0 22px;
+  background: var(--paper);
+  border-right: 1px solid var(--hair);
+  box-shadow: 24px 0 44px -26px rgba(20,22,20,.18);
+  overflow-y: auto;
+}
+
+.nav__mark {
+  display: block;
+  text-align: center;
+  font-family: var(--mark);
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: .02em;
+  color: inherit;
+  text-decoration: none;
+}
+
+.nav__links {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 32px;
+  padding-left: var(--edge);
+}
+
+.nav__links a {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  font-size: 21px;
+  font-weight: 600;
+  color: #6E716C;
+  text-shadow: 0 0 18px rgba(110,113,108,.45);
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.nav__links a:hover { color: var(--ink-soft); }
+.nav__links a[aria-current="page"] { color: var(--ink); }
+
+.nav__sep { height: 1px; background: var(--hair); margin: 20px 0; }
+
+.nav__group {
+  display: flex;
+  flex-direction: column;
+  padding-left: var(--edge);
+}
+
+.nav__head {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.nav__group a {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.nav__group a:hover { color: var(--ink); }
+
+/* =========================== MAIN =========================== */
+
+.main {
+  margin-left: var(--nav-w);
+  min-height: 100vh;
+  padding: clamp(64px, 12vh, 140px) clamp(28px, 5vw, 80px);
+}
+
+.title {
+  font-family: var(--mark);
+  font-weight: 400;
+  font-size: clamp(54px, 7.8vw, 142px);
+  line-height: .86;
+  letter-spacing: .005em;
+  color: #6E716C;
+  text-shadow: 0 0 18px rgba(110,113,108,.45);
+  margin: 0 0 clamp(28px, 4vh, 48px);
+  padding-bottom: clamp(20px, 2.6vw, 38px);
+  border-bottom: 1px solid var(--hair);
+}
+
+.note {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--gray);
+  margin: 0;
+  max-width: 44ch;
+}
+
+@media (max-width: 700px) {
+  .nav { position: static; width: auto; border-right: 0; border-bottom: 1px solid var(--hair); box-shadow: none; }
+  .main { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav__mark" href="index.html" aria-label="Home">ERL</a>
+
+  <div class="nav__links">
+    <a href="about.html" aria-current="page">About</a>
+    <a href="#">Ideas</a>
+    <a href="https://drive.google.com/file/d/1cuFnkDeGFxUhMmO6HalkI4RZM-2yYmgN/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+  </div>
+
+  <div class="nav__sep"></div>
+
+  <div class="nav__group">
+    <p class="nav__head">Contact</p>
+    <a href="https://www.linkedin.com/in/emerson-lo" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="mailto:emersonrylo@gmail.com">Email</a>
+  </div>
+</nav>
+
+<main class="main">
+  <h1 class="title">About</h1>
+  <p class="note">This page is a placeholder — the write-up is still to come.</p>
+</main>
+
+</body>
+</html>

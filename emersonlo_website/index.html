@@ -41,7 +41,8 @@
   --green: #4CC46A;
   --nav-w: 56px;
   --gutter: 14px;
-  --foot-h: 440px;
+  --foot-h: 300px;          /* fallback only — a script below keeps it equal to the footer's real height */
+  --foot-gap: 44px;         /* the space above AND below the footer's text */
 
   --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   --mark: "Sentient", var(--serif);
@@ -141,13 +142,15 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   font-size: 30px;
 }
 
-/* rules span the panel, inset the same 22px on both sides */
-.nav--open .nav__sep {
-  width: calc(100% - 44px);
-  margin-left: 22p x;
-}
 
-/* the hover pill becomes a plain standing label */
+/* open: everything starts from one shared left edge (22px in) rather
+   than being centred in the icon column — squares, contact icons,
+   section headers and the top links all line up on it */
+.nav--open .nav__group { align-items: flex-start; padding-left: 28px; }
+.nav--open .nv { justify-items: start; }
+
+/* the hover pill becomes a plain standing label. It takes pointer
+   events here, so the text itself is the hover and click target */
 .nav--open .nv__label {
   opacity: 1;
   transform: translate(0, -50%);
@@ -156,8 +159,9 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   font-size: 14px;
   font-weight: 500;
   padding: 0;
-  left: calc(100% + 4px);
-  transition-delay: .12s;
+  left: 19px;                 /* 7px square + 12px gap */
+  pointer-events: auto;
+  transition: color .2s ease;
   white-space: normal;        /* long project names wrap instead of overflowing */
   width: 148px;
   line-height: 1.2;           /* tightened so two-line names clear each other */
@@ -167,9 +171,48 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
    apart; a little row spacing keeps them legible as separate items */
 .nav--open .nav__work { gap: 4px; }
 
-.nav--open .nv:hover .nv__label,
+/* hover lives on the text only: a small step darker, nothing else */
+.nav--open .nv__label:hover,
 .nav--open .nv[aria-current="page"] .nv__label { color: var(--ink); }
-.nav--open .nv--hint .nv__label { color: #ADB0AD; }
+
+/* contact icons are 15px wide, so their text sits a little further in */
+.nav--open .nav__contact .nv__label { left: 24px; }
+
+/* PRODUCT / WEBSITE / CONTACT: set like the page's "MY WORK" eyebrow,
+   flush with the shared left edge, and inert — no hover of any kind */
+.nav--open .nv--hint .nv__label {
+  left: 0;
+  color: var(--gray);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* their icons only stand in for them while the rail is collapsed */
+.nav--open .nv--hint svg { display: none; }
+
+/* About / Idea / Resume: no marker, so the text starts on the edge */
+.nav--open .nav__links .nv__label {
+  left: 0;
+  font-size: 21px;
+  font-weight: 600;
+  color: #6E716C;
+  text-shadow: 0 0 18px rgba(110,113,108,.45);
+}
+
+/* the top links' icons only stand in for them while collapsed */
+.nav--open .nav__links svg { display: none; }
+
+/* Phone: the number replaces the word on hover (open or collapsed) */
+.nv--phone .ph-b { display: none; }
+.nv--phone:hover .ph-a, .nv--phone:focus-visible .ph-a { display: none; }
+.nv--phone:hover .ph-b, .nv--phone:focus-visible .ph-b { display: inline; }
+
+/* a lighter version of the link's own ink colour, not an accent swap */
+.nav--open .nav__links .nv__label:hover { color: var(--ink-soft); }
 
 /* toggle */
 .nav__toggle {
@@ -199,6 +242,10 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 .nav--open .nav__toggle svg { transform: rotate(180deg); }
 
 .nav__mark {
+  display: block;             /* it's a link home now */
+  flex: none;
+  color: inherit;
+  text-decoration: none;
   font-family: var(--mark);
   font-size: 20px;
   line-height: 1;
@@ -218,16 +265,17 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 .nav::-webkit-scrollbar { display: none; }
 
-.nav__links { margin-top: 32px; gap: 4px; }
+.nav__links { margin-top: 32px; gap: 5px; }
 
-/* hairline between the pages and the work shortcuts */
+/* a full-width hairline between nav groups — a sibling of .nav__group
+   rather than nested inside it, so 100% resolves against the rail's
+   own width (56px collapsed, 208px open) and runs edge to edge in
+   both states with no separate open/collapsed rule needed */
 .nav__sep {
-  width: 22px;
+  width: 100%;
   height: 1px;
   background: var(--hair);
   margin: 20px 0;
-  transition: width .3s cubic-bezier(.22,1,.36,1),
-              margin-left .3s cubic-bezier(.22,1,.36,1);
 }
 
 /* every section is separated by the same 20px + rule + 20px */
@@ -236,7 +284,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 .nv {
   position: relative;
-  width: 42px;
+  width: 30px;
   height: 38px;
   flex: none;
   display: grid;
@@ -249,9 +297,9 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 .nv:hover, .nv[aria-current="page"] { color: var(--ink); }
 
 /* the "these are previous works" marker — a label, not a link */
-.nv--hint { color: #C6C9C5; cursor: default; height: 34px; }
-.nv--hint:hover { color: #C6C9C5; }
-.nv--hint:hover .nv__label { opacity: 1; transform: translate(0, -50%); }
+/* pointer-events:none makes it fully inert: no colour change, no
+   tooltip, no pointer cursor — in either rail state */
+.nv--hint { color: #C6C9C5; height: 34px; pointer-events: none; }
 .nv--hint svg { width: 15px; height: 15px; }
 
 .nv svg {
@@ -267,13 +315,10 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 /* work shortcut = the project's gradient chip */
 .nv__chip {
-  width: 13px;
-  height: 13px;
-  border-radius: 3px;
-  transition: transform .35s cubic-bezier(.22,1,.36,1);
+  width: 7px;
+  height: 7px;
+  border-radius: 0;
 }
-
-.nv:hover .nv__chip { transform: scale(1.22) rotate(-6deg); }
 
 .c-hackdavis { background: linear-gradient(140deg, #B7D94A, #6FBF3A); }
 .c-pikspot   { background: linear-gradient(140deg, #B9D8F5, #8FBEEC); }
@@ -370,13 +415,21 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 /* =========================== WORK =========================== */
 
-.work { padding: clamp(64px, 10vh, 128px) var(--gutter) 40px; }
+/* its own, wider side margin — not --gutter, which the hero also
+   uses and needs to stay tight */
+/* no bottom padding: the closing rule is the section's last line, so
+   the footer's top gap is measured straight from it */
+.work { padding: clamp(64px, 10vh, 128px) clamp(28px, 5vw, 80px) 0; }
 
 .work__head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  padding: 0 2px 22px;
+  /* the top border is the same hairline used for .nav__sep and
+     .work__rule — it spans the same width as the grid below, since
+     both sit inside .work's own side padding with nothing extra */
+  border-top: 1px solid var(--hair);
+  padding: 28px 2px 48px;
   margin-top: clamp(12px, 2.4vh, 34px);   /* lowers the label within the added padding */
 }
 
@@ -389,74 +442,90 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   margin: 0;
 }
 
-.grid { display: flex; gap: 22px; align-items: flex-start; }
-.col { flex: 1 1 0; display: flex; flex-direction: column; gap: 60px; min-width: 0; }
+/* bento: three independent flex columns, not a CSS grid — a grid
+   sizes every row to its tallest item across all columns, so a short
+   HackDavis box next to a tall Pikspot one left dead space before
+   JASS could start. Each column now stacks tight on its own content. */
+.grid {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+}
+
+.col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 980px) { .grid { flex-wrap: wrap; } .col { flex-basis: calc(50% - 11px); } }
+@media (max-width: 600px) { .grid { flex-direction: column; } .col { flex-basis: auto; } }
 
 /* closes off the work section, edge to edge — stands in for the
    footer's own top border, which is removed so the two don't double up */
 .work__rule { border-top: 1px solid var(--hair); margin-top: 60px; }
 
-.tile { display: block; text-decoration: none; color: inherit; }
+.tile {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
 
 .tile__vis {
   position: relative;
-  width: 90%;
-  margin: 0 auto;
-  border-radius: 3px;
+  width: 100%;
+  border-radius: 8px;
   overflow: hidden;
   background: var(--paper);
-  border: 1px solid var(--hair);
-  display: grid;
-  place-items: center;
+  /* an even glow on every side, not a shadow cast in one direction */
+  box-shadow: 0 0 22px rgba(20,22,20,.12);
   isolation: isolate;
 }
 
-.r-wide  { aspect-ratio: 4 / 3; }
-.r-tall  { aspect-ratio: 3 / 2; }
-.r-short { aspect-ratio: 16 / 10; }
+.r-wide   { aspect-ratio: 4 / 3; }
+.r-tall   { aspect-ratio: 3 / 2; }
+.r-short  { aspect-ratio: 7 / 5; }   /* JVMC */
+.r-xshort { aspect-ratio: 7 / 4; }   /* shorter than r-short — HackDavis */
+.r-xtall  { aspect-ratio: 1 / 1; }   /* taller than r-tall, shorter than before — Pikspot */
 
-.tile__meta { padding: 16px 5% 0; }
+.tile__meta { padding: 14px 2px 0; }
 
+/* name left, year pinned to the box's own right edge */
 .tile__title {
-  font-family: var(--mark);        /* same hand as the ERL logo */
-  font-weight: 400;
-  font-size: 27px;
-  letter-spacing: .01em;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--sans);        /* matches the body copy, not the ERL mark */
+  font-weight: 500;
+  font-size: 21px;
+  letter-spacing: -.005em;
   line-height: 1.2;
-  margin: 0 0 8px;
+  margin: 0 0 4px;
 }
 
-/* only the name takes the hover underline — not the year */
-.tile__name {
-  display: inline;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0% 1px;
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  transition: background-size .5s cubic-bezier(.22,1,.36,1);
-}
+/* min-width:0 lets it wrap instead of overflowing past the year in
+   the flex row — no hover treatment here anymore */
+.tile__name { display: inline; min-width: 0; }
 
-.tile:hover .tile__name { background-size: 100% 1px; }
-
-/* the year, set as the old eyebrow line was */
 .tile__year {
-  font-family: var(--mono);
-  font-size: 11.5px;
+  font-family: var(--sans);
+  font-size: 16px;
   font-weight: 400;
-  letter-spacing: .1em;
-  text-transform: uppercase;
   color: #9A9D99;
-  margin-left: 10px;
   white-space: nowrap;
 }
 
 .tile__sub {
-  font-size: 17px;
-  line-height: 1.45;
-  letter-spacing: -.01em;
-  color: #5E625D;
+  font-family: var(--sans);
+  font-weight: 500;        /* same thickness as the title, just lighter in colour */
+  font-size: 21px;
+  line-height: 1.4;
+  letter-spacing: -.005em;
+  color: #ADB0AD;
   margin: 0;
-  white-space: nowrap;
 }
 
 /* =========================== misc =========================== */
@@ -478,15 +547,19 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   left: var(--nav-w);
   right: 0;
   bottom: 0;
-  height: var(--foot-h);
+  /* height follows the content (how the headline wraps changes it);
+     the script at the bottom of the page feeds it back into --foot-h
+     so the sheet above uncovers it exactly */
+  height: auto;
   z-index: 0;
   overflow: hidden;
   background: var(--paper);
   color: var(--gray);
-  padding: 64px 56px 38px;
+  /* side padding is the same clamp .work uses, so the text and the
+     closing rule start and end exactly where .work__rule does */
+  padding: 0 clamp(28px, 5vw, 80px) 38px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   transition: left .3s cubic-bezier(.22,1,.36,1);
 }
 
@@ -503,7 +576,14 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   user-select: none;
 }
 
-.foot__inner { position: relative; z-index: 1; max-width: min(620px, 48vw); }
+/* the top gap (rule above → headline) is this padding; the bottom gap
+   (links → closing rule) is .foot__links' margin — both are --foot-gap */
+.foot__inner {
+  position: relative;
+  z-index: 1;
+  max-width: min(620px, 48vw);
+  padding-top: var(--foot-gap);
+}
 
 .foot__lead {
   font-family: var(--mark);        /* same hand as the ERL logo and hero */
@@ -511,11 +591,12 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   font-weight: 400;
   letter-spacing: .005em;
   line-height: 1.08;
-  color: var(--ink);
+  color: #6E716C;                  /* same grey + glow as the hero headers */
+  text-shadow: 0 0 18px rgba(110,113,108,.45);
   margin: 0 0 26px;
 }
 
-.foot__links { display: flex; gap: 26px; flex-wrap: wrap; margin: 0 0 44px; }
+.foot__links { display: flex; gap: 26px; flex-wrap: wrap; margin: 0 0 var(--foot-gap); }
 
 .foot__links a {
   font-size: 15px;
@@ -531,16 +612,11 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 .foot__links a:hover { color: var(--ink); background-size: 100% 1px; }
 
+/* just the closing rule now — the name and year that sat under it are gone */
 .foot__base {
   position: relative;
   z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  font-size: 13px;
-  color: var(--gray);
   border-top: 1px solid var(--hair);
-  padding-top: 22px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -569,11 +645,10 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 .nav--open ~ .hero--sign { margin-left: 208px; }
 
-/* the nav-open reflow already forces this subtree to re-layout every
-   frame; pausing the blurred drift and the word carousel stops two more
-   expensive repaints from stacking on top of it for the duration */
-.nav--open ~ .hero--sign .metal__sheen,
-.nav--open ~ .hero--sign .roll__track { animation-play-state: paused; }
+/* nav--open is the resting default now (the rail ships expanded), so
+   this can no longer pause only during the toggle's transition — it
+   would just freeze both animations permanently. Collapsing the rail
+   is a rare, deliberate click; one reflow then is an acceptable cost. */
 
 /* artwork set into the hero — printed into the paper via multiply so
    its whites vanish and only the pencil linework/shadow reads.
@@ -593,6 +668,13 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   mix-blend-mode: multiply;
   pointer-events: none;
   user-select: none;
+}
+
+/* contain leaves paper showing at the edges once the window gets small
+   (e.g. the tab minimized/restored at a tiny size) — cover crops
+   instead of gapping, so the art always fills the hero */
+@media (max-width: 900px), (max-height: 600px) {
+  .sign__bg { object-fit: cover; }
 }
 
 /* washes the image back out to paper along the left, bottom and right
@@ -936,6 +1018,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
   line-height: .86;
   letter-spacing: .005em;
   color: #6E716C;
+  text-shadow: 0 0 18px rgba(110,113,108,.45);
   margin: 0;
   white-space: nowrap;
 }
@@ -1050,47 +1133,51 @@ body.is-handoff .row--name .big { visibility: hidden; }
   </div>
 </div>
 
-<nav class="nav">
-  <div class="nav__mark">ERL</div>
+<nav class="nav nav--open">
+  <a class="nav__mark" href="index.html" aria-label="Home">ERL</a>
 
   <div class="nav__group nav__links">
-    <a class="nv" href="#" aria-current="page">
-      <svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>
-      <span class="nv__label">Home</span>
-    </a>
-    <a class="nv" href="#">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6"/></svg>
-      <span class="nv__label">About</span>
-    </a>
-    <a class="nv" href="#">
-      <svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg>
-      <span class="nv__label">Resume/CV</span>
-    </a>
+    <a class="nv" href="about.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/></svg><span class="nv__label">About</span></a>
+    <a class="nv" href="#"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/></svg><span class="nv__label">Ideas</span></a>
+    <a class="nv" href="https://drive.google.com/file/d/1cuFnkDeGFxUhMmO6HalkI4RZM-2yYmgN/view?usp=sharing" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M6 2.5h8l4 4V21a.5.5 0 01-.5.5h-11A.5.5 0 016 21z"/><path d="M14 2.5V7h4M9 12h6M9 16h6"/></svg><span class="nv__label">Resume</span></a>
   </div>
 
   <div class="nav__sep"></div>
 
   <div class="nav__group nav__work">
     <span class="nv nv--hint" aria-hidden="true">
-      <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V5.5a1.5 1.5 0 0 1 1.5-1.5h4a1.5 1.5 0 0 1 1.5 1.5V7"/></svg>
-      <span class="nv__label">My Work</span>
+      <svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      <span class="nv__label">Product</span>
     </span>
-    <a class="nv" href="#hackdavis"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
     <a class="nv" href="#pikspot"><span class="nv__chip c-pikspot"></span><span class="nv__label">Pikspot</span></a>
-    <a class="nv" href="#jvmc"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri Memorial Clinic</span></a>
-    <a class="nv" href="#jass"><span class="nv__chip c-jass"></span><span class="nv__label">Japanese American Student Society</span></a>
     <a class="nv" href="#bitewise"><span class="nv__chip c-bitewise"></span><span class="nv__label">Bitewise</span></a>
   </div>
 
   <div class="nav__sep"></div>
 
-  <div class="nav__group nav__contact">
-    <a class="nv nv--contact" href="#"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.45-2.2 2.96V21H9z"/></svg><span class="nv__label">LinkedIn</span></a>
-    <a class="nv nv--contact" href="#"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1zm9 8L4.2 7.3v10.2h15.6V7.3z"/></svg><span class="nv__label">Email</span></a>
-    <a class="nv nv--contact" href="#"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.6a1 1 0 01-.25 1z"/></svg><span class="nv__label">Phone</span></a>
+  <div class="nav__group nav__work">
+    <span class="nv nv--hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+      <span class="nv__label">Website</span>
+    </span>
+    <a class="nv" href="#hackdavis"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
+    <a class="nv" href="#jvmc"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri Memorial Clinic</span></a>
+    <a class="nv" href="#jass"><span class="nv__chip c-jass"></span><span class="nv__label">Japanese American Student Society</span></a>
   </div>
 
-  <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Expand navigation">
+  <div class="nav__sep"></div>
+
+  <div class="nav__group nav__contact">
+    <span class="nv nv--hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M13 10h5M13 14h5M5.5 16c.5-1.8 1.8-2.5 3-2.5s2.5.7 3 2.5"/></svg>
+      <span class="nv__label">Contact</span>
+    </span>
+    <a class="nv nv--contact" href="https://www.linkedin.com/in/emerson-lo" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.45-2.2 2.96V21H9z"/></svg><span class="nv__label">LinkedIn</span></a>
+    <a class="nv nv--contact" href="mailto:emersonrylo@gmail.com"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1zm9 8L4.2 7.3v10.2h15.6V7.3z"/></svg><span class="nv__label">Email</span></a>
+    <a class="nv nv--contact nv--phone" href="tel:+16264666774"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.6a1 1 0 01-.25 1z"/></svg><span class="nv__label"><span class="ph-a">Phone</span><span class="ph-b">626-466-6774</span></span></a>
+  </div>
+
+  <button class="nav__toggle" type="button" aria-expanded="true" aria-label="Collapse navigation">
     <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
   </button>
 </nav>
@@ -1142,40 +1229,13 @@ body.is-handoff .row--name .big { visibility: hidden; }
     </div>
 
     <div class="grid">
-      <div class="col">
 
+      <div class="col">
         <a class="tile" id="hackdavis" href="#">
-          <div class="tile__vis r-short"></div>
+          <div class="tile__vis r-xshort"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">HackDavis</span><span class="tile__year">2026</span></h3>
-            <p class="tile__sub">The front door for one of California's largest hackathons.</p>
-          </div>
-        </a>
-
-        <a class="tile" id="jvmc" href="#">
-          <div class="tile__vis r-short"></div>
-          <div class="tile__meta">
-            <h3 class="tile__title"><span class="tile__name">Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
-            <p class="tile__sub">Rebuilt around the two questions patients actually arrive with.</p>
-          </div>
-        </a>
-
-        <a class="tile" id="bitewise" href="#">
-          <div class="tile__vis r-tall"></div>
-          <div class="tile__meta">
-            <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
-            <p class="tile__sub">Diet-aware cooking, from a filter to a two-tap grocery run.</p>
-          </div>
-        </a>
-
-      </div>
-      <div class="col">
-
-        <a class="tile" id="pikspot" href="preview/pikspot.html">
-          <div class="tile__vis r-tall"></div>
-          <div class="tile__meta">
-            <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
-            <p class="tile__sub">A photo-challenge app that turns a walk into a shared archive.</p>
+            <p class="tile__sub">Hackathon Site</p>
           </div>
         </a>
 
@@ -1183,11 +1243,39 @@ body.is-handoff .row--name .big { visibility: hidden; }
           <div class="tile__vis r-wide"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Japanese American Student Society</span><span class="tile__year">2024</span></h3>
-            <p class="tile__sub">A cultural org's home page, built around events and belonging.</p>
+            <p class="tile__sub">Club Website</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="col">
+        <a class="tile" id="pikspot" href="preview/pikspot.html">
+          <div class="tile__vis r-xtall"></div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
+            <p class="tile__sub">Photo App</p>
           </div>
         </a>
 
+        <a class="tile" id="bitewise" href="#">
+          <div class="tile__vis r-tall"></div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
+            <p class="tile__sub">Diet App</p>
+          </div>
+        </a>
       </div>
+
+      <div class="col">
+        <a class="tile" id="jvmc" href="#">
+          <div class="tile__vis r-short"></div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
+            <p class="tile__sub">Clinic Website</p>
+          </div>
+        </a>
+      </div>
+
     </div>
 
     <div class="work__rule" aria-hidden="true"></div>
@@ -1213,15 +1301,12 @@ body.is-handoff .row--name .big { visibility: hidden; }
     <p class="foot__lead">Let's make something worth sitting with.</p>
     <div class="foot__links">
       <a href="mailto:emersonrylo@gmail.com">emersonrylo@gmail.com</a>
-      <a href="#">LinkedIn</a>
-      <a href="#">Resume/CV</a>
+      <a href="https://www.linkedin.com/in/emerson-lo" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://drive.google.com/file/d/1cuFnkDeGFxUhMmO6HalkI4RZM-2yYmgN/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
     </div>
   </div>
 
-  <div class="foot__base">
-    <span>Emerson Lo</span>
-    <span>2026</span>
-  </div>
+  <div class="foot__base" aria-hidden="true"></div>
 </footer>
 
 <script>
@@ -1236,6 +1321,17 @@ body.is-handoff .row--name .big { visibility: hidden; }
     tile.addEventListener('mouseleave', function () { v.pause(); });
   });
 
+  /* the footer is fixed and sized by its content, but the sheet above
+     needs a matching bottom margin to uncover it — keep --foot-h equal
+     to its real height, including after the headline re-wraps */
+  (function () {
+    var foot = document.querySelector('.foot');
+    if (!foot || !('ResizeObserver' in window)) return;
+    new ResizeObserver(function () {
+      document.documentElement.style.setProperty('--foot-h', foot.offsetHeight + 'px');
+    }).observe(foot);
+  })();
+
   /* the rail expands to show every label at once */
   (function () {
     var nav = document.querySelector('.nav');
@@ -1246,8 +1342,6 @@ body.is-handoff .row--name .big { visibility: hidden; }
       btn.setAttribute('aria-expanded', open);
       btn.setAttribute('aria-label', open ? 'Collapse navigation' : 'Expand navigation');
     });
-    /* the rail ships collapsed; ?open starts it expanded instead */
-    if (new URLSearchParams(location.search).has('open')) btn.click();
   })();
 
   /* screenshot aid: ?shorthero collapses the hero so the whole page,

@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nav + Hero concept — not live</title>
+<style>
+:root {
+  --ink: #23261F;
+  --ink-soft: #4A4E4A;
+  --gray: #8A8D8A;
+  --hair: #E6E6E2;
+  --paper: #FFFFFF;
+  --green: #4CC46A;
+  --nav-w: 230px;
+  --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* a plain banner, since this page isn't part of the real site */
+.concept-banner {
+  background: #FFF4E0;
+  color: #8A5A22;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid #F0DCB0;
+}
+
+.shell { display: flex; }
+
+/* =========================== NAV =========================== */
+
+.nav {
+  width: var(--nav-w);
+  flex: none;
+  min-height: 100vh;
+  padding: 40px 32px;
+  border-right: 1px solid var(--hair);
+}
+
+.nav__mark {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin: 0 0 36px;
+}
+
+.nav__links {
+  list-style: none;
+  margin: 0 0 40px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nav__links a {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.nav__links a:hover { color: var(--green); }
+
+.nav__group { margin-bottom: 32px; }
+
+.nav__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin: 0 0 14px;
+}
+
+.nav__group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav__group a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.nav__group a:hover { color: var(--ink); }
+
+.nav__contact {
+  padding-top: 24px;
+  border-top: 1px solid var(--hair);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav__contact a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.nav__contact a:hover { color: var(--ink); }
+
+/* =========================== MAIN =========================== */
+
+.main { flex: 1; min-width: 0; padding: 72px 72px 0; max-width: 1100px; }
+
+.hero__greet {
+  font-size: 16px;
+  color: var(--ink-soft);
+  margin: 0 0 18px;
+}
+
+.hero__greet .wave { display: inline-block; }
+
+.hero__bio {
+  font-size: clamp(28px, 3.4vw, 40px);
+  line-height: 1.35;
+  letter-spacing: -.01em;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 60px;
+  max-width: 48ch;
+}
+
+.hero__bio strong { font-weight: 700; }
+.hero__bio a { color: var(--green); text-decoration: none; font-weight: 600; }
+
+.craft {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gray);
+  border-top: 1px solid var(--hair);
+  padding-top: 20px;
+  margin: 0 0 32px;
+}
+
+/* --- reuse of the bento grid already shipping on the real homepage --- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  padding-bottom: 80px;
+}
+
+.tile { display: block; text-decoration: none; color: inherit; }
+
+.tile__vis {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: 0 0 22px rgba(20,22,20,.12);
+}
+
+.r-wide   { aspect-ratio: 4 / 3; }
+.r-xtall  { aspect-ratio: 1 / 1; }
+.r-short  { aspect-ratio: 7 / 5; }
+.r-xshort { aspect-ratio: 7 / 4; }
+.r-tall   { aspect-ratio: 3 / 2; }
+
+.tile__meta { padding: 14px 2px 0; }
+
+.tile__title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 21px;
+  letter-spacing: -.005em;
+  margin: 0 0 4px;
+}
+
+.tile__year { font-size: 16px; font-weight: 400; color: #9A9D99; white-space: nowrap; }
+
+.tile__sub {
+  font-weight: 600;
+  font-size: 21px;
+  letter-spacing: -.005em;
+  color: #ADB0AD;
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+</head>
+<body>
+
+<div class="concept-banner">Concept only — not wired into the live site. For comparison, not for deploy.</div>
+
+<div class="shell">
+
+  <nav class="nav">
+    <div class="nav__mark">ERL</div>
+
+    <ul class="nav__links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Resume/CV</a></li>
+    </ul>
+
+    <div class="nav__group">
+      <p class="nav__label">Product Design</p>
+      <ul>
+        <li><a href="#">Pikspot</a></li>
+        <li><a href="#">Bitewise</a></li>
+      </ul>
+    </div>
+
+    <div class="nav__group">
+      <p class="nav__label">Web Design</p>
+      <ul>
+        <li><a href="#">HackDavis</a></li>
+        <li><a href="#">Joan Viteri Memorial Clinic</a></li>
+        <li><a href="#">Japanese American Student Society</a></li>
+      </ul>
+    </div>
+
+    <div class="nav__contact">
+      <a href="mailto:emersonrylo@gmail.com">Email</a>
+      <a href="#">LinkedIn</a>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <p class="hero__greet"><span class="wave">👋</span> Hey, I'm Emerson.</p>
+
+    <p class="hero__bio">
+      <strong>Emerson</strong> is a product designer who likes the part of the work people usually skip — figuring out what the thing is actually for before deciding what it looks like.
+      He's designed for a UC Davis hackathon, a free health clinic, and a cultural student org, and is currently building <a href="#">Pikspot</a>, a photo-challenge app.
+    </p>
+
+    <p class="craft">Craft</p>
+
+    <div class="grid">
+
+      <a class="tile" href="#">
+        <div class="tile__vis r-xshort"></div>
+        <div class="tile__meta">
+          <h3 class="tile__title"><span>HackDavis</span><span class="tile__year">2026</span></h3>
+          <p class="tile__sub">Hackathon Site</p>
+        </div>
+      </a>
+
+      <a class="tile" href="#">
+        <div class="tile__vis r-xtall"></div>
+        <div class="tile__meta">
+          <h3 class="tile__title"><span>Pikspot</span><span class="tile__year">2025</span></h3>
+          <p class="tile__sub">Photo App</p>
+        </div>
+      </a>
+
+      <a class="tile" href="#">
+        <div class="tile__vis r-short"></div>
+        <div class="tile__meta">
+          <h3 class="tile__title"><span>Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
+          <p class="tile__sub">Clinic Website</p>
+        </div>
+      </a>
+
+      <a class="tile" href="#">
+        <div class="tile__vis r-wide"></div>
+        <div class="tile__meta">
+          <h3 class="tile__title"><span>Japanese American Student Society</span><span class="tile__year">2024</span></h3>
+          <p class="tile__sub">Club Website</p>
+        </div>
+      </a>
+
+      <a class="tile" href="#">
+        <div class="tile__vis r-tall"></div>
+        <div class="tile__meta">
+          <h3 class="tile__title"><span>Bitewise</span><span class="tile__year">2025</span></h3>
+          <p class="tile__sub">Diet App</p>
+        </div>
+      </a>
+
+    </div>
+
+  </main>
+
+</div>
+</body>
+</html>
