@@ -476,13 +476,17 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 .tile__vis {
   position: relative;
   width: 100%;
-  border-radius: 8px;
+  border-radius: 5px;
   overflow: hidden;
   background: var(--paper);
   /* an even glow on every side, not a shadow cast in one direction */
   box-shadow: 0 0 22px rgba(20,22,20,.12);
   isolation: isolate;
+  transition: box-shadow .35s ease;
 }
+
+/* hover: the glow spreads and deepens; the box itself never changes size */
+.tile:hover .tile__vis { box-shadow: 0 0 34px 1px rgba(20,22,20,.18); }
 
 .r-wide   { aspect-ratio: 4 / 3; }
 .r-tall   { aspect-ratio: 3 / 2; }
@@ -503,7 +507,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   font-size: 21px;
   letter-spacing: -.005em;
   line-height: 1.2;
-  margin: 0 0 4px;
+  margin: 0;
 }
 
 /* min-width:0 lets it wrap instead of overflowing past the year in
@@ -522,7 +526,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   font-family: var(--sans);
   font-weight: 500;        /* same thickness as the title, just lighter in colour */
   font-size: 21px;
-  line-height: 1.4;
+  line-height: 1.2;
   letter-spacing: -.005em;
   color: #ADB0AD;
   margin: 0;
