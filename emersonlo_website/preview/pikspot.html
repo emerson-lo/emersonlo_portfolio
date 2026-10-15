@@ -679,11 +679,77 @@ a, button, .nv, [role="button"],
 }
 
 .survey-results__chart {
-  width: clamp(190px, 22vw, 270px);   /* a little smaller than before */
-  height: auto;
+  width: clamp(190px, 20vw, 240px);
   flex: none;
 }
 
+/* thin donut: Spontaneous 67% · Planned 20% · Other 13%.
+   One conic gradient: each slice is a solid, readable band, and the edges
+   are hard stops, no blending */
+.donut {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.donut__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    #597994 0%   67%,    /* Spontaneous 0–67%  */
+    #8EC6F5 67%  87%,    /* Planned    67–87% */
+    #B6BFC8 87% 100%);   /* Other      87–100% */
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+}
+
+.donut__center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.donut__big {
+  font-size: clamp(30px, 3vw, 36px);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.donut__small {
+  margin-top: 6px;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.donut-legend {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+}
+
+.donut-legend li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.donut-legend b { margin-left: auto; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.donut-legend__sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.donut-legend__sw--s { background: #597994; }
+.donut-legend__sw--p { background: #8EC6F5; }
+.donut-legend__sw--o { background: #B6BFC8; }
 .survey-results__text { flex: 1; min-width: 0; transform: translateY(-34px); }   /* nudged up from centre */
 
 @media (max-width: 560px) {
@@ -921,39 +987,44 @@ a, button, .nv, [role="button"],
   .ia-grid .ia-profile { width: 60%; }
 }
 
-/* --- user flow key: process / decision / result --- */
+/* --- user flow: key + flows inside the same panel as the IA --- */
+.flow-frame { display: block; }
+
 .flow-key {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: clamp(20px, 4vw, 44px);
-  margin: 26px 0 0;
+  margin: 0 0 clamp(32px, 4vw, 52px);
 }
 
-.flow-key__item {
-  position: relative;
+.flow-key img { display: block; height: auto; }
+
+.flow-rows {
   display: grid;
-  place-items: center;
-  text-align: center;
-  font-size: 12.5px;
-  line-height: 1.25;
-  color: var(--ink-soft);
+  gap: clamp(40px, 5vw, 72px);
+  max-width: 1160px;
+  margin: 0 auto;
 }
 
-.flow-key__item--process,
-.flow-key__item--result {
-  width: 70px;
-  height: 44px;
-  border-radius: 8px;
+.flow-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(32px, 4vw, 72px);
 }
 
-.flow-key__item--process { background: #E4F1FD; border: 1px solid #96CDFA; }
-.flow-key__item--result  { background: #E8F6E4; border: 1px solid #9CD48E; }
+.flow-row img {
+  display: block;
+  min-width: 0;
+  width: calc(var(--w) * 100% / 1400);
+  height: auto;
+}
 
-.flow-key__item--decision { width: 104px; height: 64px; }
-.flow-key__item--decision svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.flow-key__item--decision path { fill: #FDE5E5; stroke: #F2A3A3; stroke-width: 1; stroke-linejoin: round; }
-.flow-key__item--decision span { position: relative; }
+@media (max-width: 900px) {
+  .flow-row { flex-direction: column; }
+  .flow-row img { width: 100%; max-width: calc(var(--w) * 1px); }
+}
 
 /* =========================== BACK TO TOP =========================== */
 
@@ -1279,8 +1350,20 @@ a, button, .nv, [role="button"],
     <p class="research__body">To understand how people discover photo spots, we surveyed 50+ individuals aged 18&ndash;25 about their inspiration sources, equipment, and sharing habits. You can check out our survey by clicking <a class="prompt__accent" href="#">here!</a></p>
 
     <div class="survey-results">
-      <img class="survey-results__chart" src="images/piechart.svg" width="224" height="330" loading="lazy"
-           alt="Pie chart: 67% of respondents explore spontaneously, 20% plan ahead, 13% other.">
+      <div class="survey-results__chart">
+        <figure class="donut" role="img" aria-label="Donut chart: 67% of respondents explore spontaneously, 20% plan ahead, 13% other.">
+          <div class="donut__ring"></div>
+          <figcaption class="donut__center">
+            <span class="donut__big">67%</span>
+            <span class="donut__small">Spontaneous</span>
+          </figcaption>
+        </figure>
+        <ul class="donut-legend">
+          <li><span class="donut-legend__sw donut-legend__sw--s"></span>Spontaneous<b>67%</b></li>
+          <li><span class="donut-legend__sw donut-legend__sw--p"></span>Planned<b>20%</b></li>
+          <li><span class="donut-legend__sw donut-legend__sw--o"></span>Other<b>13%</b></li>
+        </ul>
+      </div>
       <div class="survey-results__text">
         <p class="prompt__cue">User Survey Results</p>
         <h3 class="research__heading">Key Insights for the future!</h3>
@@ -1356,15 +1439,33 @@ a, button, .nv, [role="button"],
 
     <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v6H3zM14 15h7v6h-7zM6 9h1.5v5.25H14v1.5H6z"/></svg> User Flow</h3>
 
-    <!-- key for the user-flow charts; the flow SVGs go underneath it -->
-    <div class="flow-key" aria-label="User flow key">
-      <span class="flow-key__item flow-key__item--process">Process<br>Block</span>
-      <span class="flow-key__item flow-key__item--decision">
-        <svg viewBox="0 0 104 64" aria-hidden="true"><path d="M52 1.5 102.5 32 52 62.5 1.5 32z"/></svg>
-        <span>Decision<br>Block</span>
-      </span>
-      <span class="flow-key__item flow-key__item--result">Result<br>Block</span>
-    </div>
+    <figure class="ia-frame flow-frame">
+      <!-- key: the three block types used in every flow below -->
+      <div class="flow-key" aria-label="User flow key">
+        <img src="images/userflow/processblock.svg" width="76" height="38" alt="Process block">
+        <img src="images/userflow/decisionblock.svg" width="118" height="74" alt="Decision block">
+        <img src="images/userflow/resultblock.svg" width="69" height="38" alt="Result block">
+      </div>
+
+      <!-- every flow is sized from its own SVG width (--w) against a shared
+           1400-unit row, so all of them are drawn at the same scale -->
+      <div class="flow-rows">
+        <div class="flow-row">
+          <img style="--w:748" src="images/userflow/startflow.svg" width="748" height="173" loading="lazy" alt="User flow: starting the app">
+        </div>
+        <div class="flow-row">
+          <img style="--w:655" src="images/userflow/homeflow.svg" width="655" height="356" loading="lazy" alt="User flow: home page">
+          <img style="--w:659" src="images/userflow/photomapflow.svg" width="659" height="369" loading="lazy" alt="User flow: photo map">
+        </div>
+        <div class="flow-row">
+          <img style="--w:745" src="images/userflow/uploadphotoflow.svg" width="745" height="82" loading="lazy" alt="User flow: uploading a photo">
+        </div>
+        <div class="flow-row">
+          <img style="--w:705" src="images/userflow/ceflow.svg" width="705" height="311" loading="lazy" alt="User flow: community events">
+          <img style="--w:402" src="images/userflow/profileflow.svg" width="402" height="198" loading="lazy" alt="User flow: profile">
+        </div>
+      </div>
+    </figure>
   </section>
 
 </main>

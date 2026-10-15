@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pie chart options — not live</title>
+<style>
+/* Options for the Pikspot "User Survey Results" chart.
+   Data: Spontaneous 67%, Planned 20%, Other 13%.
+   Colours come from the case study's gradient (#96CDFA → #597994)
+   plus a neutral for "Other". Not linked from the site. */
+
+:root {
+  --ink: #2E312E;
+  --ink-soft: #4A4E4A;
+  --gray: #8A8D8A;
+  --hair: #DFDFDB;
+  --paper: #F2F2F0;
+  --c-spont: #597994;   /* the headline slice gets the deep end of the gradient */
+  --c-plan:  #96CDFA;
+  --c-other: #C7CDD2;
+  --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --serif: "Merriweather", "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 48px clamp(20px, 5vw, 72px) 96px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
+.intro { color: var(--gray); font-size: 14px; margin: 0 0 40px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  max-width: 1180px;
+}
+
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+.card {
+  background: #FAFAF9;
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+  padding: 28px 28px 32px;
+}
+
+.tag {
+  font-size: 12px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin: 0 0 4px;
+}
+
+.name { font-size: 17px; font-weight: 600; margin: 0 0 22px; }
+.note { font-size: 13.5px; line-height: 1.55; color: var(--gray); margin: 22px 0 0; }
+
+/* ---------- shared legend ---------- */
+.legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.legend li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--ink-soft); }
+.legend b { font-weight: 600; color: var(--ink); margin-left: auto; padding-left: 18px; font-variant-numeric: tabular-nums; }
+.sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.sw--s { background: var(--c-spont); }
+.sw--p { background: var(--c-plan); }
+.sw--o { background: var(--c-other); }
+
+/* hover: the hovered slice stays, the others fade */
+svg .seg { transition: opacity .2s ease; cursor: default; }
+svg:hover .seg { opacity: .35; }
+svg:hover .seg:hover { opacity: 1; }
+
+/* ---------- A: thin donut + centre stat ---------- */
+.a-wrap { display: flex; align-items: center; gap: 36px; flex-wrap: wrap; }
+.donut { width: 200px; height: 200px; flex: none; }
+.donut__big { font-family: var(--sans); font-size: 30px; font-weight: 600; fill: var(--ink); }
+.donut__small { font-size: 8.5px; letter-spacing: .12em; fill: var(--gray); }
+
+/* ---------- B: single-stat ring ---------- */
+.b-wrap { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+.ring { width: 170px; height: 170px; flex: none; }
+.b-copy p { margin: 0; }
+.b-big {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -.03em;
+  line-height: 1;
+  background: linear-gradient(90deg, #96CDFA 0%, #96CDFA 25%, #597994 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.b-lede { font-size: 15px; color: var(--ink-soft); margin-top: 10px !important; max-width: 22ch; }
+.b-rest { font-size: 13px; color: var(--gray); margin-top: 14px !important; }
+
+/* ---------- C: 100% bar ---------- */
+.bar { display: flex; gap: 2px; height: 18px; margin: 6px 0 14px; }
+.bar span { border-radius: 4px; transition: opacity .2s ease; }
+.bar:hover span { opacity: .35; }
+.bar span:hover { opacity: 1; }
+.bar__labels { display: flex; gap: 2px; font-size: 13px; color: var(--ink-soft); }
+.bar__labels div { min-width: 0; }
+.bar__labels b { display: block; font-size: 22px; font-weight: 600; color: var(--ink); margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+
+/* ---------- D: half donut ---------- */
+.d-wrap { display: flex; flex-direction: column; align-items: center; }
+.half { width: 260px; height: 150px; }
+.d-wrap .legend { grid-template-columns: repeat(3, auto); gap: 18px; margin-top: 18px; }
+.d-wrap .legend b { margin-left: 6px; padding-left: 0; }
+</style>
+</head>
+<body>
+
+<h1>User Survey Results — chart options</h1>
+<p class="intro">Same data in each: Spontaneous 67%, Planned 20%, Other 13%. Hover a chart to isolate a slice. Pick a letter.</p>
+
+<div class="grid">
+
+  <!-- A -->
+  <section class="card">
+    <p class="tag">Option A</p>
+    <p class="name">Thin donut with the headline in the middle</p>
+    <div class="a-wrap">
+      <!-- r=60, C≈376.99; slice lengths minus a 4-unit gap so slices never touch -->
+      <svg class="donut" viewBox="0 0 160 160" role="img" aria-label="Donut chart: Spontaneous 67%, Planned 20%, Other 13%">
+        <g transform="rotate(-90 80 80)" fill="none" stroke-width="14" stroke-linecap="round">
+          <circle class="seg" cx="80" cy="80" r="60" stroke="var(--c-spont)" stroke-dasharray="238.6 376.99" stroke-dashoffset="0"><title>Spontaneous 67%</title></circle>
+          <circle class="seg" cx="80" cy="80" r="60" stroke="var(--c-plan)"  stroke-dasharray="61.4 376.99"  stroke-dashoffset="-252.6"><title>Planned 20%</title></circle>
+          <circle class="seg" cx="80" cy="80" r="60" stroke="var(--c-other)" stroke-dasharray="35 376.99"    stroke-dashoffset="-328"><title>Other 13%</title></circle>
+        </g>
+        <text class="donut__big" x="80" y="84" text-anchor="middle">67%</text>
+        <text class="donut__small" x="80" y="104" text-anchor="middle">SPONTANEOUS</text>
+      </svg>
+      <ul class="legend">
+        <li><span class="sw sw--s"></span>Spontaneous<b>67%</b></li>
+        <li><span class="sw sw--p"></span>Planned<b>20%</b></li>
+        <li><span class="sw sw--o"></span>Other<b>13%</b></li>
+      </ul>
+    </div>
+    <p class="note">Closest to what's there now, but lighter: a thin ring with rounded ends and small gaps, the key number in the centre, and the legend carrying the values.</p>
+  </section>
+
+  <!-- B -->
+  <section class="card">
+    <p class="tag">Option B</p>
+    <p class="name">One big number, one ring</p>
+    <div class="b-wrap">
+      <svg class="ring" viewBox="0 0 160 160" role="img" aria-label="67% of respondents discover spots spontaneously">
+        <defs>
+          <linearGradient id="bGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#96CDFA"/>
+            <stop offset="1" stop-color="#597994"/>
+          </linearGradient>
+        </defs>
+        <circle cx="80" cy="80" r="62" fill="none" stroke="#E4E6E3" stroke-width="10"/>
+        <circle cx="80" cy="80" r="62" fill="none" stroke="url(#bGrad)" stroke-width="10" stroke-linecap="round"
+                stroke-dasharray="261 389.6" transform="rotate(-90 80 80)"><title>Spontaneous 67%</title></circle>
+      </svg>
+      <div class="b-copy">
+        <p class="b-big">67%</p>
+        <p class="b-lede">discover photo spots spontaneously</p>
+        <p class="b-rest">20% plan ahead · 13% other</p>
+      </div>
+    </div>
+    <p class="note">Treats it as a headline instead of a chart — the finding is really one number. Uses the case study's blue gradient on both the ring and the figure.</p>
+  </section>
+
+  <!-- C -->
+  <section class="card">
+    <p class="tag">Option C</p>
+    <p class="name">Single proportion bar</p>
+    <div class="bar" role="img" aria-label="Spontaneous 67%, Planned 20%, Other 13%">
+      <span style="flex:67; background:var(--c-spont)" title="Spontaneous 67%"></span>
+      <span style="flex:20; background:var(--c-plan)"  title="Planned 20%"></span>
+      <span style="flex:13; background:var(--c-other)" title="Other 13%"></span>
+    </div>
+    <div class="bar__labels">
+      <div style="flex:67"><b>67%</b>Spontaneous</div>
+      <div style="flex:20"><b>20%</b>Planned</div>
+      <div style="flex:13"><b>13%</b>Other</div>
+    </div>
+    <p class="note">The easiest to compare at a glance and the most minimal. Lengths read more accurately than angles, and it fits a wide text column well.</p>
+  </section>
+
+  <!-- D -->
+  <section class="card">
+    <p class="tag">Option D</p>
+    <p class="name">Half donut</p>
+    <div class="d-wrap">
+      <!-- semicircle r=100: length = π·100 ≈ 314.16 -->
+      <svg class="half" viewBox="0 0 240 130" role="img" aria-label="Half donut: Spontaneous 67%, Planned 20%, Other 13%">
+        <g fill="none" stroke-width="18" stroke-linecap="round">
+          <path class="seg" d="M20 120 A100 100 0 0 1 220 120" pathLength="314.16" stroke="var(--c-spont)" stroke-dasharray="204.5 400" stroke-dashoffset="0"><title>Spontaneous 67%</title></path>
+          <path class="seg" d="M20 120 A100 100 0 0 1 220 120" pathLength="314.16" stroke="var(--c-plan)"  stroke-dasharray="51.8 400"  stroke-dashoffset="-215.5"><title>Planned 20%</title></path>
+          <path class="seg" d="M20 120 A100 100 0 0 1 220 120" pathLength="314.16" stroke="var(--c-other)" stroke-dasharray="29.8 400"  stroke-dashoffset="-278.3"><title>Other 13%</title></path>
+        </g>
+        <text x="120" y="104" text-anchor="middle" style="font-size:36px;font-weight:600;fill:var(--ink)">67%</text>
+        <text x="120" y="124" text-anchor="middle" style="font-size:10.5px;letter-spacing:.14em;fill:var(--gray)">SPONTANEOUS</text>
+      </svg>
+      <ul class="legend">
+        <li><span class="sw sw--s"></span>Spontaneous<b>67%</b></li>
+        <li><span class="sw sw--p"></span>Planned<b>20%</b></li>
+        <li><span class="sw sw--o"></span>Other<b>13%</b></li>
+      </ul>
+    </div>
+    <p class="note">A gauge-like arc — more stylised, sits nicely above a centred text block.</p>
+  </section>
+
+</div>
+
+</body>
+</html>
