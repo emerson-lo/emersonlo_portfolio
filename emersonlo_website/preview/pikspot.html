@@ -30,6 +30,9 @@
   --hair: #DFDFDB;
   --paper: #F2F2F0;
   --nav-w: 56px;
+  --sec-gap: clamp(40px, 6vh, 65px);   /* half the space between numbered sections — the rule sits in the middle */
+  /* the Figma "PhotoSpots Blue" text gradient: #96CDFA at 0% → #597994 at 29% */
+  --blue-grad: linear-gradient(90deg, #96CDFA 0%, #96CDFA 25%, #597994 100%);
 
   --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   --mark: "Sentient", var(--serif);
@@ -71,6 +74,10 @@ a, button, .nv, [role="button"],
 }
 
 /* =========================== NAV =========================== */
+/* this page's ink is a touch lighter than the home page's; pin the
+   rail to the home values so it matches exactly */
+.nav { --ink: #23261F; --hair: #E6E6E2; --paper: #FFFFFF; }
+
 
 .nav {
   position: fixed;
@@ -101,12 +108,11 @@ a, button, .nv, [role="button"],
   box-shadow: 24px 0 44px -26px rgba(20,22,20,.18);
 }
 
-/* the mark grows and centres across the full panel */
+/* the logo tile grows and moves onto the shared left edge */
 .nav--open .nav__mark {
-  width: 100%;
-  text-align: center;
-  padding: 0;
-  font-size: 30px;
+  width: 76px;
+  height: 56px;
+  margin-left: 28px;          /* on the same left edge as the links below */
 }
 
 
@@ -139,8 +145,10 @@ a, button, .nv, [role="button"],
 .nav--open .nav__work { gap: 4px; }
 
 /* hover lives on the text only: a small step darker, nothing else */
-.nav--open .nv__label:hover,
 .nav--open .nv[aria-current="page"] .nv__label { color: var(--ink); }
+
+/* hover: the text turns the grey of the hero name — no movement */
+.nav--open .nv__label:hover { color: #6E716C; }
 
 /* contact icons are 15px wide, so their text sits a little further in */
 .nav--open .nav__contact .nv__label { left: 24px; }
@@ -179,7 +187,29 @@ a, button, .nv, [role="button"],
 .nv--phone:hover .ph-b, .nv--phone:focus-visible .ph-b { display: inline; }
 
 /* a lighter version of the link's own ink colour, not an accent swap */
-.nav--open .nav__links .nv__label:hover { color: var(--ink-soft); }
+/* these already use the hero grey, so their hover goes a step lighter */
+.nav--open .nav__links .nv__label:hover { color: #9A9D99; }
+
+/* open: every row sizes to its own text instead of a fixed 38px slot,
+   so one-line and two-line names sit the same distance apart and the
+   header-to-list spacing reads like a compact index */
+.nav--open .nv {
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav--open .nv__label { position: static; transform: none; }
+.nav--open .nav__work,
+.nav--open .nav__contact { gap: 7px; }
+.nav--open .nv--hint { margin-bottom: 5px; }
+.nav--open .nav__links { gap: 12px; }
+
+/* the collapsed rail's tooltip slide (translate on hover) must not
+   reach the open rail's in-flow labels, or the text jumps up */
+.nav--open .nv:hover .nv__label,
+.nav--open .nv:focus-visible .nv__label { transform: none; }
 
 /* toggle */
 .nav__toggle {
@@ -208,17 +238,21 @@ a, button, .nv, [role="button"],
 
 .nav--open .nav__toggle svg { transform: rotate(180deg); }
 
+/* the LoLogo mark, set in a soft grey tile; it links home */
 .nav__mark {
-  display: block;             /* it's a link home now */
+  display: grid;
+  place-items: center;
   flex: none;
-  color: inherit;
+  width: 40px;
+  height: 32px;
+  border-radius: 6px;
+  background: #EDEDEB;
   text-decoration: none;
-  font-family: var(--mark);
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: .02em;
-  transition: font-size .5s cubic-bezier(.22,1,.36,1);
+  transition: width .3s cubic-bezier(.22,1,.36,1),
+              height .3s cubic-bezier(.22,1,.36,1);
 }
+
+.nav__mark img { display: block; width: 74%; height: auto; }
 
 /* the icon column keeps a fixed width matching --nav-w, so nothing
    shifts sideways when the rail widens — only the labels arrive */
@@ -232,7 +266,7 @@ a, button, .nv, [role="button"],
 
 .nav::-webkit-scrollbar { display: none; }
 
-.nav__links { margin-top: 32px; gap: 5px; }
+.nav__links { margin-top: 20px; gap: 5px; }
 
 /* a full-width hairline between nav groups — a sibling of .nav__group
    rather than nested inside it, so 100% resolves against the rail's
@@ -325,6 +359,7 @@ a, button, .nv, [role="button"],
 
 .main {
   margin-left: var(--nav-w);
+  overflow-x: clip;     /* wide decorative art (the vs. glow) never adds a sideways scroll */
   transition: margin-left .5s cubic-bezier(.22,1,.36,1);
 }
 
@@ -333,7 +368,8 @@ a, button, .nv, [role="button"],
 .hero {
   position: relative;
   overflow: hidden;
-  padding: clamp(190px, 32vh, 330px) clamp(30px, 5vw, 78px) clamp(70px, 11vh, 130px);
+  min-height: 80vh;                 /* the blank band fills 80% of the window height */
+  padding: 0 clamp(30px, 5vw, 78px);
 }
 
 /* the faded blue glow, kept from the reference — it sits behind the
@@ -421,12 +457,56 @@ a, button, .nv, [role="button"],
 /* =========================== META =========================== */
 
 .meta {
+  /* the full-width rule closes off the blank hero band, which is
+     reserved for an image */
   border-top: 1px solid var(--hair);
   /* bottom value matches .prompt/.research's own padding-bottom, so the
      gap before every numbered section (Overview → 01 → 02) is identical */
-  padding: clamp(40px, 6vh, 64px) clamp(30px, 5vw, 78px) clamp(80px, 12vh, 130px);
+  padding: 0 clamp(30px, 5vw, 78px) var(--sec-gap);
   text-align: center;
 }
+
+/* title block above the details: title, lede, rule, story, rule */
+.meta__intro {
+  /* same measure as .prompt / .research: a 1180px box that includes its
+     own side padding, so the left edge and right edge line up with them */
+  max-width: calc(1180px - 2 * clamp(30px, 5vw, 78px));
+  margin: 0 auto clamp(40px, 6vh, 64px);
+  padding-top: clamp(56px, 9vh, 96px);
+  text-align: left;
+}
+
+.intro__title {
+  font-family: var(--sans);        /* the site-wide face (SF Pro on Apple devices) */
+  font-weight: 500;
+  font-size: clamp(44px, 5.6vw, 78px);
+  line-height: 1.1;
+  letter-spacing: -.025em;
+  color: #23261F;
+  margin: 0 0 18px;
+}
+
+.intro__lede {
+  font-size: 21px;
+  line-height: 1.5;
+  color: #ADB0AD;
+  margin: 0 0 clamp(36px, 5vh, 52px);
+}
+
+.intro__story {
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  padding: clamp(28px, 4vh, 40px) 0;
+}
+
+.intro__story p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 1.1em;
+}
+
+.intro__story p:last-child { margin-bottom: 0; }
 
 .meta__grid {
   display: grid;
@@ -440,7 +520,11 @@ a, button, .nv, [role="button"],
   font-size: 12.5px;
   letter-spacing: .18em;
   text-transform: uppercase;
-  color: #7B8FC7;
+  display: inline-block;
+  background: var(--blue-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   margin: 0 0 12px;
 }
 
@@ -464,7 +548,7 @@ a, button, .nv, [role="button"],
 .prompt {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0 clamp(30px, 5vw, 78px) clamp(80px, 12vh, 130px);
+  padding: 0 clamp(30px, 5vw, 78px) var(--sec-gap);
 }
 
 .prompt__label {
@@ -499,14 +583,20 @@ a, button, .nv, [role="button"],
   margin: 0;
 }
 
-.prompt__accent { color: #7B8FC7; font-weight: 500; }
+.prompt__accent {
+  font-weight: 500;
+  background: var(--blue-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
 /* --- research / competitive analysis --- */
 
 .research {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0 clamp(30px, 5vw, 78px) clamp(80px, 12vh, 130px);
+  padding: 0 clamp(30px, 5vw, 78px) var(--sec-gap);
 }
 
 .research__heading {
@@ -583,21 +673,63 @@ a, button, .nv, [role="button"],
 
 .survey-results {
   display: flex;
-  align-items: flex-start;
+  align-items: center;      /* text sits level with the chart's centre */
   gap: clamp(24px, 5vw, 64px);
   margin-top: 36px;
 }
 
 .survey-results__chart {
-  width: 150px;
+  width: clamp(190px, 22vw, 270px);   /* a little smaller than before */
   height: auto;
   flex: none;
 }
 
-.survey-results__text { flex: 1; min-width: 0; }
+.survey-results__text { flex: 1; min-width: 0; transform: translateY(-34px); }   /* nudged up from centre */
 
 @media (max-width: 560px) {
   .survey-results { flex-direction: column; align-items: flex-start; }
+}
+
+/* --- user interviews: three consistent themes --- */
+
+.themes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px clamp(24px, 4vw, 56px);
+  margin-top: 8px;
+}
+
+.theme__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  background: var(--blue-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 0 0 14px;
+}
+
+/* icons sit at the gradient's start, so they take its first colour */
+.theme__icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: #96CDFA;
+}
+
+.theme__body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--gray);          /* same grey as the "User Interviews / Results" cue */
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .themes { grid-template-columns: 1fr; }
 }
 
 /* --- Pinterest deep-dive: the FigJam sticky-note board --- */
@@ -655,12 +787,306 @@ a, button, .nv, [role="button"],
   .rise { animation: none; }
   .btn { transition: none; }
 }
+/* --- synthesis: mobile vs. desktop comparison --- */
+
+/* the SVG is the blue hourglass + "vs." with its glow; it sits centred
+   behind a three-column grid whose middle column is the hourglass */
+.versus {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(92px, 11vw, 125px) minmax(0, 1fr);
+  /* both columns hang from the same top edge, so the two titles and the
+     first bullets line up; the padding drops the pair to the hourglass's
+     middle */
+  align-items: start;
+  padding-top: clamp(70px, 8.5vw, 100px);
+  min-height: clamp(260px, 32vw, 360px);
+  margin-top: 8px;
+}
+
+.versus__art {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(430px, 54vw, 660px);   /* was 560–860px */
+  height: auto;
+  translate: -50% -50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.versus__side { position: relative; z-index: 1; }
+.versus__side--left { grid-column: 1; align-self: start; justify-self: end; padding-right: 20px; }
+.versus__side--right { grid-column: 3; align-self: start; justify-self: start; padding-left: 20px; }
+
+/* same treatment as the theme titles: blue, semibold, icon in front */
+.versus__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  background: var(--blue-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 0 0 18px;
+}
+
+.versus__icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: #96CDFA;
+}
+
+.versus__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.versus__list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--gray);          /* same grey as the theme descriptions */
+}
+
+/* small blue triangle bullets */
+.versus__list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: .42em;
+  border-left: 7px solid #668CAB;
+  border-top: 4.5px solid transparent;
+  border-bottom: 4.5px solid transparent;
+}
+
+@media (max-width: 700px) {
+  .versus { grid-template-columns: 1fr; gap: 32px; min-height: 0; padding-top: 0; }
+  .versus__art { display: none; }
+  .versus__side--left, .versus__side--right { grid-column: 1; justify-self: start; padding: 0; }
+}
+
+/* sub-section title inside a numbered section: wears the .versus__title
+   look (blue, semibold, icon) and only adds the space above it */
+.syn-sub { margin: clamp(28px, 4vh, 44px) 0 0; }
+
+/* a soft full-bleed band the information-architecture diagrams sit in.
+   It breaks out of the section's reading column to span the whole page
+   area (100cqw = .main's width, via the container set on it) */
+.main { container-type: inline-size; }
+
+.ia-frame {
+  /* wider than the reading column, but inset from the page edges */
+  --ia-inset: clamp(20px, 4vw, 72px);
+  width: calc(100cqw - 2 * var(--ia-inset));
+  margin: 22px 0 0 calc(50% - 50cqw + var(--ia-inset));
+  padding: clamp(36px, 5vw, 72px) clamp(24px, 4vw, 64px);
+  background: #FAFAF9;
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+}
+
+/* triangle: Home & Map and CE side by side, Profile centred beneath.
+   Column widths follow each SVG's own width, so all three diagrams are
+   drawn at the same scale */
+.ia-grid {
+  display: grid;
+  grid-template-columns: 539fr 667fr;
+  align-items: center;
+  gap: clamp(40px, 5vw, 80px) clamp(32px, 4vw, 72px);
+  max-width: 1160px;        /* caps the diagrams' overall size — lower to shrink them */
+  margin: 0 auto;
+}
+
+.ia-grid img { display: block; width: 100%; height: auto; }
+
+.ia-grid .ia-profile {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 26%;              /* 312 / (539 + 667): same scale as the row above */
+  min-width: 220px;
+}
+
+@media (max-width: 900px) {
+  .ia-grid { grid-template-columns: 1fr; }
+  .ia-grid .ia-profile { width: 60%; }
+}
+
+/* --- user flow key: process / decision / result --- */
+.flow-key {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(20px, 4vw, 44px);
+  margin: 26px 0 0;
+}
+
+.flow-key__item {
+  position: relative;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 12.5px;
+  line-height: 1.25;
+  color: var(--ink-soft);
+}
+
+.flow-key__item--process,
+.flow-key__item--result {
+  width: 70px;
+  height: 44px;
+  border-radius: 8px;
+}
+
+.flow-key__item--process { background: #E4F1FD; border: 1px solid #96CDFA; }
+.flow-key__item--result  { background: #E8F6E4; border: 1px solid #9CD48E; }
+
+.flow-key__item--decision { width: 104px; height: 64px; }
+.flow-key__item--decision svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.flow-key__item--decision path { fill: #FDE5E5; stroke: #F2A3A3; stroke-width: 1; stroke-linejoin: round; }
+.flow-key__item--decision span { position: relative; }
+
+/* =========================== BACK TO TOP =========================== */
+
+/* rises out of the foot of the nav once the reader reaches Overview.
+   Text is set in the nav "eyebrow" style (PRODUCT / WEBSITE / CONTACT) */
+.nav__top {
+  margin-top: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0 0;
+  background: none;
+  border: 0;
+  color: var(--gray);
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(18px);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .45s cubic-bezier(.22,1,.36,1), color .2s ease;
+}
+
+.nav__top.is-shown { opacity: 1; transform: none; pointer-events: auto; }
+.nav__top:hover { color: var(--ink-soft); }
+
+.nav__top svg {
+  width: 14px; height: 14px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* open rail: on the shared left edge; collapsed: just the arrow, centred */
+.nav--open .nav__top { align-self: flex-start; margin-left: 28px; }
+.nav:not(.nav--open) .nav__top { width: 56px; justify-content: center; }
+.nav:not(.nav--open) .nav__top-label { display: none; }
+
+/* =========================== SECTION RULES =========================== */
+
+/* a short centred hairline between numbered sections — it stops well
+   short of the text column's left and right edges */
+.sec-rule {
+  width: min(56%, 620px);
+  height: 1px;
+  border: 0;
+  background: var(--hair);
+  margin: 0 auto var(--sec-gap);
+}
+
+/* =========================== TRACKER =========================== */
+
+/* fixed on the right: a tick per section, the current one longer and
+   blue. Hovering the rail reveals every label. Sections that aren't
+   written yet are listed but greyed out and not clickable. */
+.tracker {
+  position: fixed;
+  top: 50%;
+  right: clamp(14px, 1.6vw, 28px);
+  translate: 0 -50%;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 14px 0 14px 18px;
+  margin: 0;
+  list-style: none;
+}
+
+.tracker__item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 12.5px;
+  line-height: 1.2;
+  color: var(--gray);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tracker__label {
+  opacity: 0;
+  translate: 6px 0;
+  /* zero width while hidden, so the invisible labels don't sit over the
+     text and catch the pointer */
+  max-width: 0;
+  overflow: hidden;
+  padding: 3px 0;
+  border-radius: 4px;
+  background: var(--paper);
+  pointer-events: none;
+  transition: opacity .22s ease, translate .3s cubic-bezier(.22,1,.36,1),
+              max-width .35s cubic-bezier(.22,1,.36,1), padding .35s cubic-bezier(.22,1,.36,1);
+}
+
+.tracker__tick {
+  flex: none;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: #C9CBC7;
+  transition: width .3s cubic-bezier(.22,1,.36,1), background .3s ease;
+}
+
+.tracker__item.is-active .tracker__tick { width: 28px; background: var(--blue-grad); }
+.tracker__item.is-active { color: var(--ink); }
+
+.tracker__item.is-soon { color: #BDBFBB; cursor: default; }
+.tracker__item.is-soon .tracker__tick { background: #E2E3E0; }
+
+/* hover the rail: all labels slide in */
+.tracker:hover .tracker__label { opacity: 1; translate: 0 0; max-width: 360px; padding: 3px 8px; pointer-events: auto; }
+.tracker__item:not(.is-soon):hover { color: var(--ink); }
+
+/* on very wide screens there's room to keep the current label showing */
+@media (min-width: 1700px) {
+  .tracker__item.is-active .tracker__label { opacity: 1; translate: 0 0; max-width: 360px; padding: 3px 8px; }
+}
+
+@media (max-width: 900px) {
+  .tracker { display: none; }
+}
 </style>
 </head>
 <body>
 
 <nav class="nav nav--open">
-  <a class="nav__mark" href="../index.html" aria-label="Home">ERL</a>
+  <a class="nav__mark" href="../index.html" aria-label="Home"><img src="../images/lo-mark.svg" alt=""></a>
 
   <div class="nav__group nav__links">
     <a class="nv" href="../about.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/></svg><span class="nv__label">About</span></a>
@@ -706,24 +1132,29 @@ a, button, .nv, [role="button"],
   <button class="nav__toggle" type="button" aria-expanded="true" aria-label="Collapse navigation">
     <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
   </button>
+
+  <button class="nav__top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+    <span class="nav__top-label">Back to top</span>
+  </button>
 </nav>
 
 
 <main class="main">
 
-  <header class="hero">
-    <div class="hero__inner">
-      <p class="hero__year rise" style="--d:0ms">2025</p>
-      <h1 class="hero__title rise" style="--d:80ms">Pikspot</h1>
-      <p class="hero__lede rise" style="--d:160ms">Chasing adventures through spontaneous photography</p>
-      <div class="hero__actions rise" style="--d:240ms">
-        <a class="btn" href="https://www.figma.com/proto/wPXX58P0pZhD61IaQTYuFi/Pikspot-Prototype?page-id=0%3A1&node-id=1-4683&viewport=1903%2C1175%2C0.17&t=fsdhYA7rXJ38Cijh-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=1%3A5776" target="_blank" rel="noopener">View Prototype</a>
-        <a class="btn" href="#skip-to-the-end">Skip to the End</a>
-      </div>
-    </div>
-  </header>
+  <header class="hero" aria-hidden="true"></header>
 
   <section class="meta" id="overview">
+   <div class="meta__intro">
+    <h1 class="intro__title">Pikspot &ndash; Design Interactive</h1>
+    <p class="intro__lede">Chasing adventures through spontaneous photography</p>
+
+    <div class="intro__story">
+      <p>In the spring of my third year, I joined a cohort program run by UC Davis&rsquo; human-centered design organization, Design Interactive. After applying and interviewing, I was accepted and excited to find out who I&rsquo;d be collaborating with.</p>
+      <p>Teams were matched through a survey of our preferences across five design prompts. I was placed on the <span class="prompt__accent">&ldquo;Photo Spots&rdquo;</span> team, and our prompt was&hellip;</p>
+    </div>
+   </div>
+
    <div class="meta__grid">
 
     <div>
@@ -759,7 +1190,9 @@ a, button, .nv, [role="button"],
    </div>
   </section>
 
-  <section class="prompt">
+  <hr class="sec-rule">
+
+  <section class="prompt" id="problem">
     <p class="prompt__label">01. Problem Statement</p>
 
     <p class="prompt__cue">What exactly was our prompt?</p>
@@ -769,7 +1202,9 @@ a, button, .nv, [role="button"],
     <p class="prompt__hmw"><span class="prompt__accent">How might we</span> design an app that can make discovering unique photo spots and sharing hidden gems effortless for <span class="prompt__accent">photographers?</span></p>
   </section>
 
-  <section class="research">
+  <hr class="sec-rule">
+
+  <section class="research" id="research">
     <p class="prompt__label">02. Research</p>
     <p class="prompt__cue">Competitive Analysis</p>
     <h2 class="research__heading">Where are photographers already looking?</h2>
@@ -837,7 +1272,7 @@ a, button, .nv, [role="button"],
 
     <p class="prompt__cue">Competitive Analysis Results</p>
     <h3 class="research__heading">So&hellip; what does each platform have to offer?</h3>
-    <p class="research__body">Every successful product has one standout feature, something polished, seamless, and unique. Since there are countless amounts of photo apps, we realized that our app needed the same defining element. But, what would that element be? How would it set us apart? This question stayed with us throughout our research and carried on into our ideation phase.</p>
+    <p class="research__body">Every successful product has one standout feature. With so many photo apps, ours needed one too, but what would set us apart? That question carried us from research into ideation.</p>
 
     <p class="prompt__cue research-sub">User Surveys</p>
     <h3 class="research__heading">What do users actually prefer?</h3>
@@ -849,12 +1284,141 @@ a, button, .nv, [role="button"],
       <div class="survey-results__text">
         <p class="prompt__cue">User Survey Results</p>
         <h3 class="research__heading">Key Insights for the future!</h3>
-        <p class="research__body">67% of people prefer discovering photo spots spontaneously, while 20% plan ahead. In-person exploration was the top method (73%) over social media (27%). <strong>Key insight:</strong> spontaneous, real-world discovery felt more exciting and inspiring to young people than searching online.</p>
+        <p class="research__body">67% discover photo spots spontaneously, and only 20% plan ahead. 73% explore in person rather than through social media. <strong>Key insight:</strong> spontaneous, real-world discovery feels more exciting than searching online.</p>
+      </div>
+    </div>
+
+    <p class="prompt__cue research-sub">User Interviews / Results</p>
+    <h3 class="research__heading">Three themes were consistent</h3>
+    <p class="research__body">To better understand common preferences and specific <strong>pain points</strong> in modern photo apps, we interviewed 10 UC Davis students (1 professional). Using an <strong>affinity map</strong>, we synthesized the findings and discovered three key problem areas that would guide us later in ideation.</p>
+
+    <div class="themes">
+      <div class="theme">
+        <h4 class="theme__title"><svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 9h-1V7a4 4 0 00-8 0v2H7a2 2 0 00-2 2v8a2 2 0 002 2h10a2 2 0 002-2v-8a2 2 0 00-2-2zM9.8 7a2.2 2.2 0 014.4 0v2H9.8z"/></svg>Gatekeeping</h4>
+        <p class="theme__body">Many keep favorite spots secret, fearing they'll lose their uniqueness.</p>
+      </div>
+      <div class="theme">
+        <h4 class="theme__title"><svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 2L5 13.5h6L10 22l9-12h-6z"/></svg>Spontaneity</h4>
+        <p class="theme__body">Best photos happen in the moment, without overthinking.</p>
+      </div>
+      <div class="theme">
+        <h4 class="theme__title"><svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>Casual Sharing</h4>
+        <p class="theme__body">Sharing should feel casual, without pressure to be perfect.</p>
       </div>
     </div>
   </section>
 
+  <hr class="sec-rule">
+
+  <section class="research" id="synthesis">
+    <p class="prompt__label">03. Synthesis &amp; Ideation</p>
+    <p class="prompt__cue">Mobile vs. Desktop</p>
+    <h2 class="research__heading">Why mobile won</h2>
+    <p class="research__body">The first big call was mobile or desktop. Research showed people prefer spontaneous, in-person discovery, which is exactly where mobile shines. Desktop is better for big screens and editing, but mobile lets photographers explore, shoot, and share in the moment.</p>
+
+    <div class="versus">
+      <img class="versus__art" src="images/mobilevsdesktop.svg" width="719" height="714" loading="lazy" alt="">
+      <div class="versus__side versus__side--left">
+        <h3 class="versus__title"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 012 2v16a2 2 0 01-2 2H8a2 2 0 01-2-2V4a2 2 0 012-2zm4 17.2a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zM8 5v12h8V5z"/></svg>Mobile</h3>
+        <ul class="versus__list">
+          <li>Push notifications</li>
+          <li>Works offline</li>
+          <li>Built for spontaneity</li>
+          <li>Best for casual users</li>
+        </ul>
+      </div>
+      <div class="versus__side versus__side--right">
+        <h3 class="versus__title"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 012 2v9a2 2 0 01-2 2h-5.5l.8 2H17a1 1 0 010 2H7a1 1 0 010-2h1.7l.8-2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v9h16V6z"/></svg>Desktop</h3>
+        <ul class="versus__list">
+          <li>Can&rsquo;t shoot on the go</li>
+          <li>Suits polished, pro uploads</li>
+          <li>More ways to monetize</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="prompt__cue research-sub">Looking back at our research</p>
+    <h3 class="research__heading">Laying out the journey</h3>
+    <p class="research__body">To turn our research into actionable designs, I went back through the main pain points from users. From there I began brainstorming solutions, mapping the overall workflow and experience through <strong>information architectures</strong> and <strong>user flows</strong>.</p>
+
+    <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v5H9zM2 16h6v5H2zM9 16h6v5H9zM16 16h6v5h-6zM11.5 7h1v4.5h-1zM4.5 11.5h15v1h-15zM4.5 12h1v4h-1zM18.5 12h1v4h-1zM11.5 12.5h1v3.5h-1z"/></svg> Information Architecture</h3>
+
+    <figure class="ia-frame">
+      <div class="ia-grid">
+        <img class="ia-home" src="images/home-map-info-arc.svg" width="539" height="458" loading="lazy"
+             alt="Information architecture for the Home and Map screens">
+        <img class="ia-ce" src="images/ce-info-arc.svg" width="667" height="225" loading="lazy"
+             alt="Information architecture for the CE screens">
+        <img class="ia-profile" src="images/profile-info-arc.svg" width="312" height="103" loading="lazy"
+             alt="Information architecture for the Profile screen">
+      </div>
+    </figure>
+
+    <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v6H3zM14 15h7v6h-7zM6 9h1.5v5.25H14v1.5H6z"/></svg> User Flow</h3>
+
+    <!-- key for the user-flow charts; the flow SVGs go underneath it -->
+    <div class="flow-key" aria-label="User flow key">
+      <span class="flow-key__item flow-key__item--process">Process<br>Block</span>
+      <span class="flow-key__item flow-key__item--decision">
+        <svg viewBox="0 0 104 64" aria-hidden="true"><path d="M52 1.5 102.5 32 52 62.5 1.5 32z"/></svg>
+        <span>Decision<br>Block</span>
+      </span>
+      <span class="flow-key__item flow-key__item--result">Result<br>Block</span>
+    </div>
+  </section>
+
 </main>
+
+<!-- reading tracker: entries with no matching section yet show as "coming soon" -->
+<nav class="tracker" aria-label="Case study sections">
+  <a class="tracker__item" href="#overview"><span class="tracker__label">Overview</span><span class="tracker__tick"></span></a>
+  <a class="tracker__item" href="#problem"><span class="tracker__label">01. Problem Statement</span><span class="tracker__tick"></span></a>
+  <a class="tracker__item" href="#research"><span class="tracker__label">02. Research</span><span class="tracker__tick"></span></a>
+  <a class="tracker__item" href="#synthesis"><span class="tracker__label">03. Synthesis &amp; Ideation</span><span class="tracker__tick"></span></a>
+  <a class="tracker__item" href="#midfi"><span class="tracker__label">04. Mid-Fi Prototyping &amp; Usability Testing</span><span class="tracker__tick"></span></a>
+  <a class="tracker__item" href="#hifi"><span class="tracker__label">05. Hi-Fi Prototyping</span><span class="tracker__tick"></span></a>
+</nav>
+
+<script>
+  /* reading tracker — highlights the section crossing the middle of the
+     window. To hook up a new section, give it the id its entry points
+     at (synthesis, midfi, hifi) and it switches on automatically. */
+  (function () {
+    var items = [].slice.call(document.querySelectorAll('.tracker__item'));
+    var live = [];
+
+    items.forEach(function (item) {
+      var sec = document.querySelector(item.getAttribute('href'));
+      if (!sec) {
+        item.classList.add('is-soon');
+        item.removeAttribute('href');
+        item.setAttribute('aria-disabled', 'true');
+        return;
+      }
+      live.push({ item: item, sec: sec });
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    function setActive(item) {
+      items.forEach(function (i) { i.classList.toggle('is-active', i === item); });
+    }
+
+    if (live.length) setActive(live[0].item);
+    if (!('IntersectionObserver' in window)) return;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        live.forEach(function (l) { if (l.sec === e.target) setActive(l.item); });
+      });
+    }, { rootMargin: '-45% 0px -54% 0px' });
+
+    live.forEach(function (l) { io.observe(l.sec); });
+  })();
+</script>
 
 <script>
   /* the rail expands to show every label at once — ported from the
@@ -867,6 +1431,28 @@ a, button, .nv, [role="button"],
       var open = nav.classList.toggle('nav--open');
       btn.setAttribute('aria-expanded', open);
       btn.setAttribute('aria-label', open ? 'Collapse navigation' : 'Expand navigation');
+    });
+  })();
+</script>
+
+<script>
+  /* back to top: shown once the Overview section reaches the middle of
+     the window, hidden again above it */
+  (function () {
+    var btn = document.querySelector('.nav__top');
+    var mark = document.getElementById('overview');
+    if (!btn || !mark) return;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      btn.classList.toggle('is-shown', mark.getBoundingClientRect().top < window.innerHeight * .5);
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   })();
 </script>

@@ -134,12 +134,11 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
   box-shadow: 24px 0 44px -26px rgba(20,22,20,.18);
 }
 
-/* the mark grows and centres across the full panel */
+/* the logo tile grows and moves onto the shared left edge */
 .nav--open .nav__mark {
-  width: 100%;
-  text-align: center;
-  padding: 0;
-  font-size: 30px;
+  width: 76px;
+  height: 56px;
+  margin-left: 28px;          /* on the same left edge as the links below */
 }
 
 
@@ -172,8 +171,10 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 .nav--open .nav__work { gap: 4px; }
 
 /* hover lives on the text only: a small step darker, nothing else */
-.nav--open .nv__label:hover,
 .nav--open .nv[aria-current="page"] .nv__label { color: var(--ink); }
+
+/* hover: the text turns the grey of the hero name — no movement */
+.nav--open .nv__label:hover { color: #6E716C; }
 
 /* contact icons are 15px wide, so their text sits a little further in */
 .nav--open .nav__contact .nv__label { left: 24px; }
@@ -212,7 +213,29 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 .nv--phone:hover .ph-b, .nv--phone:focus-visible .ph-b { display: inline; }
 
 /* a lighter version of the link's own ink colour, not an accent swap */
-.nav--open .nav__links .nv__label:hover { color: var(--ink-soft); }
+/* these already use the hero grey, so their hover goes a step lighter */
+.nav--open .nav__links .nv__label:hover { color: #9A9D99; }
+
+/* open: every row sizes to its own text instead of a fixed 38px slot,
+   so one-line and two-line names sit the same distance apart and the
+   header-to-list spacing reads like a compact index */
+.nav--open .nv {
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav--open .nv__label { position: static; transform: none; }
+.nav--open .nav__work,
+.nav--open .nav__contact { gap: 7px; }
+.nav--open .nv--hint { margin-bottom: 5px; }
+.nav--open .nav__links { gap: 12px; }
+
+/* the collapsed rail's tooltip slide (translate on hover) must not
+   reach the open rail's in-flow labels, or the text jumps up */
+.nav--open .nv:hover .nv__label,
+.nav--open .nv:focus-visible .nv__label { transform: none; }
 
 /* toggle */
 .nav__toggle {
@@ -241,17 +264,21 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 .nav--open .nav__toggle svg { transform: rotate(180deg); }
 
+/* the LoLogo mark, set in a soft grey tile; it links home */
 .nav__mark {
-  display: block;             /* it's a link home now */
+  display: grid;
+  place-items: center;
   flex: none;
-  color: inherit;
+  width: 40px;
+  height: 32px;
+  border-radius: 6px;
+  background: #EDEDEB;
   text-decoration: none;
-  font-family: var(--mark);
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: .02em;
-  transition: font-size .5s cubic-bezier(.22,1,.36,1);
+  transition: width .3s cubic-bezier(.22,1,.36,1),
+              height .3s cubic-bezier(.22,1,.36,1);
 }
+
+.nav__mark img { display: block; width: 74%; height: auto; }
 
 /* the icon column keeps a fixed width matching --nav-w, so nothing
    shifts sideways when the rail widens — only the labels arrive */
@@ -265,7 +292,7 @@ a:active, button:active, .nv:active, .tile:active, [role="button"]:active,
 
 .nav::-webkit-scrollbar { display: none; }
 
-.nav__links { margin-top: 32px; gap: 5px; }
+.nav__links { margin-top: 20px; gap: 5px; }
 
 /* a full-width hairline between nav groups — a sibling of .nav__group
    rather than nested inside it, so 100% resolves against the rail's
@@ -1138,7 +1165,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
 </div>
 
 <nav class="nav nav--open">
-  <a class="nav__mark" href="index.html" aria-label="Home">ERL</a>
+  <a class="nav__mark" href="index.html" aria-label="Home"><img src="images/lo-mark.svg" alt=""></a>
 
   <div class="nav__group nav__links">
     <a class="nv" href="about.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/></svg><span class="nv__label">About</span></a>
