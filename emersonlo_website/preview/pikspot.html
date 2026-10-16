@@ -617,6 +617,9 @@ a, button, .nv, [role="button"],
 
 .research__body strong { font-weight: 700; color: var(--ink); }
 
+/* back-to-back paragraphs read as one block, not two sections */
+.research__body:has(+ .research__body) { margin-bottom: 1em; }
+
 .pc-head {
   display: flex;
   align-items: center;
@@ -943,16 +946,23 @@ a, button, .nv, [role="button"],
 
 /* sub-section title inside a numbered section: wears the .versus__title
    look (blue, semibold, icon) and only adds the space above it */
-.syn-sub { margin: clamp(28px, 4vh, 44px) 0 0; }
+/* the IA / User Flow titles sit inside their panels, as the first line,
+   on the panel's own left padding edge */
+.syn-sub { margin: 0 0 clamp(28px, 4vw, 48px); }
+
+/* the panels now carry the gap that used to sit above the titles */
+.ia-frame { margin-top: clamp(28px, 4vh, 44px) !important; }
 
 /* a soft full-bleed band the information-architecture diagrams sit in.
    It breaks out of the section's reading column to span the whole page
    area (100cqw = .main's width, via the container set on it) */
-.main { container-type: inline-size; }
+.main {
+  container-type: inline-size;
+  --ia-inset: clamp(20px, 4vw, 72px);   /* how far the IA / user-flow panels sit in from the page edges */
+}
 
 .ia-frame {
   /* wider than the reading column, but inset from the page edges */
-  --ia-inset: clamp(20px, 4vw, 72px);
   width: calc(100cqw - 2 * var(--ia-inset));
   margin: 22px 0 0 calc(50% - 50cqw + var(--ia-inset));
   padding: clamp(36px, 5vw, 72px) clamp(24px, 4vw, 64px);
@@ -990,40 +1000,259 @@ a, button, .nv, [role="button"],
 /* --- user flow: key + flows inside the same panel as the IA --- */
 .flow-frame { display: block; }
 
+/* legend + grid share one 1160px measure, centred the same way as the
+   info-architecture grid above, so their left edges line up */
+.flow-key,
+.flow-grid { max-width: 1160px; margin-left: auto; margin-right: auto; }
+
 .flow-key {
   display: flex;
+  container-type: inline-size;   /* lets the blocks size against this row's own width */
   align-items: center;
-  flex-wrap: wrap;
-  gap: clamp(20px, 4vw, 44px);
-  margin: 0 0 clamp(32px, 4vw, 52px);
+  justify-content: center;       /* centred over the graphs below */
+  gap: clamp(16px, 2.6vw, 36px);
+  margin-bottom: clamp(32px, 4vw, 52px);
 }
 
-.flow-key img { display: block; height: auto; }
-
-.flow-rows {
-  display: grid;
-  gap: clamp(40px, 5vw, 72px);
-  max-width: 1160px;
-  margin: 0 auto;
-}
-
-.flow-row {
+/* the box the three legend blocks sit in */
+.flow-key__box {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: clamp(32px, 4vw, 72px);
+  gap: clamp(16px, 2.6vw, 36px);
+  padding: 14px clamp(16px, 2vw, 28px);
+  background: #fff;
+  border: 1px solid #E6E6E2;
+  border-radius: 10px;
 }
 
-.flow-row img {
+/* eyebrow style */
+.flow-key__label {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/* same scale as the flows: the row's width minus the grid's column gap,
+   divided over the grid's 748 + 745 units */
+.flow-key img {
   display: block;
-  min-width: 0;
-  width: calc(var(--w) * 100% / 1400);
+  flex: none;
+  width: calc((100cqw - clamp(28px, 3vw, 48px)) * var(--w) / 1493);
   height: auto;
 }
 
+.flow-grid {
+  display: grid;
+  grid-template-columns: 748fr 745fr;   /* each column = its widest chart */
+  gap: clamp(40px, 5vw, 72px) clamp(28px, 3vw, 48px);
+  align-items: start;
+}
+
+.flow-grid img { display: block; height: auto; cursor: zoom-in; }
+
+/* column 1 is 748 units wide, column 2 is 745: widths are the chart's own
+   unit count over its column's, so the scale is the same everywhere */
+.flow-left { width: calc(var(--w) * 100% / 748); }
+.flow-right-top { width: calc(var(--w) * 100% / 745); }
+.flow-grid > .flow-left:first-child,
+.flow-right-top { align-self: center; }
+
+.flow-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(36px, 4.5vw, 64px);
+}
+
+.flow-right img { width: calc(var(--w) * 100% / 745); }
+
 @media (max-width: 900px) {
-  .flow-row { flex-direction: column; }
-  .flow-row img { width: 100%; max-width: calc(var(--w) * 1px); }
+  .flow-grid { grid-template-columns: 1fr; }
+  .flow-left, .flow-right-top { width: 100%; max-width: calc(var(--w) * 1px); }
+  .flow-key { flex-wrap: wrap; }
+}
+
+/* click a flow to see it large */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 4vh 4vw;
+  background: rgba(242,242,240,.94);
+  cursor: zoom-out;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.lightbox.is-open { opacity: 1; }
+
+.lightbox img {
+  /* a fixed large sheet: the charts and sketches are SVGs with small
+     intrinsic sizes, so they are scaled up to fill it rather than shown
+     at their exported size */
+  width: min(92vw, 1200px);
+  height: 88vh;
+  object-fit: contain;
+  background: #FAFAF9;
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+  padding: clamp(16px, 3vw, 40px);
+  box-shadow: 0 24px 60px -30px rgba(20,22,20,.35);
+}
+
+/* --- lo-fi sketches: my sheet with callouts, the team's beside it --- */
+/* row 1: my sheet | the team's two sheets; row 2: the captions.
+   The right column sets the row height; my sheet fills that height, so
+   the left card's top and bottom line up with the two on the right. */
+.lofi {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  column-gap: clamp(48px, 7vw, 110px);   /* room for the callout labels to hang into */
+  row-gap: 14px;
+  align-items: stretch;
+  max-width: 860px;
+  margin: 8px auto 0;
+}
+
+.lofi__card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 22px rgba(20,22,20,.08);
+}
+
+.lofi__card img { display: block; width: 100%; height: auto; }
+.lofi__card img { cursor: zoom-in; }
+/* the sketches panel stays within the reading column (no breakout), so
+   its sides sit closer in than the IA / user-flow panels */
+.lofi-frame {
+  display: block;
+  width: 100%;
+  margin-left: 0;
+}
+
+.lofi__stage { position: relative; }
+
+/* my sheet: out of flow, filling the stretched cell; the sketch is drawn
+   on white paper, so any spare room around it just reads as more paper */
+.lofi__card--mine { position: absolute; inset: 0; }
+.lofi__card--mine img { width: 100%; height: 100%; object-fit: contain; }
+
+.lofi__team { display: flex; flex-direction: column; gap: clamp(18px, 2.4vw, 28px); }
+
+/* a callout: the blue line's diamond tip sits on the sketch, the label
+   rides above its far end and may hang past the card's edge */
+.lofi__note {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--len, clamp(100px, 12vw, 140px));   /* --len: per-callout line length */
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+/* the blue callout line: a diamond tip on the left, a 3px line with a
+   rounded right end. Drawn in CSS so the thickness never changes with
+   the line's length */
+.lofi__note { height: 8px; }
+
+.lofi__note::before {
+  content: "";
+  position: absolute;
+  left: 1.2px;
+  top: 50%;
+  width: 5.6px;
+  height: 5.6px;
+  background: #96CDFA;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.lofi__note::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  translate: 0 -50%;
+  background: #96CDFA;
+  border-radius: 0 1.5px 1.5px 0;
+}
+
+/* eyebrow style */
+.lofi__note b {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.lofi__note b {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  /* right edge sits flush with the blue line's right end; the negative
+     margin cancels the letter-spacing trailing the last character */
+  margin-right: -.2em;
+}
+
+/* captions use .prompt__cue (italic grey, like the FigJam board's cue) */
+.lofi__cap { margin: 0; }
+
+@media (max-width: 760px) {
+  .lofi { grid-template-columns: 1fr; }
+  .lofi__stage { aspect-ratio: 336 / 423; }
+  .lofi__note b { translate: 0 0; }
+}
+
+/* --- mid-fi: page title (IA / User Flow look), eyebrow, iteration row --- */
+.midfi-frame { display: block; }
+.midfi-frame .syn-sub { margin-bottom: 16px; }   /* the eyebrow follows close behind */
+
+/* eyebrow style */
+.midfi-eyebrow {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin: 0 0 18px;
+}
+
+.iters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 3.4vw, 52px);
+}
+
+.iter { margin: 0; }
+
+.iter img {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: zoom-in;
+  /* drop-shadow (not box-shadow) so the blur hugs the rounded frame */
+  filter: drop-shadow(0 0 16px rgba(20,22,20,.13));
+}
+
+.iter figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #ADB0AD;
+}
+
+.iter-notes { margin-top: clamp(36px, 5vw, 60px); }
+
+@media (max-width: 700px) {
+  .iters { grid-template-columns: 1fr; }
 }
 
 /* =========================== BACK TO TOP =========================== */
@@ -1424,9 +1653,8 @@ a, button, .nv, [role="button"],
     <h3 class="research__heading">Laying out the journey</h3>
     <p class="research__body">To turn our research into actionable designs, I went back through the main pain points from users. From there I began brainstorming solutions, mapping the overall workflow and experience through <strong>information architectures</strong> and <strong>user flows</strong>.</p>
 
-    <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v5H9zM2 16h6v5H2zM9 16h6v5H9zM16 16h6v5h-6zM11.5 7h1v4.5h-1zM4.5 11.5h15v1h-15zM4.5 12h1v4h-1zM18.5 12h1v4h-1zM11.5 12.5h1v3.5h-1z"/></svg> Information Architecture</h3>
-
     <figure class="ia-frame">
+      <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v5H9zM2 16h6v5H2zM9 16h6v5H9zM16 16h6v5h-6zM11.5 7h1v4.5h-1zM4.5 11.5h15v1h-15zM4.5 12h1v4h-1zM18.5 12h1v4h-1zM11.5 12.5h1v3.5h-1z"/></svg> Information Architecture</h3>
       <div class="ia-grid">
         <img class="ia-home" src="images/home-map-info-arc.svg" width="539" height="458" loading="lazy"
              alt="Information architecture for the Home and Map screens">
@@ -1437,34 +1665,106 @@ a, button, .nv, [role="button"],
       </div>
     </figure>
 
-    <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v6H3zM14 15h7v6h-7zM6 9h1.5v5.25H14v1.5H6z"/></svg> User Flow</h3>
-
     <figure class="ia-frame flow-frame">
-      <!-- key: the three block types used in every flow below -->
-      <div class="flow-key" aria-label="User flow key">
-        <img src="images/userflow/processblock.svg" width="76" height="38" alt="Process block">
-        <img src="images/userflow/decisionblock.svg" width="118" height="74" alt="Decision block">
-        <img src="images/userflow/resultblock.svg" width="69" height="38" alt="Result block">
+      <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v6H3zM14 15h7v6h-7zM6 9h1.5v5.25H14v1.5H6z"/></svg> User Flow</h3>
+      <!-- legend: the three block types used in every flow below -->
+      <div class="flow-key" aria-label="User flow legend">
+        <span class="flow-key__label">Legend</span>
+        <div class="flow-key__box">
+          <img style="--w:76" src="images/userflow/processblock.svg" width="76" height="38" alt="Process block">
+          <img style="--w:118" src="images/userflow/decisionblock.svg" width="118" height="74" alt="Decision block">
+          <img style="--w:69" src="images/userflow/resultblock.svg" width="69" height="38" alt="Result block">
+        </div>
       </div>
 
-      <!-- every flow is sized from its own SVG width (--w) against a shared
-           1400-unit row, so all of them are drawn at the same scale -->
-      <div class="flow-rows">
-        <div class="flow-row">
-          <img style="--w:748" src="images/userflow/startflow.svg" width="748" height="173" loading="lazy" alt="User flow: starting the app">
-        </div>
-        <div class="flow-row">
-          <img style="--w:655" src="images/userflow/homeflow.svg" width="655" height="356" loading="lazy" alt="User flow: home page">
-          <img style="--w:659" src="images/userflow/photomapflow.svg" width="659" height="369" loading="lazy" alt="User flow: photo map">
-        </div>
-        <div class="flow-row">
-          <img style="--w:745" src="images/userflow/uploadphotoflow.svg" width="745" height="82" loading="lazy" alt="User flow: uploading a photo">
-        </div>
-        <div class="flow-row">
+      <!-- Row 1: Start and Upload Photo, side by side. Row 2: Home → Photo
+           Map (one joined chart) on the left, Community Events and Profile
+           stacked on the right. Every chart is sized from its own SVG width
+           (--w) against the same grid, so all are drawn at one scale.
+           Click any chart to enlarge. -->
+      <div class="flow-grid">
+        <img class="flow-left" style="--w:748" src="images/userflow/startflow.svg" width="748" height="173" loading="lazy" alt="User flow: starting the app">
+        <img class="flow-right-top" style="--w:745" src="images/userflow/uploadphotoflow.svg" width="745" height="82" loading="lazy" alt="User flow: uploading a photo">
+
+        <img class="flow-left" style="--w:659" src="images/userflow/home-photomap-flow.svg" width="659" height="607" loading="lazy" alt="User flow: home page, continuing into the photo map">
+
+        <div class="flow-right">
           <img style="--w:705" src="images/userflow/ceflow.svg" width="705" height="311" loading="lazy" alt="User flow: community events">
           <img style="--w:402" src="images/userflow/profileflow.svg" width="402" height="198" loading="lazy" alt="User flow: profile">
         </div>
       </div>
+    </figure>
+
+    <p class="prompt__cue research-sub">Lo-fi Sketches</p>
+    <h3 class="research__heading">Concepts start to take shape</h3>
+    <p class="research__body">Lo-fi sketches let me explore ideas quickly before committing to wireframes, turning research insights into tangible layouts and workflows. Each designer took two pages; mine were the <strong>home page</strong>, which I iterated twice, and the <strong>events page</strong>.</p>
+
+    <figure class="ia-frame lofi-frame">
+    <div class="lofi">
+      <div class="lofi__stage">
+        <div class="lofi__card lofi__card--mine">
+          <img src="images/lofi/mylofi.svg" width="336" height="423" loading="lazy"
+               alt="My lo-fi sketches: two versions of the home page and the events page">
+        </div>
+        <!-- callouts: --x / --y place the arrow's tip on the sketch (as % of the card) -->
+        <span class="lofi__note" style="--x:40%; --y:21%"><b>home page v1.</b></span>
+        <span class="lofi__note" style="--len:140px; --x:calc(100% + 27px - 140px); --y:46%"><b>home page v2.</b></span>
+        <span class="lofi__note" style="--len:clamp(125px, 14.5vw, 165px); --x:61%; --y:83%"><b>events page v1.</b></span>
+      </div>
+
+      <div class="lofi__team">
+        <div class="lofi__card"><img src="images/lofi/teamlofi1.svg" width="210" height="269" loading="lazy" alt="Teammates' lo-fi sketches"></div>
+        <div class="lofi__card"><img src="images/lofi/teamlofi2.svg" width="210" height="160" loading="lazy" alt="More of the team's lo-fi sketches"></div>
+      </div>
+
+      <p class="prompt__cue lofi__cap">My iterations</p>
+      <p class="prompt__cue lofi__cap">The team&rsquo;s work</p>
+    </div>
+    </figure>
+  </section>
+
+  <hr class="sec-rule">
+
+  <section class="research" id="midfi">
+    <p class="prompt__label">04. Mid-Fi Prototyping &amp; Usability Testing</p>
+    <p class="prompt__cue">Mid-Fidelity Prototypes &amp; Usability Testing</p>
+    <h2 class="research__heading">The app coming to life</h2>
+    <p class="research__body">Moving into mid-fi, everyone iterated on wireframes across every key page, so we could explore different directions before settling on one consistent design.</p>
+    <p class="research__body">I then took ownership of the <strong>home</strong> and <strong>community events</strong> pages, working through many layouts to sharpen <strong>intuitive visual interactions</strong> and a clear <strong>information</strong> and <strong>visual hierarchy</strong>.</p>
+
+    <figure class="ia-frame midfi-frame">
+      <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 7.5V20a1 1 0 01-1 1h-5.5v-6h-5v6H4a1 1 0 01-1-1v-9.5z"/></svg> Home Page</h3>
+    <p class="midfi-eyebrow">Initial iterations</p>
+
+    <div class="iters">
+      <figure class="iter">
+        <img src="images/midfi/home-initial-1.svg" width="239" height="517" loading="lazy" alt="Home page, iteration 1: gallery with tip of the day, weekly event and a Near You grid">
+        <figcaption>.01</figcaption>
+      </figure>
+      <figure class="iter">
+        <img src="images/midfi/home-initial-2.svg" width="239" height="518" loading="lazy" alt="Home page, iteration 2: recommended feed of large single photos">
+        <figcaption>.02</figcaption>
+      </figure>
+      <figure class="iter">
+        <img src="images/midfi/home-initial-3.svg" width="239" height="517" loading="lazy" alt="Home page, iteration 3: scroll gallery with tip of the day, weekly challenge and filter chips">
+        <figcaption>.03</figcaption>
+      </figure>
+    </div>
+
+    <div class="themes iter-notes">
+      <div class="theme">
+        <h4 class="theme__title">1.</h4>
+        <p class="theme__body">Users favored .02&rsquo;s image layout for its large, high-quality photos.</p>
+      </div>
+      <div class="theme">
+        <h4 class="theme__title">2.</h4>
+        <p class="theme__body">.01&rsquo;s photo challenge banner won out because it shows the time left, which users found crucial.</p>
+      </div>
+      <div class="theme">
+        <h4 class="theme__title">3.</h4>
+        <p class="theme__body">Users preferred .03&rsquo;s filter chips; .01&rsquo;s dropdown felt tedious and .02&rsquo;s horizontal scroll unnatural.</p>
+      </div>
+    </div>
     </figure>
   </section>
 
@@ -1555,6 +1855,37 @@ a, button, .nv, [role="button"],
     btn.addEventListener('click', function () {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+  })();
+</script>
+
+<script>
+  /* user flows and lo-fi sketches: click one to view it large; click, or press Esc, to close */
+  (function () {
+    var imgs = document.querySelectorAll('.flow-grid img, .lofi__card img, .iter img');
+    if (!imgs.length) return;
+    var box = null;
+    function close() {
+      if (!box) return;
+      var b = box; box = null;
+      b.classList.remove('is-open');
+      setTimeout(function () { b.remove(); }, 250);
+    }
+    imgs.forEach(function (img) {
+      img.addEventListener('click', function () {
+        box = document.createElement('div');
+        box.className = 'lightbox';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-label', img.alt);
+        var big = document.createElement('img');
+        big.src = img.src;
+        big.alt = img.alt;
+        box.appendChild(big);
+        box.addEventListener('click', close);
+        document.body.appendChild(box);
+        requestAnimationFrame(function () { box.classList.add('is-open'); });
+      });
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
   })();
 </script>
 
