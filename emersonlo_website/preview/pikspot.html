@@ -29,7 +29,7 @@
   --gray-soft: #A8ABA7;
   --hair: #DFDFDB;
   --paper: #F2F2F0;
-  --nav-w: 56px;
+  --nav-w: 72px;
   --sec-gap: clamp(40px, 6vh, 65px);   /* half the space between numbered sections — the rule sits in the middle */
   /* the Figma "PhotoSpots Blue" text gradient: #96CDFA at 0% → #597994 at 29% */
   --blue-grad: linear-gradient(90deg, #96CDFA 0%, #96CDFA 25%, #597994 100%);
@@ -103,9 +103,9 @@ a, button, .nv, [role="button"],
 /* ---- expanded rail ---- */
 
 .nav--open {
-  width: 208px;
+  width: 196px;
   align-items: flex-start;
-  box-shadow: 24px 0 44px -26px rgba(20,22,20,.18);
+  box-shadow: none;           /* no shadow — the right edge is just the 1px hairline */
 }
 
 /* the logo tile grows and moves onto the shared left edge */
@@ -173,9 +173,9 @@ a, button, .nv, [role="button"],
 .nav--open .nav__links .nv__label {
   left: 0;
   font-size: 21px;
-  font-weight: 600;
-  color: #6E716C;
-  text-shadow: 0 0 18px rgba(110,113,108,.45);
+  font-weight: 500;
+  -webkit-text-stroke: .35px currentColor;   /* a hair bolder than 500, on any font */
+  color: var(--ink);            /* black, no glow */
 }
 
 /* the top links' icons only stand in for them while collapsed */
@@ -188,7 +188,7 @@ a, button, .nv, [role="button"],
 
 /* a lighter version of the link's own ink colour, not an accent swap */
 /* these already use the hero grey, so their hover goes a step lighter */
-.nav--open .nav__links .nv__label:hover { color: #9A9D99; }
+.nav--open .nav__links .nv__label:hover { color: #9A9D99; }   /* grey on hover */
 
 /* open: every row sizes to its own text instead of a fixed 38px slot,
    so one-line and two-line names sit the same distance apart and the
@@ -213,7 +213,7 @@ a, button, .nv, [role="button"],
 
 /* toggle */
 .nav__toggle {
-  width: 56px;
+  width: 72px;
   height: 38px;
   margin-top: 14px;
   flex: none;
@@ -228,6 +228,44 @@ a, button, .nv, [role="button"],
 }
 
 .nav__toggle:hover { color: var(--ink); }
+
+/* hover tip saying what the arrow does. Open rail: sits to the right of
+   the arrow. Collapsed rail (72px wide, clips sideways): sits above it.
+   The text comes from data-tip, which the toggle script keeps current. */
+.nav__toggle { position: relative; }
+
+.nav__toggle::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  translate: -50% 2px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  background: #1B1E19;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, translate .25s cubic-bezier(.22,1,.36,1);
+}
+
+.nav--open .nav__toggle::after {
+  left: calc(50% + 16px);
+  bottom: auto;
+  top: 50%;
+  translate: -4px -50%;
+}
+
+.nav__toggle:hover::after,
+.nav__toggle:focus-visible::after { opacity: 1; translate: -50% -4px; }
+
+.nav--open .nav__toggle:hover::after,
+.nav--open .nav__toggle:focus-visible::after { translate: 0 -50%; }
 
 .nav__toggle svg {
   width: 17px; height: 17px;
@@ -249,7 +287,8 @@ a, button, .nv, [role="button"],
   background: #EDEDEB;
   text-decoration: none;
   transition: width .3s cubic-bezier(.22,1,.36,1),
-              height .3s cubic-bezier(.22,1,.36,1);
+              height .3s cubic-bezier(.22,1,.36,1),
+              margin .3s cubic-bezier(.22,1,.36,1)   /* height and margin move together, so the rows below never shift */;
 }
 
 .nav__mark img { display: block; width: 74%; height: auto; }
@@ -260,7 +299,7 @@ a, button, .nv, [role="button"],
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 56px;
+  width: 72px;
   flex: none;
 }
 
@@ -270,7 +309,7 @@ a, button, .nv, [role="button"],
 
 /* a full-width hairline between nav groups — a sibling of .nav__group
    rather than nested inside it, so 100% resolves against the rail's
-   own width (56px collapsed, 208px open) and runs edge to edge in
+   own width (72px collapsed, 196px open) and runs edge to edge in
    both states with no separate open/collapsed rule needed */
 .nav__sep {
   width: 100%;
@@ -278,6 +317,9 @@ a, button, .nv, [role="button"],
   background: #E6E6E2;
   margin: 20px 0;
 }
+
+/* Product → Website: same space, no line */
+.nav__sep--blank { background: none; }
 
 /* every section is separated by the same 20px + rule + 20px */
 
@@ -355,6 +397,83 @@ a, button, .nv, [role="button"],
 }
 
 
+/* ---- collapsed rail keeps the open rail's vertical rhythm ----
+   Every row sits at the same height in both states, so collapsing never
+   pushes anything down — the arrow stays right under the pointer. Rows
+   are laid out exactly as when open; the labels stay in the flow (they
+   set each row's height, two-line names included) but are invisible,
+   and the icons take their place. */
+.nav:not(.nav--open) .nav__mark { width: 40px; height: 40px; margin-block: 8px; }   /* 40 + 16 = the open tile's 56 */
+
+.nav:not(.nav--open) .nav__group { align-items: flex-start; padding-left: 27px; }   /* centres an 18px icon in the 72px rail */
+
+.nav:not(.nav--open) .nv {
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav:not(.nav--open) .nv__label {
+  position: static;
+  transform: none;
+  padding: 0;
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: normal;
+  width: 148px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .15s ease, visibility 0s linear .15s;
+}
+
+.nav:not(.nav--open) .nv--hint .nv__label {
+  font-size: 11.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nav:not(.nav--open) .nav__links .nv__label { font-size: 21px; font-weight: 500; -webkit-text-stroke: .35px currentColor; }
+
+.nav:not(.nav--open) .nav__work,
+.nav:not(.nav--open) .nav__contact { gap: 7px; }
+.nav:not(.nav--open) .nv--hint { margin-bottom: 5px; }
+.nav:not(.nav--open) .nav__links { gap: 12px; }
+
+/* every icon centred in the same 18px column */
+.nav:not(.nav--open) .nv__chip { margin: 0 5.5px; }
+.nav:not(.nav--open) .nv--contact svg { margin: 0 1.5px; }
+.nav:not(.nav--open) .nv--hint svg { width: 13px; height: 13px; margin: 0 2.5px; }   /* no taller than the header text it replaces */
+
+/* collapsed rail: the arrow's tip can't sit inside a 72px rail that
+   clips sideways, so it's a separate element beside the rail, to the
+   right of the arrow (see the nav-tip script) */
+.nav:not(.nav--open) .nav__toggle::after { display: none; }
+
+.nav-tip {
+  position: fixed;
+  z-index: 70;
+  translate: -4px -50%;
+  padding: 5px 7px;
+  border-radius: 5px;
+  background: #1B1E19;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, translate .25s cubic-bezier(.22,1,.36,1);
+}
+
+.nav-tip.is-shown { opacity: 1; translate: 0 -50%; }
+
 /* =========================== HERO =========================== */
 
 .main {
@@ -363,7 +482,7 @@ a, button, .nv, [role="button"],
   transition: margin-left .5s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .main { margin-left: 208px; }
+.nav--open ~ .main { margin-left: 196px; }
 
 .hero {
   position: relative;
@@ -620,26 +739,33 @@ a, button, .nv, [role="button"],
 /* back-to-back paragraphs read as one block, not two sections */
 .research__body:has(+ .research__body) { margin-bottom: 1em; }
 
+/* eyebrow style */
 .pc-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--ink);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
   margin: 0 0 32px;
 }
 
+/* a check for pros, a cross for cons */
 .dot {
   display: inline-block;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
   margin-right: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
 }
 
-.dot--pro { background: #3FAE5C; }
-.dot--con { background: #E24C4C; }
+.dot--pro { color: #3FAE5C; }
+.dot--pro::before { content: "\2713"; }
+.dot--con { color: #E24C4C; }
+.dot--con::before { content: "\2715"; }
 
 .pc-grid {
   display: grid;
@@ -1213,8 +1339,12 @@ a, button, .nv, [role="button"],
 }
 
 /* --- mid-fi: page title (IA / User Flow look), eyebrow, iteration row --- */
-.midfi-frame { display: block; }
-.midfi-frame .syn-sub { margin-bottom: 16px; }   /* the eyebrow follows close behind */
+.midfi-frame {
+  display: block;
+  width: 100%;          /* stays inside the reading column, like the lo-fi sketches panel */
+  margin-left: 0;
+}
+.midfi-frame .syn-sub { margin-bottom: 56px; }   /* air between the title and the eyebrow */
 
 /* eyebrow style */
 .midfi-eyebrow {
@@ -1230,7 +1360,18 @@ a, button, .nv, [role="button"],
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(24px, 3.4vw, 52px);
+  max-width: 900px;          /* caps the three screens a bit smaller */
+  margin: 0 auto;
 }
+
+/* centred with the screens, so each finding stays under its screen */
+.iter-notes { max-width: 900px; column-gap: clamp(24px, 3.4vw, 52px); margin-left: auto; margin-right: auto; }
+
+/* "INITIAL ITERATIONS" starts on the left edge of the first screen */
+.midfi-frame .midfi-eyebrow { max-width: 900px; margin-left: auto; margin-right: auto; }
+
+/* the findings lead with an icon instead of a number */
+.iter-icon { width: 20px; height: 20px; fill: url(#iterGrad); }   /* the case study's blue text gradient */
 
 .iter { margin: 0; }
 
@@ -1240,7 +1381,7 @@ a, button, .nv, [role="button"],
   height: auto;
   cursor: zoom-in;
   /* drop-shadow (not box-shadow) so the blur hugs the rounded frame */
-  filter: drop-shadow(0 0 16px rgba(20,22,20,.13));
+  filter: drop-shadow(0 0 26px rgba(20,22,20,.18));
 }
 
 .iter figcaption {
@@ -1253,6 +1394,187 @@ a, button, .nv, [role="button"],
 
 @media (max-width: 700px) {
   .iters { grid-template-columns: 1fr; }
+}
+
+/* --- home page: no panel; iterations, a bracket rule, feature preferences --- */
+.midfi-frame {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* the iterations and the preferences share one 900px column; a hairline
+   bracket runs down its left side, from the screens into the first row of
+   boxes, with a branch reaching in between the two */
+.split {
+  --rail: clamp(24px, 3.2vw, 44px);   /* how far the bracket sits left of the content */
+  --rule: #BDBFBB;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.iters-wrap, .split__rule, .pref:first-child { position: relative; }
+
+.iters-wrap::after,
+.split__rule::after,
+.pref:first-child::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--rail));
+  width: 1px;
+  background: var(--rule);
+}
+.iters-wrap::after { top: 45%; bottom: 0; }
+.split__rule { height: clamp(64px, 8vw, 104px); }
+.split__rule::after { top: 0; bottom: 0; }
+/* down through the eyebrow (16px line + 24px gap) to the box's middle */
+.pref:first-child::before { top: -40px; bottom: 50%; }
+
+/* the branch: from the bracket to the middle of the first screen */
+.split__rule::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(-1 * var(--rail));
+  width: calc(var(--rail) + (100% - 2 * clamp(24px, 3.4vw, 52px)) / 6);
+  height: 1px;
+  background: var(--rule);
+}
+
+.midfi-frame .prefs__eyebrow { line-height: 16px; margin: 0 0 24px; }
+
+/* two boxes side by side, the third centred beneath */
+.prefs__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(20px, 2.6vw, 32px);
+}
+
+.pref {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(18px, 2.4vw, 28px);
+  background: #E7E7E4;
+  border-radius: 14px;
+}
+.pref:nth-child(3) { grid-column: 2 / 4; }
+
+/* every box's picture area is the same shape, so the cards line up */
+.pref__visual {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pref-crop { display: block; filter: drop-shadow(0 4px 18px rgba(20,22,20,.16)); }
+
+/* 1: .03's banner tucked behind .01's weekly event card */
+.pref__visual--stack .pref-crop { position: absolute; width: 64%; }
+.pref__visual--stack .pref-crop--back  { left: 8%;  top: 16%; }
+.pref__visual--stack .pref-crop--front { left: 28%; top: 48%; }
+
+/* 2: one post from .02, framed like the phone screen it came from */
+.pref-crop--post {
+  position: absolute;
+  top: 7%;
+  left: 50%;
+  translate: -50% 0;
+  height: 86%;
+  width: auto;
+  aspect-ratio: 238.5 / 168;
+  background: #fff;
+  border-radius: 12px;
+}
+
+/* 3: .01's dropdown and .02's tabs above the .03 chips users chose */
+.pref__visual--filters { flex-direction: column; gap: 22px; }
+.pref-ctrls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.pref-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 15px;
+  background: #fff;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1F1F1F;
+  box-shadow: 0 2px 10px rgba(20,22,20,.08);
+}
+.pref-pill svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pref-pill__dim { font-weight: 400; color: #9A9D99; }
+
+.pref-chips {
+  display: flex;
+  gap: 8px;
+  padding: 7px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 4px 18px rgba(20,22,20,.12);
+}
+.pref-chip {
+  padding: 10px 24px;
+  border-radius: 999px;
+  background: #525252;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+.pref-chip.is-on { background: #1F1F1F; }
+
+/* the finding: icon + short title, the detail beneath */
+.pref__card {
+  flex: 1;
+  margin-top: clamp(18px, 2.4vw, 26px);
+  padding: 18px 20px 20px;
+  background: #FAFAF9;
+  border-radius: 10px;
+}
+.pref__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.pref__title .iter-icon { flex: none; width: 18px; height: 18px; }
+.pref__body { margin: 0; font-size: 14px; line-height: 1.6; color: var(--gray); }
+
+@media (max-width: 700px) {
+  .prefs__grid { grid-template-columns: 1fr; }
+  .pref, .pref:nth-child(3) { grid-column: auto; }
+  .iters-wrap::after, .split__rule::after, .split__rule::before, .pref:first-child::before { display: none; }
+  .split__rule { height: 56px; }
+}
+
+/* --- final iteration: two screens with their callouts --- */
+.midfi-frame .final-eyebrow { max-width: 900px; margin: clamp(56px, 7vw, 88px) auto 22px; }   /* starts on the stage's left edge */
+
+.final-stage {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  aspect-ratio: 730 / 588;
+}
+
+.final-p {
+  position: absolute;
+  display: block;
+  height: auto;
+  left: calc((var(--x) - 40) / 730 * 100%);
+  top: calc((var(--y) - 57) / 588 * 100%);
+  width: calc(var(--w) / 730 * 100%);
+}
+
+.final-phone {
+  cursor: zoom-in;
+  filter: drop-shadow(0 0 26px rgba(20,22,20,.18));   /* same blur as the initial iterations */
 }
 
 /* =========================== BACK TO TOP =========================== */
@@ -1292,7 +1614,7 @@ a, button, .nv, [role="button"],
 
 /* open rail: on the shared left edge; collapsed: just the arrow, centred */
 .nav--open .nav__top { align-self: flex-start; margin-left: 28px; }
-.nav:not(.nav--open) .nav__top { width: 56px; justify-content: center; }
+.nav:not(.nav--open) .nav__top { width: 72px; justify-content: center; }
 .nav:not(.nav--open) .nav__top-label { display: none; }
 
 /* =========================== SECTION RULES =========================== */
@@ -1405,7 +1727,7 @@ a, button, .nv, [role="button"],
     <a class="nv" href="#bitewise"><span class="nv__chip c-bitewise"></span><span class="nv__label">Bitewise</span></a>
   </div>
 
-  <div class="nav__sep"></div>
+  <div class="nav__sep nav__sep--blank"></div>
 
   <div class="nav__group nav__work">
     <span class="nv nv--hint" aria-hidden="true">
@@ -1429,7 +1751,7 @@ a, button, .nv, [role="button"],
     <a class="nv nv--contact nv--phone" href="tel:+16264666774"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.6a1 1 0 01-.25 1z"/></svg><span class="nv__label"><span class="ph-a">Phone</span><span class="ph-b">626-466-6774</span></span></a>
   </div>
 
-  <button class="nav__toggle" type="button" aria-expanded="true" aria-label="Collapse navigation">
+  <button class="nav__toggle" type="button" aria-expanded="true" aria-label="Collapse navigation" data-tip="Minimize menu">
     <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
   </button>
 
@@ -1508,9 +1830,8 @@ a, button, .nv, [role="button"],
     <p class="prompt__label">02. Research</p>
     <p class="prompt__cue">Competitive Analysis</p>
     <h2 class="research__heading">Where are photographers already looking?</h2>
-    <p class="research__body">Our research began by first conducting a competitive analysis. Each member was tasked to look at one of four photo-sharing platforms which include <strong>VSCO</strong>, <strong>Flicker</strong>, <strong>Pinterest</strong>, and <strong>Instagram</strong> to better understand their pros and cons.</p>
+    <p class="research__body">Our research began by first conducting a competitive analysis. Each member was tasked to look at one of four photo-sharing platforms which include <strong>VSCO</strong>, <strong>Flicker</strong>, <strong>Pinterest</strong>, and <strong>Instagram</strong> to better understand their <span class="dot dot--pro"></span>pros and <span class="dot dot--con"></span>cons.</p>
 
-    <p class="pc-head" id="pros-cons"><span class="dot dot--pro"></span>Pros &amp; <span class="dot dot--con"></span>Cons</p>
 
     <div class="pc-grid">
       <div class="pc-card">
@@ -1729,13 +2050,14 @@ a, button, .nv, [role="button"],
     <p class="prompt__label">04. Mid-Fi Prototyping &amp; Usability Testing</p>
     <p class="prompt__cue">Mid-Fidelity Prototypes &amp; Usability Testing</p>
     <h2 class="research__heading">The app coming to life</h2>
-    <p class="research__body">Moving into mid-fi, everyone iterated on wireframes across every key page, so we could explore different directions before settling on one consistent design.</p>
-    <p class="research__body">I then took ownership of the <strong>home</strong> and <strong>community events</strong> pages, working through many layouts to sharpen <strong>intuitive visual interactions</strong> and a clear <strong>information</strong> and <strong>visual hierarchy</strong>.</p>
+    <p class="research__body">After everyone explored wireframes across every key page and we settled on one consistent design, I took ownership of the <strong>home</strong> and <strong>community events</strong> pages, working through many layouts to sharpen <strong>intuitive visual interactions</strong> and a clear <strong>information</strong> and <strong>visual hierarchy</strong>.</p>
 
     <figure class="ia-frame midfi-frame">
       <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 7.5V20a1 1 0 01-1 1h-5.5v-6h-5v6H4a1 1 0 01-1-1v-9.5z"/></svg> Home Page</h3>
     <p class="midfi-eyebrow">Initial iterations</p>
 
+    <div class="split">
+    <div class="iters-wrap">
     <div class="iters">
       <figure class="iter">
         <img src="images/midfi/home-initial-1.svg" width="239" height="517" loading="lazy" alt="Home page, iteration 1: gallery with tip of the day, weekly event and a Near You grid">
@@ -1750,21 +2072,78 @@ a, button, .nv, [role="button"],
         <figcaption>.03</figcaption>
       </figure>
     </div>
+    </div>
 
-    <div class="themes iter-notes">
-      <div class="theme">
-        <h4 class="theme__title">1.</h4>
-        <p class="theme__body">Users favored .02&rsquo;s image layout for its large, high-quality photos.</p>
-      </div>
-      <div class="theme">
-        <h4 class="theme__title">2.</h4>
-        <p class="theme__body">.01&rsquo;s photo challenge banner won out because it shows the time left, which users found crucial.</p>
-      </div>
-      <div class="theme">
-        <h4 class="theme__title">3.</h4>
-        <p class="theme__body">Users preferred .03&rsquo;s filter chips; .01&rsquo;s dropdown felt tedious and .02&rsquo;s horizontal scroll unnatural.</p>
+    <div class="split__rule" aria-hidden="true"></div>
+
+    <div class="prefs">
+      <p class="midfi-eyebrow prefs__eyebrow">Feature design preferences</p>
+      <div class="prefs__grid">
+        <div class="pref">
+          <div class="pref__visual pref__visual--stack">
+            <svg class="pref-crop pref-crop--back" viewBox="4 97 226 112" aria-hidden="true"><image href="images/midfi/home-initial-3.svg" width="239" height="517"/></svg>
+            <svg class="pref-crop pref-crop--front" viewBox="8 111 223 74" aria-hidden="true"><image href="images/midfi/home-initial-1.svg" width="239" height="517"/></svg>
+          </div>
+          <div class="pref__card">
+            <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="iterGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#96CDFA"/><stop offset=".25" stop-color="#96CDFA"/><stop offset="1" stop-color="#597994"/></linearGradient></defs><path fill-rule="evenodd" d="M12 3a9 9 0 110 18 9 9 0 010-18zm-.9 4.2v5.4l4.4 2.6.9-1.5-3.5-2.1V7.2z"/></svg>A visible countdown</h4>
+            <p class="pref__body">.01&rsquo;s photo challenge banner won out because it shows the time left, which users found crucial.</p>
+          </div>
+        </div>
+
+        <div class="pref">
+          <div class="pref__visual">
+            <svg class="pref-crop pref-crop--post" viewBox="0 105.6 238.5 168" aria-hidden="true"><image href="images/midfi/home-initial-2.svg" width="239" height="518"/></svg>
+          </div>
+          <div class="pref__card">
+            <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zm1 2v9.6l3.6-3.6 3 3 4.4-4.4L19 13.6V6zm3.5 1.5a1.75 1.75 0 110 3.5 1.75 1.75 0 010-3.5z"/></svg>Photos that fill the screen</h4>
+            <p class="pref__body">Users favored .02&rsquo;s image layout for its large, high-quality photos.</p>
+          </div>
+        </div>
+
+        <div class="pref">
+          <div class="pref__visual pref__visual--filters">
+            <div class="pref-ctrls">
+              <span class="pref-pill">Near You <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></span>
+              <span class="pref-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.3"/></svg> Recommended <span class="pref-pill__dim">Popular</span></span>
+            </div>
+            <div class="pref-chips">
+              <span class="pref-chip is-on">Nearby</span>
+              <span class="pref-chip">Friends</span>
+              <span class="pref-chip">Global</span>
+            </div>
+          </div>
+          <div class="pref__card">
+            <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8.2V19l-4 2v-7.8z"/></svg>Filters at a glance</h4>
+            <p class="pref__body">Users preferred .03&rsquo;s filter chips; .01&rsquo;s dropdown felt tedious and .02&rsquo;s horizontal scroll unnatural.</p>
+          </div>
+        </div>
       </div>
     </div>
+    </div>
+
+      <p class="midfi-eyebrow final-eyebrow">Final iteration</p>
+
+      <!-- every piece is placed in the Figma mock's own pixel grid (x 40–770,
+           y 57–645), as percentages of the stage, so the callouts stay on
+           their targets at any width -->
+      <div class="final-stage">
+        <img class="final-p final-phone" style="--x:203;--y:57;--w:195" src="images/midfi/final/home-final-1.svg" width="330" height="956" loading="lazy" alt="Final mid-fi home page: tip of the day, weekly photo challenge with time left, gallery with filter chips">
+        <img class="final-p final-phone" style="--x:412;--y:57;--w:195" src="images/midfi/final/home-final-2.svg" width="330" height="956" loading="lazy" alt="Final mid-fi post detail page: photo, description, location and camera specs">
+
+        <img class="final-p" style="--x:40;--y:70;--w:135" src="images/midfi/final/textbox1.svg" width="167" height="134" loading="lazy" alt="Refreshes daily. Provides users with ongoing photography learning opportunities.">
+        <img class="final-p" style="--x:40;--y:281;--w:123" src="images/midfi/final/textbox2.svg" width="153" height="153" loading="lazy" alt="Added &ldquo;Time Left&rdquo; on photo challenge and used the filter on .03 that users preferred.">
+        <img class="final-p" style="--x:40;--y:477;--w:130" src="images/midfi/final/textbox3.svg" width="161" height="115" loading="lazy" alt="Extended the images towards the end to highlight their visual quality.">
+        <img class="final-p" style="--x:646;--y:157;--w:123" src="images/midfi/final/textbox4.svg" width="153" height="96" loading="lazy" alt="Picture of the post with a description from the user.">
+        <img class="final-p" style="--x:646;--y:400;--w:123" src="images/midfi/final/textbox5.svg" width="153" height="96" loading="lazy" alt="Location of picture, camera specs, and more.">
+
+        <img class="final-p" style="--x:176;--y:99;--w:41.35" src="images/midfi/final/vector1.svg" width="51" height="27" alt="">
+        <img class="final-p" style="--x:175;--y:211;--w:38" src="images/midfi/final/vector2.svg" width="47" height="154" alt="">
+        <img class="final-p" style="--x:178.5;--y:295.9;--w:33.96" src="images/midfi/final/vector3.svg" width="42" height="45" alt="">
+        <img class="final-p" style="--x:177;--y:525;--w:35" src="images/midfi/final/vector4.svg" width="43" height="46" alt="">
+        <img class="final-p" style="--x:600;--y:131;--w:42" src="images/midfi/final/vector5.svg" width="52" height="80" alt="">
+        <img class="final-p" style="--x:600;--y:371;--w:42" src="images/midfi/final/vector6.svg" width="52" height="82" alt="">
+        <img class="final-p" style="--x:600;--y:433.12;--w:45.23" src="images/midfi/final/vector7.svg" width="56" height="86" alt="">
+      </div>
     </figure>
   </section>
 
@@ -1832,6 +2211,7 @@ a, button, .nv, [role="button"],
       var open = nav.classList.toggle('nav--open');
       btn.setAttribute('aria-expanded', open);
       btn.setAttribute('aria-label', open ? 'Collapse navigation' : 'Expand navigation');
+      btn.setAttribute('data-tip', open ? 'Minimize menu' : 'Expand');
     });
   })();
 </script>
@@ -1861,7 +2241,7 @@ a, button, .nv, [role="button"],
 <script>
   /* user flows and lo-fi sketches: click one to view it large; click, or press Esc, to close */
   (function () {
-    var imgs = document.querySelectorAll('.flow-grid img, .lofi__card img, .iter img');
+    var imgs = document.querySelectorAll('.flow-grid img, .lofi__card img, .iter img, .final-phone');
     if (!imgs.length) return;
     var box = null;
     function close() {
@@ -1886,6 +2266,38 @@ a, button, .nv, [role="button"],
       });
     });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+</script>
+
+<script>
+  /* the arrow's hover tip while the rail is collapsed — placed just to
+     the right of the arrow, outside the rail (which would clip it) */
+  (function () {
+    var nav = document.querySelector('.nav');
+    var btn = nav && nav.querySelector('.nav__toggle');
+    if (!btn) return;
+    var tip = document.createElement('div');
+    tip.className = 'nav-tip';
+    tip.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(tip);
+    function show() {
+      if (nav.classList.contains('nav--open')) return;   /* open rail uses its own in-rail tip */
+      tip.textContent = btn.getAttribute('data-tip') || '';
+      tip.style.left = (nav.offsetWidth + 8) + 'px';
+      tip.style.top = (btn.offsetTop - nav.scrollTop + btn.offsetHeight / 2) + 'px';
+      tip.classList.add('is-shown');
+    }
+    function hide() { tip.classList.remove('is-shown'); }
+    btn.addEventListener('mouseenter', show);
+    btn.addEventListener('focus', show);
+    btn.addEventListener('mouseleave', hide);
+    btn.addEventListener('blur', hide);
+    btn.addEventListener('click', function () {
+      hide();
+      /* once the rail has finished collapsing, show it again if the
+         pointer is still on the arrow */
+      setTimeout(function () { if (btn.matches(':hover')) show(); }, 320);
+    });
   })();
 </script>
 
