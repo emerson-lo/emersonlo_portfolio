@@ -28,7 +28,7 @@
   --gray: #8A8D8A;
   --gray-soft: #A8ABA7;
   --hair: #DFDFDB;
-  --paper: #F2F2F0;
+  --paper: #FFFFFF;          /* white, same as the home page */
   --nav-w: 72px;
   --sec-gap: clamp(40px, 6vh, 65px);   /* half the space between numbered sections — the rule sits in the middle */
   /* the Figma "PhotoSpots Blue" text gradient: #96CDFA at 0% → #597994 at 29% */
@@ -1208,7 +1208,7 @@ a, button, .nv, [role="button"],
   display: grid;
   place-items: center;
   padding: 4vh 4vw;
-  background: rgba(242,242,240,.94);
+  background: rgba(255,255,255,.94);
   cursor: zoom-out;
   opacity: 0;
   transition: opacity .25s ease;
@@ -1343,6 +1343,8 @@ a, button, .nv, [role="button"],
   display: block;
   width: 100%;          /* stays inside the reading column, like the lo-fi sketches panel */
   margin-left: 0;
+  --mf-gap: clamp(24px, 3vw, 44px);       /* the one column gap for every row under Home Page */
+  --mf-sec: clamp(64px, 8vw, 104px);      /* the one gap between its sections */
 }
 .midfi-frame .syn-sub { margin-bottom: 56px; }   /* air between the title and the eyebrow */
 
@@ -1359,8 +1361,7 @@ a, button, .nv, [role="button"],
 .iters {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(24px, 3.4vw, 52px);
-  max-width: 900px;          /* caps the three screens a bit smaller */
+  gap: var(--mf-gap);
   margin: 0 auto;
 }
 
@@ -1368,7 +1369,7 @@ a, button, .nv, [role="button"],
 .iter-notes { max-width: 900px; column-gap: clamp(24px, 3.4vw, 52px); margin-left: auto; margin-right: auto; }
 
 /* "INITIAL ITERATIONS" starts on the left edge of the first screen */
-.midfi-frame .midfi-eyebrow { max-width: 900px; margin-left: auto; margin-right: auto; }
+.midfi-frame .midfi-eyebrow { line-height: 16px; margin: 0 0 24px; }   /* every eyebrow sits the same distance above its row */
 
 /* the findings lead with an icon instead of a number */
 .iter-icon { width: 20px; height: 20px; fill: url(#iterGrad); }   /* the case study's blue text gradient */
@@ -1411,25 +1412,21 @@ a, button, .nv, [role="button"],
 .split {
   --rail: clamp(24px, 3.2vw, 44px);   /* how far the bracket sits left of the content */
   --rule: #BDBFBB;
-  max-width: 900px;
-  margin: 0 auto;
 }
-.iters-wrap, .split__rule, .pref:first-child { position: relative; }
+.split__rule, .split__span { position: relative; z-index: 1; }
 
-.iters-wrap::after,
-.split__rule::after,
-.pref:first-child::before {
+.split::after {
   content: "";
   position: absolute;
   left: calc(-1 * var(--rail));
   width: 1px;
   background: var(--rule);
 }
-.iters-wrap::after { top: 45%; bottom: 0; }
-.split__rule { height: clamp(64px, 8vw, 104px); }
-.split__rule::after { top: 0; bottom: 0; }
-/* down through the eyebrow (16px line + 24px gap) to the box's middle */
-.pref:first-child::before { top: -40px; bottom: 50%; }
+.split__rule { height: var(--mf-sec); }
+/* the spine: the full height of the block, from the top of the first
+   screens to the foot of the final iteration */
+.split { position: relative; }
+.split::after { top: 0; bottom: 0; }
 
 /* the branch: from the bracket to the middle of the first screen */
 .split__rule::before {
@@ -1437,34 +1434,33 @@ a, button, .nv, [role="button"],
   position: absolute;
   top: 50%;
   left: calc(-1 * var(--rail));
-  width: calc(var(--rail) + (100% - 2 * clamp(24px, 3.4vw, 52px)) / 6);
+  width: calc(var(--rail) + (100% - 2 * var(--mf-gap)) / 6);
   height: 1px;
   background: var(--rule);
 }
 
-.midfi-frame .prefs__eyebrow { line-height: 16px; margin: 0 0 24px; }
 
-/* two boxes side by side, the third centred beneath */
+/* the three boxes side by side */
 .prefs__grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(20px, 2.6vw, 32px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--mf-gap);
 }
 
 .pref {
-  grid-column: span 2;
   display: flex;
   flex-direction: column;
   padding: clamp(18px, 2.4vw, 28px);
-  background: #E7E7E4;
-  border-radius: 14px;
+  background: #FAFAF9;          /* same panel as the IA / user-flow boxes */
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
 }
-.pref:nth-child(3) { grid-column: 2 / 4; }
 
 /* every box's picture area is the same shape, so the cards line up */
 .pref__visual {
   position: relative;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 5 / 4;
+  margin: 0 calc(-1 * clamp(18px, 2.4vw, 28px));   /* the pictures run out to the box edges */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1472,56 +1468,80 @@ a, button, .nv, [role="button"],
 
 .pref-crop { display: block; filter: drop-shadow(0 4px 18px rgba(20,22,20,.16)); }
 
+/* preferred / not: a green tick or red cross on each picture's top-right corner */
+.mark {
+  position: absolute;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(20,22,20,.18);
+}
+.mark--yes { background: #3FAE5C; }
+.mark--yes::before { content: "\2713"; }
+.mark--no { background: #E24C4C; }
+.mark--no::before { content: "\2715"; }
+/* on the pills and the chip track the badge sits on their own corner */
+.pref-pill, .pref-chips { position: relative; }
+.pref-pill .mark, .pref-chips .mark { left: 100%; top: 0; translate: -35% -50%; }
+
 /* 1: .03's banner tucked behind .01's weekly event card */
-.pref__visual--stack .pref-crop { position: absolute; width: 64%; }
-.pref__visual--stack .pref-crop--back  { left: 8%;  top: 16%; }
-.pref__visual--stack .pref-crop--front { left: 28%; top: 48%; }
+.pref__visual--stack .pref-crop { position: absolute; }
+.pref__visual--stack .pref-crop--front { width: 80%; left: 6%;  top: 4%; z-index: 1; }
+.pref__visual--stack .pref-crop--back  { width: 66%; left: 28%; top: 45%; }   /* a clear gap under the card above */
 
 /* 2: one post from .02, framed like the phone screen it came from */
 .pref-crop--post {
   position: absolute;
-  top: 7%;
+  top: 50%;
   left: 50%;
-  translate: -50% 0;
-  height: 86%;
-  width: auto;
-  aspect-ratio: 238.5 / 168;
+  translate: -50% -50%;
+  width: 90%;
+  height: auto;
+  aspect-ratio: 238.48 / 186.29;
   background: #fff;
   border-radius: 12px;
 }
 
 /* 3: .01's dropdown and .02's tabs above the .03 chips users chose */
-.pref__visual--filters { flex-direction: column; gap: 22px; }
-.pref-ctrls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.pref__visual--filters { flex-direction: column; gap: 16px; }
+.pref-ctrls { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
 .pref-pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 9px 15px;
+  padding: 6px 10px;
   background: #fff;
-  border-radius: 9px;
-  font-size: 14px;
+  border-radius: 7px;
+  font-size: 11.5px;
   font-weight: 600;
   color: #1F1F1F;
   box-shadow: 0 2px 10px rgba(20,22,20,.08);
 }
-.pref-pill svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pref-pill svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .pref-pill__dim { font-weight: 400; color: #9A9D99; }
 
 .pref-chips {
   display: flex;
-  gap: 8px;
-  padding: 7px;
+  gap: 6px;
+  padding: 5px;
   background: #fff;
   border-radius: 999px;
   box-shadow: 0 4px 18px rgba(20,22,20,.12);
 }
 .pref-chip {
-  padding: 10px 24px;
+  padding: 7px 14px;
   border-radius: 999px;
   background: #525252;
   color: #fff;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
 }
 .pref-chip.is-on { background: #1F1F1F; }
@@ -1530,9 +1550,6 @@ a, button, .nv, [role="button"],
 .pref__card {
   flex: 1;
   margin-top: clamp(18px, 2.4vw, 26px);
-  padding: 18px 20px 20px;
-  background: #FAFAF9;
-  border-radius: 10px;
 }
 .pref__title {
   display: flex;
@@ -1540,37 +1557,48 @@ a, button, .nv, [role="button"],
   gap: 10px;
   margin: 0 0 8px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
+  -webkit-text-stroke: .25px currentColor;   /* the About / Ideas / Resume weight, scaled to 15px */
   color: var(--ink);
 }
 .pref__title .iter-icon { flex: none; width: 18px; height: 18px; }
-.pref__body { margin: 0; font-size: 14px; line-height: 1.6; color: var(--gray); }
+.pref__body { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }   /* same as the body copy */
+.pref-num { font-weight: 600; color: #000; }   /* the iteration numbers stand out in black */
 
 @media (max-width: 700px) {
   .prefs__grid { grid-template-columns: 1fr; }
-  .pref, .pref:nth-child(3) { grid-column: auto; }
-  .iters-wrap::after, .split__rule::after, .split__rule::before, .pref:first-child::before { display: none; }
+  .split::after, .split__rule::before { display: none; }
   .split__rule { height: 56px; }
 }
 
 /* --- final iteration: two screens with their callouts --- */
-.midfi-frame .final-eyebrow { max-width: 900px; margin: clamp(56px, 7vw, 88px) auto 22px; }   /* starts on the stage's left edge */
+.midfi-frame .final-eyebrow { margin-top: 0; }   /* the second branch's band already holds the gap */
 
 .final-stage {
   position: relative;
-  max-width: 900px;
-  margin: 0 auto;
-  aspect-ratio: 730 / 588;
+  aspect-ratio: var(--sw) / var(--sh);
 }
 
 .final-p {
   position: absolute;
   display: block;
   height: auto;
-  left: calc((var(--x) - 40) / 730 * 100%);
-  top: calc((var(--y) - 57) / 588 * 100%);
-  width: calc(var(--w) / 730 * 100%);
+  left: calc((var(--x) - var(--x0)) / var(--sw) * 100%);
+  top: calc((var(--y) - var(--y0)) / var(--sh) * 100%);
+  width: calc(var(--w) / var(--sw) * 100%);
 }
+
+.final-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke-width: 1.21;
+  pointer-events: none;
+}
+.final-lines__dot { stroke: none; }
 
 .final-phone {
   cursor: zoom-in;
@@ -1772,7 +1800,7 @@ a, button, .nv, [role="button"],
     <p class="intro__lede">Chasing adventures through spontaneous photography</p>
 
     <div class="intro__story">
-      <p>In the spring of my third year, I joined a cohort program run by UC Davis&rsquo; human-centered design organization, Design Interactive. After applying and interviewing, I was accepted and excited to find out who I&rsquo;d be collaborating with.</p>
+      <p>During the spring of 2025, I joined a cohort program run by UC Davis&rsquo; human-centered design organization, Design Interactive. After applying and interviewing, I was accepted and excited to find out who I&rsquo;d be collaborating with.</p>
       <p>Teams were matched through a survey of our preferences across five design prompts. I was placed on the <span class="prompt__accent">&ldquo;Photo Spots&rdquo;</span> team, and our prompt was&hellip;</p>
     </div>
    </div>
@@ -2074,6 +2102,7 @@ a, button, .nv, [role="button"],
     </div>
     </div>
 
+    <div class="split__span">
     <div class="split__rule" aria-hidden="true"></div>
 
     <div class="prefs">
@@ -2081,44 +2110,50 @@ a, button, .nv, [role="button"],
       <div class="prefs__grid">
         <div class="pref">
           <div class="pref__visual pref__visual--stack">
-            <svg class="pref-crop pref-crop--back" viewBox="4 97 226 112" aria-hidden="true"><image href="images/midfi/home-initial-3.svg" width="239" height="517"/></svg>
-            <svg class="pref-crop pref-crop--front" viewBox="8 111 223 74" aria-hidden="true"><image href="images/midfi/home-initial-1.svg" width="239" height="517"/></svg>
+            <svg class="pref-crop pref-crop--back" viewBox="6.66 99.69 220.73 107.29" aria-hidden="true"><image href="images/midfi/home-initial-3.svg" width="239" height="517"/></svg>
+            <svg class="pref-crop pref-crop--front" viewBox="10 113 219.06 69.78" aria-hidden="true"><image href="images/midfi/home-initial-1.svg" width="239" height="517"/></svg>
+            <span class="mark mark--yes" style="left:86%;top:4%" aria-label="Preferred"></span>
+            <span class="mark mark--no" style="left:94%;top:45%" aria-label="Less preferred"></span>
           </div>
           <div class="pref__card">
             <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="iterGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#96CDFA"/><stop offset=".25" stop-color="#96CDFA"/><stop offset="1" stop-color="#597994"/></linearGradient></defs><path fill-rule="evenodd" d="M12 3a9 9 0 110 18 9 9 0 010-18zm-.9 4.2v5.4l4.4 2.6.9-1.5-3.5-2.1V7.2z"/></svg>A visible countdown</h4>
-            <p class="pref__body">.01&rsquo;s photo challenge banner won out because it shows the time left, which users found crucial.</p>
+            <p class="pref__body"><b class="pref-num">.01</b>&rsquo;s photo challenge banner won out because it shows the time left, which users found crucial.</p>
           </div>
         </div>
 
         <div class="pref">
           <div class="pref__visual">
-            <svg class="pref-crop pref-crop--post" viewBox="0 105.6 238.5 168" aria-hidden="true"><image href="images/midfi/home-initial-2.svg" width="239" height="518"/></svg>
+            <svg class="pref-crop pref-crop--post" viewBox="0 105.59 238.48 186.29" aria-hidden="true"><image href="images/midfi/home-initial-2.svg" width="239" height="518"/></svg>
+            <span class="mark mark--yes" style="left:95%;top:6.06%" aria-label="Preferred"></span>
           </div>
           <div class="pref__card">
             <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zm1 2v9.6l3.6-3.6 3 3 4.4-4.4L19 13.6V6zm3.5 1.5a1.75 1.75 0 110 3.5 1.75 1.75 0 010-3.5z"/></svg>Photos that fill the screen</h4>
-            <p class="pref__body">Users favored .02&rsquo;s image layout for its large, high-quality photos.</p>
+            <p class="pref__body">Users favored <b class="pref-num">.02</b>&rsquo;s image layout for its large, high-quality photos.</p>
           </div>
         </div>
 
         <div class="pref">
           <div class="pref__visual pref__visual--filters">
-            <div class="pref-ctrls">
-              <span class="pref-pill">Near You <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></span>
-              <span class="pref-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.3"/></svg> Recommended <span class="pref-pill__dim">Popular</span></span>
-            </div>
             <div class="pref-chips">
               <span class="pref-chip is-on">Nearby</span>
               <span class="pref-chip">Friends</span>
               <span class="pref-chip">Global</span>
+              <span class="mark mark--yes" aria-label="Preferred"></span>
+            </div>
+            <div class="pref-ctrls">
+              <span class="pref-pill">Near You <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg><span class="mark mark--no" aria-label="Less preferred"></span></span>
+              <span class="pref-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.3"/></svg> Recommended <span class="pref-pill__dim">Popular</span><span class="mark mark--no" aria-label="Less preferred"></span></span>
             </div>
           </div>
           <div class="pref__card">
             <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8.2V19l-4 2v-7.8z"/></svg>Filters at a glance</h4>
-            <p class="pref__body">Users preferred .03&rsquo;s filter chips; .01&rsquo;s dropdown felt tedious and .02&rsquo;s horizontal scroll unnatural.</p>
+            <p class="pref__body">Users preferred <b class="pref-num">.03</b>&rsquo;s filter chips; <b class="pref-num">.01</b>&rsquo;s dropdown felt tedious and <b class="pref-num">.02</b>&rsquo;s horizontal scroll unnatural.</p>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="split__rule" aria-hidden="true"></div>
     </div>
 
       <p class="midfi-eyebrow final-eyebrow">Final iteration</p>
@@ -2126,24 +2161,51 @@ a, button, .nv, [role="button"],
       <!-- every piece is placed in the Figma mock's own pixel grid (x 40–770,
            y 57–645), as percentages of the stage, so the callouts stay on
            their targets at any width -->
-      <div class="final-stage">
-        <img class="final-p final-phone" style="--x:203;--y:57;--w:195" src="images/midfi/final/home-final-1.svg" width="330" height="956" loading="lazy" alt="Final mid-fi home page: tip of the day, weekly photo challenge with time left, gallery with filter chips">
-        <img class="final-p final-phone" style="--x:412;--y:57;--w:195" src="images/midfi/final/home-final-2.svg" width="330" height="956" loading="lazy" alt="Final mid-fi post detail page: photo, description, location and camera specs">
+      <div class="final-stage" style="--x0:37.44;--y0:57;--sw:734.58;--sh:677.89">
+        <img class="final-p final-phone" style="--x:163;--y:57;--w:234" src="images/midfi/final/home-final-1.svg" width="330" height="956" loading="lazy" alt="Final mid-fi home page: tip of the day, weekly photo challenge with time left, gallery with filter chips">
+        <img class="final-p final-phone" style="--x:413;--y:57;--w:234" src="images/midfi/final/home-final-2.svg" width="330" height="956" loading="lazy" alt="Final mid-fi post detail page: photo, description, location and camera specs">
 
-        <img class="final-p" style="--x:40;--y:70;--w:135" src="images/midfi/final/textbox1.svg" width="167" height="134" loading="lazy" alt="Refreshes daily. Provides users with ongoing photography learning opportunities.">
-        <img class="final-p" style="--x:40;--y:281;--w:123" src="images/midfi/final/textbox2.svg" width="153" height="153" loading="lazy" alt="Added &ldquo;Time Left&rdquo; on photo challenge and used the filter on .03 that users preferred.">
-        <img class="final-p" style="--x:40;--y:477;--w:130" src="images/midfi/final/textbox3.svg" width="161" height="115" loading="lazy" alt="Extended the images towards the end to highlight their visual quality.">
-        <img class="final-p" style="--x:646;--y:157;--w:123" src="images/midfi/final/textbox4.svg" width="153" height="96" loading="lazy" alt="Picture of the post with a description from the user.">
-        <img class="final-p" style="--x:646;--y:400;--w:123" src="images/midfi/final/textbox5.svg" width="153" height="96" loading="lazy" alt="Location of picture, camera specs, and more.">
+        <img class="final-p" style="--x:39.89;--y:83.59;--w:108" src="images/midfi/final/textbox1.svg" width="167" height="134" loading="lazy" alt="Refreshes daily. Provides users with ongoing photography learning opportunities.">
+        <img class="final-p" style="--x:38.01;--y:292.05;--w:98.4" src="images/midfi/final/textbox2.svg" width="153" height="153" loading="lazy" alt="Added &ldquo;Time Left&rdquo; on photo challenge and used the filter on .03 that users preferred.">
+        <img class="final-p" style="--x:37.44;--y:596.27;--w:104" src="images/midfi/final/textbox3.svg" width="161" height="115" loading="lazy" alt="Extended the images towards the end to highlight their visual quality.">
+        <img class="final-p" style="--x:673.51;--y:163.85;--w:98.4" src="images/midfi/final/textbox4.svg" width="153" height="96" loading="lazy" alt="Picture of the post with a description from the user.">
+        <img class="final-p" style="--x:673.62;--y:453.99;--w:98.4" src="images/midfi/final/textbox5.svg" width="153" height="96" loading="lazy" alt="Location of picture, camera specs, and more.">
 
-        <img class="final-p" style="--x:176;--y:99;--w:41.35" src="images/midfi/final/vector1.svg" width="51" height="27" alt="">
-        <img class="final-p" style="--x:175;--y:211;--w:38" src="images/midfi/final/vector2.svg" width="47" height="154" alt="">
-        <img class="final-p" style="--x:178.5;--y:295.9;--w:33.96" src="images/midfi/final/vector3.svg" width="42" height="45" alt="">
-        <img class="final-p" style="--x:177;--y:525;--w:35" src="images/midfi/final/vector4.svg" width="43" height="46" alt="">
-        <img class="final-p" style="--x:600;--y:131;--w:42" src="images/midfi/final/vector5.svg" width="52" height="80" alt="">
-        <img class="final-p" style="--x:600;--y:371;--w:42" src="images/midfi/final/vector6.svg" width="52" height="82" alt="">
-        <img class="final-p" style="--x:600;--y:433.12;--w:45.23" src="images/midfi/final/vector7.svg" width="56" height="86" alt="">
+        <!-- the callout lines, drawn in the stage's own coordinates so each one
+             stays pinned to its spot on the phone and its text box -->
+        <svg class="final-lines" viewBox="37.44 57 734.58 677.89" aria-hidden="true">
+          <defs>
+            <linearGradient id="fl1" gradientUnits="userSpaceOnUse" x1="179.32" y1="0" x2="156.07" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="fl2" gradientUnits="userSpaceOnUse" x1="148.81" y1="0" x2="173.64" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="fl3" gradientUnits="userSpaceOnUse" x1="148.88" y1="0" x2="174.35" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="fl4" gradientUnits="userSpaceOnUse" x1="149.84" y1="0" x2="172.41" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="fl5" gradientUnits="userSpaceOnUse" x1="639.05" y1="0" x2="666.95" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="fl6" gradientUnits="userSpaceOnUse" x1="639.32" y1="0" x2="669.62" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="fl7" gradientUnits="userSpaceOnUse" x1="639.32" y1="0" x2="669.62" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="fl8" gradientUnits="userSpaceOnUse" x1="335" y1="0" x2="446" y2="0"><stop stop-color="#96CDFA"/><stop offset="1" stop-color="#597994"/></linearGradient>
+          </defs>
+          <path d="M179.32 108.12H165.48A6.38 6.38 0 0 0 159.11 114.49V114.49A6.38 6.38 0 0 1 152.73 120.87H151.5" stroke="url(#fl1)"/>
+          <path d="M174.16 242.52H166.06A8.62 8.62 0 0 0 157.44 251.14V323.67A8.62 8.62 0 0 1 148.81 332.29H148.81" stroke="url(#fl2)"/>
+          <path d="M174.35 344.4H163.49A6.05 6.05 0 0 1 157.44 338.35V338.35A6.05 6.05 0 0 0 151.38 332.29H148.81" stroke="url(#fl3)"/>
+          <path d="M172.9 661.92H166.64A8.4 8.4 0 0 1 158.24 653.52V645.87A8.4 8.4 0 0 0 149.84 637.47H149.84" stroke="url(#fl4)"/>
+          <path d="M638.6 146.52H644.75A9 9 0 0 1 653.75 155.52V182.37A9 9 0 0 0 662.75 191.37H666.95" stroke="url(#fl5)"/>
+          <path d="M639.32 434.52H644.87A9 9 0 0 1 653.87 443.52V474.27A9 9 0 0 0 662.87 483.27H669.62" stroke="url(#fl6)"/>
+          <path d="M639.32 590.52H644.87A9 9 0 0 0 653.87 581.52V492.27A9 9 0 0 1 662.87 483.27H669.62" stroke="url(#fl7)"/>
+          <path class="final-lines__dot" d="M148 120.87L151.5 117.37L155 120.87L151.5 124.37Z" fill="url(#fl1)"/>
+          <path class="final-lines__dot" d="M145.31 332.29L148.81 328.79L152.31 332.29L148.81 335.79Z" fill="url(#fl2)"/>
+          <path class="final-lines__dot" d="M146.34 637.47L149.84 633.97L153.34 637.47L149.84 640.97Z" fill="url(#fl4)"/>
+          <path class="final-lines__dot" d="M663.45 191.37L666.95 187.87L670.45 191.37L666.95 194.87Z" fill="url(#fl5)"/>
+          <path class="final-lines__dot" d="M666.12 483.27L669.62 479.77L673.12 483.27L669.62 486.77Z" fill="url(#fl6)"/>
+          <!-- the flow: tapping a gallery photo opens its post -->
+          <g class="final-flow">
+            <circle cx="335" cy="400.4" r="7" stroke="url(#fl8)"/>
+            <circle class="final-lines__dot" cx="335" cy="400.4" r="2.5" fill="#96CDFA"/>
+            <path d="M342 400.4H397A8 8 0 0 0 405 392.4V182.5A8 8 0 0 1 413 174.5H446" stroke="url(#fl8)"/>
+            <path d="M440.5 170L446 174.5L440.5 179" stroke="#597994" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
       </div>
+    </div>
     </figure>
   </section>
 
