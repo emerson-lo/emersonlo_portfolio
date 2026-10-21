@@ -690,7 +690,7 @@ a, button, .nv, .tile, [role="button"],
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: clamp(36px, 3.4vw, 52px);   /* roomy rows; the columns keep their 22px gap */
 }
 
 @media (max-width: 640px) { .grid { flex-direction: column; } .col { flex-basis: auto; } }
@@ -708,25 +708,31 @@ a, button, .nv, .tile, [role="button"],
 .tile__vis {
   position: relative;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 6px;
   overflow: hidden;
-  background: var(--paper);
-  /* an even glow on every side, not a shadow cast in one direction */
-  box-shadow: 0 0 22px rgba(20,22,20,.12);
+  /* a flat, light grey card with only a whisper of shadow, like a product shot
+     on a studio sweep */
+  background: #F5F5F4;
+  box-shadow: 0 0 0 1px rgba(20,22,20,.03), 0 1px 10px rgba(20,22,20,.05);
   isolation: isolate;
   transition: box-shadow .35s ease;
 }
 
 /* hover: the glow spreads and deepens; the box itself never changes size */
-.tile:hover .tile__vis { box-shadow: 0 0 34px 1px rgba(20,22,20,.18); }
+.tile:hover .tile__vis { box-shadow: 0 0 0 1px rgba(20,22,20,.05), 0 6px 24px rgba(20,22,20,.10); }
 
 .r-wide   { aspect-ratio: 4 / 3; }
 .r-tall   { aspect-ratio: 3 / 2; }
 .r-short  { aspect-ratio: 7 / 5; }   /* JVMC */
 .r-xshort { aspect-ratio: 7 / 4; }   /* shorter than r-short — HackDavis */
+
+/* artwork inside a card, placed in the card's own proportions */
+.tile__art { position: absolute; display: block; height: auto; max-width: none; pointer-events: none; }
+/* the cow sits dead centre; the wave runs off the card's edges */
+.tile__art--cow { width: 120%; left: 5.2%; top: -24.7%; }   /* zoomed out: the cow centred, the wave curling around it */
 .r-xtall  { aspect-ratio: 1 / 1; }   /* taller than r-tall, shorter than before — Pikspot */
 
-.tile__meta { padding: 14px 2px 0; }
+.tile__meta { padding: 16px 2px 0; }
 
 /* name left, year pinned to the box's own right edge */
 .tile__title {
@@ -760,7 +766,7 @@ a, button, .nv, .tile, [role="button"],
   font-size: 21px;
   line-height: 1.2;
   letter-spacing: -.005em;
-  color: #ADB0AD;
+  color: #9C9F9B;
   margin: 0;
 }
 
@@ -1374,6 +1380,13 @@ body.is-handoff .row--name .big { visibility: hidden; }
          scroll position back on a real reload — do it ourselves */
       var y = canStore ? (+sessionStorage.getItem(SCROLL_KEY) || 0) : 0;
       window.scrollTo(0, y);
+      /* this runs before the rest of the page exists, so the page is still too
+         short to scroll that far; repeat once the content and images are in */
+      document.addEventListener('DOMContentLoaded', function () { window.scrollTo(0, y); });
+      window.addEventListener('load', function () { window.scrollTo(0, y); });
+      /* ?static is a one-off (the case studies' back arrow uses it): drop it
+         from the address so a later refresh plays the intro as usual */
+      if (q.has('static')) history.replaceState(null, '', location.pathname);
     } else {
       /* belt-and-suspenders: scrollRestoration was already claimed in
          <head>, but force it here too in case anything restored a
@@ -1519,10 +1532,10 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
       <div class="col">
         <a class="tile" id="hackdavis" href="#">
-          <div class="tile__vis r-xshort"></div>
+          <div class="tile__vis r-xshort"><img class="tile__art tile__art--cow" src="images/cowfloat.svg" width="1969" height="2651" alt="HackDavis cow mascot riding a colourful wave"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">HackDavis</span><span class="tile__year">2026</span></h3>
-            <p class="tile__sub">Hackathon Site</p>
+            <p class="tile__sub">Collegiate Hackathon</p>
           </div>
         </a>
 
@@ -1540,7 +1553,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
           <div class="tile__vis r-xtall"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
-            <p class="tile__sub">Photo App</p>
+            <p class="tile__sub">Spontaneous Photo Sharing</p>
           </div>
         </a>
 
@@ -1548,7 +1561,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
           <div class="tile__vis r-tall"></div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
-            <p class="tile__sub">Diet App</p>
+            <p class="tile__sub">Dietary App</p>
           </div>
         </a>
       </div>

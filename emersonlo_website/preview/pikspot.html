@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400&family=Lexend:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <!-- Sentient is a Fontshare face, not a Google one — it needs its own sheet -->
 <link href="https://api.fontshare.com/v2/css?f%5B%5D=sentient@400,500,700&display=swap" rel="stylesheet">
 <style>
@@ -513,8 +513,81 @@ a, button, .nv, [role="button"],
 .hero {
   position: relative;
   overflow: hidden;
-  min-height: 80vh;                 /* the blank band fills 80% of the window height */
+  /* the band fills the window except a strip at the bottom, where the top of the
+     case study title peeks in as a cue to scroll */
+  height: calc(100vh - 140px);
+  min-height: 460px;
   padding: 0 clamp(30px, 5vw, 78px);
+}
+/* the backdrop: a small pre-rendered gradient image (pale sky at the top, white
+   through the middle, soft cool grey at the floor) stretched smooth. It lives on
+   its own layer and is sized to the window rather than the band, so when the
+   nav opens or closes it only slides; nothing gets repainted */
+.hero__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background: url("images/hero/hero-bg.png") center / 100% 100% no-repeat;
+  will-change: transform;
+  pointer-events: none;
+}
+/* a quiet pill in the lower left of the band, in eyebrow type */
+.hero__proto {
+  position: absolute;
+  /* left edge lines up with the tip of the back arrow above (same inset from
+     the nav, plus the arrow's 8px inset inside its hover circle) */
+  left: calc(clamp(18px, 2.2vw, 28px) + 8px);
+  bottom: clamp(24px, 4vw, 44px);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 16px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color .2s ease, border-color .2s ease;
+}
+.hero__proto:hover { color: var(--ink); border-color: #C9CBC7; }
+/* a line icon like the zoom magnifier: 1.8 stroke, rounded */
+.hero__proto svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* the wooden hand rises from the bottom edge, holding the phone up on the right */
+.hero__hand {
+  position: absolute;
+  left: 50%;
+  translate: -45% 0;   /* the phone sits a little left of the image's middle, so this centres the phone */
+  bottom: -10%;   /* sits lower in the band; the wrist runs off the bottom edge */
+  height: 112%;   /* taller than the band, so the hand fills more of it */
+  aspect-ratio: 3234 / 3253;   /* the mockup's original canvas, so placement is unchanged */
+  pointer-events: none;
+  user-select: none;
+}
+/* every part is placed in the canvas's own proportions */
+.hero__hand > img { position: absolute; display: block; }
+.hero__frame { left: 23.5%; top: 17.893%; width: 63%; height: 82.107%; z-index: 1; }
+.hero__screen {
+  left: 31.1%;
+  top: 19.78%;
+  width: 26.65%;
+  height: 56.86%;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 12% / 5.6%;
+}
+/* the home screen fades in and out over the map: 4s each, a 0.6s crossfade */
+.hero__screen--home { animation: heroSwap 9.2s ease-in-out infinite; }
+@keyframes heroSwap {
+  0%, 43.5%  { opacity: 1; }
+  50%, 93.5% { opacity: 0; }
+  100%       { opacity: 1; }
 }
 
 /* the faded blue glow, kept from the reference — it sits behind the
@@ -854,7 +927,9 @@ a, button, .nv, [role="button"],
 
 /* separates a new sub-block of "02. Research" from the one above it —
    noticeably less than the gap between numbered sections */
-.research-sub { margin-top: 56px; }
+/* one gap between every sub-section of a numbered section */
+:root { --sub-gap: clamp(76px, 7.5vw, 104px); }
+.research-sub { margin-top: var(--sub-gap); }
 
 /* --- user survey: chart + findings side by side --- */
 
@@ -947,15 +1022,16 @@ a, button, .nv, [role="button"],
        the donut on the right, the layout of an intro block with a hero visual --- */
 .survey {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(40px, 6vw, 96px);
-  align-items: center;
-  margin-top: 56px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+  gap: clamp(40px, 5vw, 80px);
+  align-items: center;   /* the cards sit centred against the whole text column */
+  margin-top: var(--sub-gap);
 }
 .survey__rule { height: 1px; border: 0; background: var(--hair); margin: 28px 0; }
 /* the stat leads in grey and lands in ink, in a step-up size */
 .survey__stat {
   font-size: clamp(19px, 1.8vw, 23px);
+  font-style: italic;
   line-height: 1.4;
   font-weight: 500;
   -webkit-text-stroke: .015em currentColor;
@@ -965,24 +1041,142 @@ a, button, .nv, [role="button"],
 }
 .survey__stat strong { color: var(--ink); -webkit-text-stroke: .015em currentColor; }
 
-.survey__cards { position: relative; aspect-ratio: 1 / .92; }
+.survey__cards { position: relative; aspect-ratio: 1 / .98; }
 .survey__card {
   position: absolute;
-  width: 56%;
+  width: 64%;
   height: auto;
   border-radius: 14px;
+  /* no forced compositing layer: as a layer the card was painted once as a
+     small bitmap and then rotated, which softened the text. Painted directly,
+     the rotated text is drawn sharp at its real size */
   box-shadow: var(--lift);
   cursor: var(--cur-zoom-in);
 }
-/* the back page tilts right and up, the front page left and down, overlapping by about a third */
-.survey__card--back  { right: 3%; top: 0;   rotate: 6deg; }
-.survey__card--front { left: 3%;  top: 13%; rotate: -5deg; }
+/* a layered deck: both pages slanted the same way (a flat 2D slant rather than a
+   3D turn, which the browser would flatten into a soft bitmap; this keeps the
+   text sharp), the back one set a
+   little behind, to the left and lower, so its left and bottom edges peek out */
+.survey__card--front { left: 24%; top: 3%; transform: skewY(-3deg) scaleX(.97); z-index: 1; }
+.survey__card--back  { left: 15%; top: 8%; transform: skewY(-3deg) scaleX(.97); }
 
-.survey__chart { margin: clamp(28px, 3vw, 40px) auto 0; }
+/* the results sit under the findings in the text column, on its left edge:
+   a donut and its legend side by side, no card */
+.survey__chart {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--hair);
+}
+.survey__chart .donut { width: 112px; flex: none; }
+.survey__chart .donut__ring {
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+}
+.survey__chart .donut__big { font-size: 21px; }
+.survey__chart .donut__small { margin-top: 3px; font-size: 7.5px; letter-spacing: .1em; }
+.survey__chart .donut-legend { margin: 0; gap: 9px; min-width: 170px; }
+.survey__chart .donut-legend li { font-size: 14px; gap: 10px; }
 
 @media (max-width: 760px) {
   .survey { grid-template-columns: 1fr; }
 }
+
+/* --- the survey pages, rebuilt in HTML from the live Google Form so the text is
+       sharp at any size: Lexend, the form's cream page and gold accent --- */
+.gf {
+  container-type: inline-size;
+  overflow: hidden;
+  aspect-ratio: 649 / 825;
+  background: #F7F3E9;
+  font-family: "Lexend", -apple-system, "Segoe UI", sans-serif;
+  color: #202124;
+  text-align: left;
+  --u: calc(100cqw / 649);
+}
+.gf p { margin: 0; }
+.gf__banner {
+  height: calc(162 * var(--u));
+  margin: 0 calc(4 * var(--u));
+  border-radius: calc(8 * var(--u)) calc(8 * var(--u)) 0 0;
+  background: url("images/survey/banner.png") center / cover;
+}
+.gf__box {
+  margin: calc(12 * var(--u)) calc(4 * var(--u)) 0;
+  padding: calc(24 * var(--u)) calc(24 * var(--u)) calc(20 * var(--u));
+  background: #fff;
+  border: calc(1 * var(--u)) solid #DADCE0;
+  border-radius: calc(8 * var(--u));
+}
+.gf__box--title { border-top: calc(10 * var(--u)) solid #C7B269; padding-top: calc(18 * var(--u)); padding-bottom: 0; }
+.gf__box--cut { margin-top: calc(-14 * var(--u)); border-top: 0; border-radius: 0 0 calc(8 * var(--u)) calc(8 * var(--u)); padding-top: 0; }
+.gf__title { font-size: calc(32 * var(--u)); line-height: 1.35; margin-bottom: calc(12 * var(--u)) !important; }
+.gf__desc { font-size: calc(14.6 * var(--u)); line-height: 1.55; }
+.gf__desc--gap { margin-top: calc(44 * var(--u)) !important; }
+.gf__desc b, .gf__opt b { font-weight: 600; }
+.gf__req {
+  margin: calc(22 * var(--u)) calc(-24 * var(--u)) 0 !important;
+  padding: calc(14 * var(--u)) calc(24 * var(--u));
+  border-top: calc(1 * var(--u)) solid #DADCE0;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: calc(14 * var(--u));
+  color: #D93025;
+}
+.gf__q { font-size: calc(16 * var(--u)); line-height: 1.5; margin-bottom: calc(14 * var(--u)) !important; }
+.gf__q span { color: #D93025; }
+.gf__opt {
+  position: relative;
+  padding: calc(9 * var(--u)) 0 calc(9 * var(--u)) calc(32 * var(--u));
+  font-size: calc(14.6 * var(--u));
+  line-height: 1.45;
+}
+.gf__opt::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: calc(9 * var(--u));
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  box-sizing: border-box;
+  border: calc(2 * var(--u)) solid #5F6368;
+}
+.gf__opt--radio::before { border-radius: 50%; }
+.gf__opt--check::before { width: calc(18 * var(--u)); height: calc(18 * var(--u)); border-radius: calc(2 * var(--u)); top: calc(10 * var(--u)); }
+.gf__opt--sys { font-family: Roboto, Arial, sans-serif; font-size: calc(14 * var(--u)); color: #3C4043; }
+.gf__opt--other { display: flex; align-items: flex-end; gap: calc(16 * var(--u)); }
+.gf__line { flex: 1; height: 0; border-bottom: calc(1 * var(--u)) solid #DADCE0; margin-bottom: calc(4 * var(--u)); }
+
+.gf__box--first { margin-top: calc(6 * var(--u)); }
+/* the 1–5 linear scale: numbers over the circles, a label at each end */
+.gf__scale {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(5, calc(34 * var(--u))) minmax(0, 1fr);
+  align-items: center;
+  justify-items: center;
+  row-gap: calc(18 * var(--u));
+  column-gap: calc(4 * var(--u));
+  margin-top: calc(18 * var(--u));
+  font-size: calc(14 * var(--u));
+}
+.gf__scale-end { font-size: calc(14 * var(--u)); line-height: 1.3; text-align: center; }
+.gf__scale i {
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  box-sizing: border-box;
+  border: calc(2 * var(--u)) solid #5F6368;
+  border-radius: 50%;
+}
+/* a long question keeps its asterisk at the far right, as the form does */
+.gf__q--split { display: flex; justify-content: space-between; gap: calc(40 * var(--u)); }
+
+/* on the page the form is drawn 1.5x larger inside the card (a narrower, phone-width
+   view of it) so its text is readable while scanning; the zoom view keeps the full width */
+.survey__card.gf { --u: calc(100cqw / 430); }
+
+/* opened in the zoom view: the same card, drawn large */
+.lightbox .gf--big { width: min(80vw, calc(88vh * 649 / 825)); border-radius: 14px; box-shadow: 0 24px 60px -30px rgba(20,22,20,.35); }
 
 /* --- user interviews: three consistent themes --- */
 
@@ -1022,6 +1216,16 @@ a, button, .nv, [role="button"],
   margin: 0;
 }
 
+/* every theme grid (user interviews, usability testing): dark title and black icon, like Mobile / Desktop */
+.themes .theme__title {
+  font-weight: 500;
+  -webkit-text-stroke: .035em currentColor;
+  background: none;
+  color: var(--ink);
+  gap: 8px;
+}
+.themes .theme__icon { width: 18px; height: 18px; fill: #111; -webkit-text-stroke: 0; }
+
 @media (max-width: 700px) {
   .themes { grid-template-columns: 1fr; }
 }
@@ -1032,20 +1236,24 @@ a, button, .nv, [role="button"],
 
 .pin-board-wrap {
   border-radius: 10px;
-  padding: 0 0 clamp(14px, 2.4vw, 24px);   /* the caption sits 14px above, as the lo-fi captions do */
-  margin: 0 0 56px;
+  padding: 0;   /* the caption sits 14px above, as the lo-fi captions do */
+  margin: 0;
 }
 
 /* no gap of our own: each note's SVG already carries ~10px of
    transparent margin on every side for its drop shadow, which is
    exactly the spacing the original board had between notes */
+/* four narrower columns spread edge to edge. Each note SVG carries 10/149 of
+   empty margin on each side; the board's small negative margins cancel that
+   on the outer notes so their coloured edges meet the text column's edges
+   (worked out for 20%-wide columns) */
 .pin-board {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: start;
-  column-gap: 4%;
-  margin: 0 -1.52%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 0 -1.379%;
 }
+.pin-board > .pin-col { width: 20%; }
 
 .pin-col { display: flex; flex-direction: column; }
 
@@ -1057,7 +1265,8 @@ a, button, .nv, [role="button"],
 }
 
 @media (max-width: 900px) {
-  .pin-board { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; column-gap: 0; }
+  .pin-board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+  .pin-board > .pin-col { width: auto; }
 }
 
 @media (max-width: 520px) {
@@ -1097,15 +1306,39 @@ a, button, .nv, [role="button"],
   margin-top: 8px;
 }
 
-.versus__art {
+/* the divider: a thin line fading light blue to slate, with a ringed "vs." badge */
+.versus__mark {
   position: absolute;
-  top: 50%;
+  top: 0;
+  bottom: 0;
   left: 50%;
-  width: clamp(430px, 54vw, 660px);   /* was 560–860px */
-  height: auto;
-  translate: -50% -50%;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
   pointer-events: none;
   z-index: 0;
+}
+.versus__mark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  translate: -50% 0;
+  background: linear-gradient(180deg, transparent, #96CDFA 25%, #597994 75%, transparent);
+}
+.versus__badge {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #96CDFA, 0 8px 24px rgba(89,121,148,.25);
+  font: italic 400 22px/1 var(--serif);
+  color: #597994;
 }
 
 .versus__side { position: relative; z-index: 1; }
@@ -1174,7 +1407,7 @@ a, button, .nv, [role="button"],
 
 @media (max-width: 700px) {
   .versus { grid-template-columns: 1fr; gap: 32px; min-height: 0; padding-top: 0; }
-  .versus__art { display: none; }
+  .versus__mark { display: none; }
   .versus__side--left, .versus__side--right { grid-column: 1; justify-self: start; padding: 0; }
 }
 
@@ -1348,7 +1581,7 @@ a, button, .nv, [role="button"],
   border-radius: 0;
   padding: 0;
   box-shadow: none;
-  filter: drop-shadow(0 0 10px rgba(0,0,0,.25)) drop-shadow(0 0 26px rgba(20,22,20,.18));
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.22)) drop-shadow(0 0 14px rgba(20,22,20,.14));
 }
 
 /* --- lo-fi sketches: my sheet with callouts, the team's beside it --- */
@@ -1471,7 +1704,7 @@ a, button, .nv, [role="button"],
   width: 100%;          /* stays inside the reading column, like the lo-fi sketches panel */
   margin-left: 0;
   --mf-gap: clamp(24px, 3vw, 44px);       /* the one column gap for every row under Home Page */
-  --mf-sec: clamp(64px, 8vw, 104px);      /* the one gap between its sections */
+  --mf-sec: var(--sub-gap);               /* the same gap as between every sub-section */
 }
 .midfi-frame .syn-sub { margin-bottom: 56px; }   /* air between the title and the eyebrow */
 
@@ -1531,6 +1764,8 @@ a, button, .nv, [role="button"],
   border-radius: 0;
   padding-left: 0;
   padding-right: 0;
+  padding-top: 0;      /* no panel any more, so no inner padding to add to the gaps */
+  padding-bottom: 0;
 }
 
 /* the iterations and the preferences share one 900px column; a hairline
@@ -1681,14 +1916,14 @@ a, button, .nv, [role="button"],
 .pref__title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin: 0 0 8px;
   font-size: 15px;
   font-weight: 500;
-  -webkit-text-stroke: .25px currentColor;   /* the About / Ideas / Resume weight, scaled to 15px */
+  -webkit-text-stroke: .035em currentColor;   /* semibold, like the Mobile / Desktop titles */
   color: var(--ink);
 }
-.pref__title .iter-icon { flex: none; width: 18px; height: 18px; }
+.pref__title .iter-icon { flex: none; width: 18px; height: 18px; fill: #111; -webkit-text-stroke: 0; }   /* black, like theirs */
 .pref__body { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }   /* same as the body copy */
 .pref-num { font-weight: 600; color: #000; }   /* the iteration numbers stand out in black */
 
@@ -1699,7 +1934,7 @@ a, button, .nv, [role="button"],
 }
 
 /* --- community events: the same layout as the home page block --- */
-.midfi-frame--ce { margin-top: clamp(96px, 11vw, 150px) !important; }
+.midfi-frame--ce { margin-top: var(--sub-gap) !important; }
 
 /* 1: .01's banner over .03's */
 .pref-crop--ce01 { width: 90%; left: 3%;  top: 6%; z-index: 1; }
@@ -1727,7 +1962,7 @@ a, button, .nv, [role="button"],
 .mark--ask::before { content: "?"; font-size: 12px; }
 
 /* --- the rest of the app: three small pairs of screens, no callouts --- */
-.more { margin: clamp(96px, 11vw, 150px) 0 0; }
+.more { margin: var(--sub-gap) 0 0; }
 .more .more__eyebrow { line-height: 16px; margin: 0 0 10px; }
 .more__cue { margin: 0 0 clamp(28px, 3.5vw, 44px); }
 
@@ -1765,7 +2000,7 @@ a, button, .nv, [role="button"],
 }
 
 /* --- usability testing: the same theme grid as the user interviews --- */
-.usab-cue { margin-top: clamp(96px, 11vw, 150px); }
+.usab-cue { margin-top: var(--sub-gap); }
 .usab { margin-top: 8px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .usab .theme { grid-column: span 2; }
 /* the last two (Photo Map, Profile) centred under the first three */
@@ -1776,17 +2011,54 @@ a, button, .nv, [role="button"],
   .usab .theme, .usab .theme:nth-child(4), .usab .theme:nth-child(5) { grid-column: auto; }
 }
 
+/* --- 05 hi-fi: text on the left; Typography and Color as two white cards,
+       overlapping and slightly angled, on the right; Components in a panel below --- */
+.dsx {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  --row-gap: clamp(14px, 1.6vw, 20px);
+  column-gap: clamp(36px, 4vw, 64px);
+  row-gap: 0;
+  align-items: start;
+}
+/* the first text block is centred against Typography + Color */
+.dsx__text--top { align-self: center; }
+.dsx__text--top .research__body { margin-bottom: 14px; }
+.dsx__text--top .zoom-hint { margin-bottom: 0; }
+/* a short rule under the first text block, then the components sentence and strip
+   running the full width */
+.dsx__rule { grid-column: 1; height: 1px; border: 0; background: var(--hair); margin: 36px 0; }
+.dsx__text--bottom { grid-column: 1 / -1; }
+.dsx__text--bottom .research__body { margin-bottom: 14px; }
+.dsx .dsx__comp { grid-column: 1 / -1; margin-top: clamp(24px, 3vw, 36px); }
+.ds-comp { display: flex; align-items: flex-start; gap: clamp(20px, 2.6vw, 36px); cursor: var(--cur-zoom-in); }
+.ds-comp__crop { flex-basis: 0; min-width: 0; height: auto; }
+.dsx__text .research__body:has(+ .zoom-hint) { margin-bottom: 14px; }
+.dsx__text .zoom-hint { margin-bottom: 0; }
+/* the right column: Typography and Color side by side (columns follow each SVG's
+   width, so both show at one scale), Components across both underneath */
+.dsx__pair {
+  display: grid;
+  grid-template-columns: 280fr 265fr;
+  gap: var(--row-gap);
+  margin-top: clamp(24px, 3vw, 40px);   /* dropped a little below the section number, as the survey cards sit */
+}
+@media (max-width: 760px) {
+  .dsx { grid-template-columns: 1fr; }
+  .dsx__rule { display: none; }
+  .ds-comp { flex-wrap: wrap; }
+  .ds-comp__crop { flex-basis: 40%; }
+}
+
 /* --- 05 hi-fi: the design system, one panel per part (the feature-box panel) --- */
 /* Typography and Color share the first row (columns follow
    each SVG's width, so both show at the same scale), Components gets its own */
 .ds {
   display: grid;
-  grid-template-columns: 280fr 265fr;
+  grid-template-columns: 1fr;
   gap: clamp(20px, 2.6vw, 36px);
-  margin: clamp(28px, 4vw, 48px) 0 0;   /* the full reading column, edge to edge */
+  margin: clamp(40px, 5vw, 64px) 0 0;
 }
-.ds__part:nth-child(3) { grid-column: 1 / -1; }
-.ds__part:nth-child(3) .ds__card img { max-width: 420px; margin: 0 auto; }
 .ia-grid img { cursor: var(--cur-zoom-in); }
 .ds__part {
   margin: 0;
@@ -1877,7 +2149,7 @@ a, button, .nv, [role="button"],
 .final-phone {
   cursor: var(--cur-zoom-in);
   /* one shadow for every final-iteration phone (the SVGs' own shadows were removed) */
-  filter: drop-shadow(0 0 10px rgba(0,0,0,.25)) drop-shadow(0 0 26px rgba(20,22,20,.18));
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.22)) drop-shadow(0 0 14px rgba(20,22,20,.14));
 }
 
 /* =========================== BACK TO TOP =========================== */
@@ -1934,6 +2206,26 @@ a, button, .nv, [role="button"],
   margin: 0 auto 22px;
 }
 
+/* =========================== BACK ARROW =========================== */
+/* a quiet line arrow pinned to the top-left of the page, just right of the nav;
+   it follows the nav as it opens and closes */
+.page-back {
+  position: fixed;
+  top: clamp(18px, 2.2vw, 28px);
+  left: calc(var(--nav-w) + clamp(18px, 2.2vw, 28px));
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  width: 28px;   /* a tight hover circle around the 20px arrow */
+  height: 28px;
+  border-radius: 50%;
+  color: var(--gray);
+  transition: color .2s ease, background .2s ease, left .5s cubic-bezier(.22,1,.36,1);
+}
+.nav--open ~ .page-back { left: calc(196px + clamp(18px, 2.2vw, 28px)); }
+.page-back:hover { color: var(--ink); background: rgba(35,38,31,.05); }
+.page-back svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
 /* =========================== TRACKER =========================== */
 
 /* fixed on the right: a tick per section, the current one longer and
@@ -1974,9 +2266,7 @@ a, button, .nv, [role="button"],
   max-width: 0;
   overflow: hidden;
   padding: 3px 0;
-  border-radius: 4px;
-  background: var(--paper);
-  pointer-events: none;
+  pointer-events: none;   /* plain text: no box behind the label */
   transition: opacity .22s ease, translate .3s cubic-bezier(.22,1,.36,1),
               max-width .35s cubic-bezier(.22,1,.36,1), padding .35s cubic-bezier(.22,1,.36,1);
 }
@@ -1997,12 +2287,12 @@ a, button, .nv, [role="button"],
 .tracker__item.is-soon .tracker__tick { background: #E2E3E0; }
 
 /* hover the rail: all labels slide in */
-.tracker:hover .tracker__label { opacity: 1; translate: 0 0; max-width: 360px; padding: 3px 8px; pointer-events: auto; }
+.tracker:hover .tracker__label { opacity: 1; translate: 0 0; max-width: 360px; padding: 3px 10px 3px 0; pointer-events: auto; }
 .tracker__item:not(.is-soon):hover { color: var(--ink); }
 
 /* on very wide screens there's room to keep the current label showing */
 @media (min-width: 1700px) {
-  .tracker__item.is-active .tracker__label { opacity: 1; translate: 0 0; max-width: 360px; padding: 3px 8px; }
+  .tracker__item.is-active .tracker__label { opacity: 1; translate: 0 0; max-width: 360px; padding: 3px 10px 3px 0; }
 }
 
 @media (max-width: 900px) {
@@ -2069,7 +2359,17 @@ a, button, .nv, [role="button"],
 
 <main class="main">
 
-  <header class="hero" aria-hidden="true"></header>
+  <header class="hero">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <!-- the hand photo with its screen cut out; the two app screens sit behind
+         the cut-out and take turns showing through it -->
+    <div class="hero__hand" aria-hidden="true">
+      <img class="hero__screen hero__screen--map" src="images/hero/screen-map.jpg" width="600" height="1301" alt="">
+      <img class="hero__screen hero__screen--home" src="images/hero/screen-home.jpg" width="600" height="1301" alt="">
+      <img class="hero__frame" src="images/hero/hand-frame.png" width="945" height="1239" alt="">
+    </div>
+    <a class="hero__proto" href="https://www.figma.com/proto/wPXX58P0pZhD61IaQTYuFi/Pikspot-Prototype?page-id=0%3A1&amp;node-id=1-4685&amp;viewport=1903%2C1175%2C0.17&amp;t=w1KX134RMH0PaIUD-1&amp;scaling=scale-down&amp;content-scaling=fixed&amp;starting-point-node-id=1%3A5776" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.8v6.4l5.2-3.2z"/></svg>View prototype</a>
+  </header>
 
   <section class="meta" id="overview">
    <div class="meta__intro">
@@ -2196,39 +2496,80 @@ a, button, .nv, [role="button"],
       </div>
     </div>
 
-    <p class="prompt__cue">Competitive Analysis Results</p>
+    <p class="prompt__cue research-sub">Competitive Analysis Results</p>
     <h3 class="research__heading">So&hellip; what does each platform have to offer?</h3>
-    <p class="research__body">Every successful product has one standout feature. With so many photo apps, ours needed one too, but what would set us apart? That question carried us from research into ideation.</p>
+    <p class="research__body">Every successful product has one standout feature. Pinterest curates, Flickr protects quality, VSCO sets a mood, and Instagram brings the audience, yet none of them helps you find the place where a great photo happens. With so many photo apps, ours needed one too, but what would set us apart? That question carried us from research into ideation.</p>
 
     <!-- user surveys: the text on the left; the survey itself and its results on the right -->
     <div class="survey">
       <div class="survey__text">
-        <p class="prompt__cue">User Surveys</p>
+        <p class="prompt__cue">User Surveys / Results</p>
         <h3 class="research__heading">Spontaneity beats planning</h3>
         <p class="research__body">To understand how people discover photo spots, we surveyed 50+ individuals aged 18&ndash;25 about their inspiration sources, equipment, and sharing habits. You can check out our survey by clicking <a class="prompt__accent" href="https://forms.gle/9ks4kvUhDHP4RTM69" target="_blank" rel="noopener">here!</a></p>
         <hr class="survey__rule">
         <p class="survey__stat">67% discover photo spots spontaneously, <strong>and only 20% plan ahead.</strong></p>
         <p class="research__body">73% explore in person rather than through social media. <strong>Key insight:</strong> spontaneous, real-world discovery feels more exciting than searching&nbsp;online.</p>
+        <div class="survey__chart">
+      <figure class="donut" role="img" aria-label="Donut chart: 67% of respondents explore spontaneously, 20% plan ahead, 13% other.">
+        <div class="donut__ring"></div>
+        <figcaption class="donut__center">
+          <span class="donut__big">67%</span>
+          <span class="donut__small">Spontaneous</span>
+        </figcaption>
+      </figure>
+      <ul class="donut-legend">
+        <li><span class="donut-legend__sw donut-legend__sw--s"></span>Spontaneous<b>67%</b></li>
+        <li><span class="donut-legend__sw donut-legend__sw--p"></span>Planned<b>20%</b></li>
+        <li><span class="donut-legend__sw donut-legend__sw--o"></span>Other<b>13%</b></li>
+      </ul>
+        </div>
       </div>
 
       <div class="survey__media">
         <div class="survey__cards">
-          <img class="survey__card survey__card--back" src="images/survey/survey-2.png" width="646" height="822" loading="lazy" alt="Photo Spots Survey questions: photography experience, equipment used, and what people mainly photograph">
-          <img class="survey__card survey__card--front" src="images/survey/survey-1.png" width="649" height="825" loading="lazy" alt="Photo Spots Survey: introduction for photographers of all skill levels, taking under 5 minutes">
+        <div class="survey__card survey__card--back gf" role="img" aria-label="Photo Spots Survey questions: how important location is (1 to 5), how people prefer to find photo spots, and whether they share their favorite spots">
+          <div class="gf__box gf__box--first">
+            <p class="gf__q">How important is location to you when taking photos? <span>*</span></p>
+            <div class="gf__scale">
+              <span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span></span>
+              <span class="gf__scale-end">Not at all important</span><i></i><i></i><i></i><i></i><i></i><span class="gf__scale-end">Very important</span>
+            </div>
+          </div>
+          <div class="gf__box">
+            <p class="gf__q">How do you prefer to find photo spots? <span>*</span></p>
+            <p class="gf__opt gf__opt--radio">I prefer to plan and find photo spots ahead of time</p>
+            <p class="gf__opt gf__opt--radio">I prefer to explore and find spots spontaneously</p>
+            <p class="gf__opt gf__opt--radio">I don&rsquo;t usually look for photo spots</p>
+          </div>
+          <div class="gf__box">
+            <p class="gf__q gf__q--split">Do you usually share the locations of your favorite photo spots with others? <span>*</span></p>
+            <p class="gf__opt gf__opt--radio">Yes, I always share location info</p>
+            <p class="gf__opt gf__opt--radio">I share sometimes, depending on the spot</p>
+            <p class="gf__opt gf__opt--radio">I only share with close friends or other photographers I trust</p>
+            <p class="gf__opt gf__opt--radio">No, I prefer to keep my favorite spots private</p>
+            <p class="gf__opt gf__opt--radio">It depends on how popular or fragile the location is</p>
+          </div>
         </div>
-        <div class="survey-results__chart survey__chart">
-        <figure class="donut" role="img" aria-label="Donut chart: 67% of respondents explore spontaneously, 20% plan ahead, 13% other.">
-          <div class="donut__ring"></div>
-          <figcaption class="donut__center">
-            <span class="donut__big">67%</span>
-            <span class="donut__small">Spontaneous</span>
-          </figcaption>
-        </figure>
-        <ul class="donut-legend">
-          <li><span class="donut-legend__sw donut-legend__sw--s"></span>Spontaneous<b>67%</b></li>
-          <li><span class="donut-legend__sw donut-legend__sw--p"></span>Planned<b>20%</b></li>
-          <li><span class="donut-legend__sw donut-legend__sw--o"></span>Other<b>13%</b></li>
-        </ul>
+        <div class="survey__card survey__card--front gf" role="img" aria-label="Photo Spots Survey: introduction for photographers of all skill levels, taking under 5 minutes, then email and age questions">
+          <div class="gf__banner"></div>
+          <div class="gf__box gf__box--title">
+            <p class="gf__title">Photo Spots Survey</p>
+            <p class="gf__desc">Hello! We&rsquo;re a team of designers hoping to gain insight on how photographers engage in their craft and the digital platforms that facilitate them, with the goal of designing an application for photographers.</p>
+            <p class="gf__desc gf__desc--gap">This survey is for <b>all skill levels</b> of photographers!<br>It should take <b>less than 5 minutes</b> to complete. Thank you for your time and input!</p>
+            <p class="gf__req">* Indicates required question</p>
+          </div>
+          <div class="gf__box">
+            <p class="gf__q">Email <span>*</span></p>
+            <p class="gf__opt gf__opt--check gf__opt--sys">Record <b>erlo@ucdavis.edu</b> as the email to be included with my response</p>
+          </div>
+          <div class="gf__box">
+            <p class="gf__q">What is your age? <span>*</span></p>
+            <p class="gf__opt gf__opt--radio">Under 18</p>
+            <p class="gf__opt gf__opt--radio">18-25 years</p>
+            <p class="gf__opt gf__opt--radio">26-39 years</p>
+            <p class="gf__opt gf__opt--radio">40-64 years</p>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -2262,7 +2603,8 @@ a, button, .nv, [role="button"],
     <p class="research__body">The first big call was mobile or desktop. Research showed people prefer spontaneous, in-person discovery, which is exactly where mobile shines. Desktop is better for big screens and editing, but mobile lets photographers explore, shoot, and share in the moment.</p>
 
     <div class="versus">
-      <img class="versus__art" src="images/mobilevsdesktop.svg" width="719" height="714" loading="lazy" alt="">
+      <!-- the divider: a fading gradient line with a ringed "vs." badge -->
+      <div class="versus__mark" aria-hidden="true"><span class="versus__badge">vs.</span></div>
       <div class="versus__side versus__side--left">
         <h3 class="versus__title versus__title--plain"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 012 2v16a2 2 0 01-2 2H8a2 2 0 01-2-2V4a2 2 0 012-2zm4 17.2a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zM8 5v12h8V5z"/></svg>Mobile</h3>
         <ul class="versus__list">
@@ -2363,7 +2705,7 @@ a, button, .nv, [role="button"],
 
   <section class="research" id="midfi">
     <p class="prompt__label">04. Mid-Fi Prototyping &amp; Usability Testing</p>
-    <p class="prompt__cue">Mid-Fidelity Prototypes &amp; Usability Testing</p>
+    <p class="prompt__cue">My Pages, Iterated</p>
     <h2 class="research__heading">The app coming to life</h2>
     <p class="research__body">After everyone explored wireframes across every key page and we settled on one consistent design, I took ownership of the <strong>home</strong> and <strong>community events</strong> pages, working through many layouts to sharpen <strong>intuitive visual interactions</strong> and a clear <strong>information</strong> and <strong>visual hierarchy</strong>.</p>
 
@@ -2591,7 +2933,7 @@ a, button, .nv, [role="button"],
             <linearGradient id="cl5" gradientUnits="userSpaceOnUse" x1="617" y1="0" x2="664.7" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
             <linearGradient id="cl6" gradientUnits="userSpaceOnUse" x1="340" y1="0" x2="450" y2="0"><stop stop-color="#96CDFA"/><stop offset="1" stop-color="#597994"/></linearGradient>
           </defs>
-          <path d="M349.5 100L349.5 56A6 6 0 0 0 343.5 50L171.5 50A6 6 0 0 0 165.5 56L165.5 149A3 3 0 0 1 162.5 152L159.5 152" stroke="url(#cl1)"/>
+          <path d="M349.5 100L349.5 62A6 6 0 0 0 343.5 56L171.5 56A6 6 0 0 0 165.5 62L165.5 149A3 3 0 0 1 162.5 152L159.5 152" stroke="url(#cl1)"/>
           <path d="M184 239L171.5 239A6 6 0 0 0 165.5 245L165.5 339A6 6 0 0 1 159.5 345L153.1 345" stroke="url(#cl2)"/>
           <path d="M184 470L171.5 470A6 6 0 0 0 165.5 476L165.5 539A6 6 0 0 1 159.5 545L148.6 545" stroke="url(#cl3)"/>
           <path d="M622 420.6L644.5 420.6A6 6 0 0 0 650.5 414.6L650.5 292.8A4.2 4.2 0 0 1 654.7 288.6L658.9 288.6" stroke="url(#cl4)"/>
@@ -2675,29 +3017,45 @@ a, button, .nv, [role="button"],
 
   <section class="research" id="hifi">
     <p class="prompt__label">05. Hi-Fi Prototyping</p>
-    <p class="prompt__cue">Design System</p>
-    <h2 class="research__heading">Final touches to the UI</h2>
-    <p class="research__body">To keep every page consistent, we built a design system that standardized <strong>typography</strong>, <strong>color</strong> and <strong>components</strong>. Albert Sans keeps text clean and easy to read, a simple palette lets the photos stand out, and <strong>reusable components</strong> kept the team in sync. I built my high-fidelity screens on this foundation for a <strong>polished</strong> experience.</p>
-
-    <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
-
-    <div class="ds">
-      <figure class="ds__part">
-        <p class="midfi-eyebrow ds__eyebrow">Typography</p>
-        <div class="ds__card"><img src="images/hifi/ds-1.svg" width="280" height="350" loading="lazy" alt="Typography: Albert Sans in four styles, Title/Header 1 bold 24px, Header 2 semibold 20px, Body regular 16px, Caption regular 12px"></div>
-      </figure>
-      <figure class="ds__part">
-        <p class="midfi-eyebrow ds__eyebrow">Color</p>
-        <div class="ds__card"><img src="images/hifi/ds-2.svg" width="265" height="349" loading="lazy" alt="Color: blue #35A3FC primary, off-black #353935 body text, off-white #F8F8F8 background, gray #C3D6E4 helper text"></div>
-      </figure>
-      <figure class="ds__part">
+    <!-- row 1: text (centred) beside Typography + Color; a short rule under the
+         text; then the components sentence and the Components strip, full width -->
+    <div class="dsx">
+      <div class="dsx__text dsx__text--top">
+        <p class="prompt__cue">Design System</p>
+        <h2 class="research__heading">Final touches to the UI</h2>
+        <p class="research__body">To keep every page consistent, we built a design system that standardized <strong>typography</strong>, <strong>color</strong> and <strong>components</strong>. Albert Sans keeps text clean and easy to read. We kept the palette to a <strong>small set of colors</strong> on purpose, so the photos people post, and their visual quality, stay the focus.</p>
+        <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
+      </div>
+      <div class="dsx__pair">
+          <figure class="ds__part">
+            <p class="midfi-eyebrow ds__eyebrow">Typography</p>
+            <div class="ds__card"><img src="images/hifi/ds-1.svg" width="280" height="350" loading="lazy" alt="Typography: Albert Sans in four styles, Title/Header 1 bold 24px, Header 2 semibold 20px, Body regular 16px, Caption regular 12px"></div>
+          </figure>
+          <figure class="ds__part">
+            <p class="midfi-eyebrow ds__eyebrow">Color</p>
+            <div class="ds__card"><img src="images/hifi/ds-2.svg" width="265" height="349" loading="lazy" alt="Color: blue #35A3FC primary, off-black #353935 body text, off-white #F8F8F8 background, gray #C3D6E4 helper text"></div>
+          </figure>
+      </div>
+      <hr class="dsx__rule">
+      <div class="dsx__text dsx__text--bottom">
+        <p class="research__body"><strong>Reusable components</strong> kept the team in sync: a five-tab <strong>nav bar</strong> (home, map, upload, events, profile), <strong>page headers</strong> with back and save actions, <strong>filter chips</strong> for Near You, Friends and Global, <strong>Active / Past toggles</strong>, and one set of icons and buttons. I built my high-fidelity screens on this foundation for a <strong>polished</strong> experience.</p>
+      </div>
+      <figure class="ds__part dsx__comp">
         <p class="midfi-eyebrow ds__eyebrow">Components</p>
-        <div class="ds__card"><img src="images/hifi/ds-3.svg" width="298" height="412" loading="lazy" alt="Components: nav bars, page headers, filter chips, toggles, icons and buttons"></div>
+        <div class="ds-comp" data-src="images/hifi/ds-3.svg" role="img" aria-label="Components: nav bars, page headers, filter chips, toggles, icons and buttons">
+          <svg class="ds-comp__crop" style="flex-grow:132" viewBox="35 39 132 162" aria-hidden="true"><image href="images/hifi/ds-3.svg" x="28" y="34" width="298" height="412"/></svg>
+          <svg class="ds-comp__crop" style="flex-grow:132" viewBox="35 211 132 245" aria-hidden="true"><image href="images/hifi/ds-3.svg" x="28" y="34" width="298" height="412"/></svg>
+          <svg class="ds-comp__crop" style="flex-grow:144" viewBox="178 37 144 212" aria-hidden="true"><image href="images/hifi/ds-3.svg" x="28" y="34" width="298" height="412"/></svg>
+          <svg class="ds-comp__crop" style="flex-grow:136" viewBox="178 250 136 204" aria-hidden="true"><image href="images/hifi/ds-3.svg" x="28" y="34" width="298" height="412"/></svg>
+        </div>
       </figure>
     </div>
   </section>
 
 </main>
+
+<!-- back to the work page: fixed at the top left, beside the nav -->
+<a class="page-back" href="../index.html?static" aria-label="Back to all work"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
 
 <!-- reading tracker: entries with no matching section yet show as "coming soon" -->
 <nav class="tracker" aria-label="Case study sections">
@@ -2798,7 +3156,7 @@ a, button, .nv, [role="button"],
 <script>
   /* user flows and lo-fi sketches: click one to view it large; click, or press Esc, to close */
   (function () {
-    var imgs = document.querySelectorAll('.flow-grid img, .lofi__card img, .iter img, .final-phone, .more__pair img, .ds img, .ia-grid img, .survey__card');
+    var imgs = document.querySelectorAll('.flow-grid img, .lofi__card img, .iter img, .final-phone, .more__pair img, .dsx__pair img, .ds-comp, .ia-grid img, .survey__card');
     if (!imgs.length) return;
     var box = null;
     function close() {
@@ -2812,10 +3170,16 @@ a, button, .nv, [role="button"],
         box = document.createElement('div');
         box.className = img.matches('.final-phone, .more__pair img') ? 'lightbox lightbox--phone' : 'lightbox';
         box.setAttribute('role', 'dialog');
-        box.setAttribute('aria-label', img.alt);
-        var big = document.createElement('img');
-        big.src = img.src;
-        big.alt = img.alt;
+        box.setAttribute('aria-label', img.alt || img.getAttribute('aria-label'));
+        var big;
+        if (img.tagName === 'IMG' || img.dataset.src) {
+          big = document.createElement('img');
+          big.src = img.src || img.dataset.src;
+          big.alt = img.alt || img.getAttribute('aria-label');
+        } else {
+          big = img.cloneNode(true);
+          big.className = 'gf gf--big';
+        }
         box.appendChild(big);
         box.addEventListener('click', close);
         document.body.appendChild(box);
