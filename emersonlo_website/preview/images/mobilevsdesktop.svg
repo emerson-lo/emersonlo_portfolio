@@ -1,8 +1,8 @@
 <svg width="719" height="714" viewBox="0 0 719 714" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M286 181H432V534H286V181Z" fill="url(#paint0_linear_1303_2133)"/>
 <ellipse cx="359" cy="349" rx="50" ry="125" fill="#ABD2F0"/>
-<ellipse cx="286" cy="357.5" rx="50" ry="176.5" fill="#F2F2F0"/>
-<ellipse cx="432" cy="357.5" rx="50" ry="176.5" fill="#F2F2F0"/>
+<ellipse cx="286" cy="357.5" rx="50" ry="176.5" fill="#FFFFFF"/>
+<ellipse cx="432" cy="357.5" rx="50" ry="176.5" fill="#FFFFFF"/>
 <g filter="url(#filter0_f_1303_2133)">
 <rect x="300" y="300" width="119" height="114" fill="#96CDFA"/>
 </g>

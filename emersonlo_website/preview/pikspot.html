@@ -204,7 +204,7 @@ a, button, .nv, [role="button"],
 .nav--open .nav__work,
 .nav--open .nav__contact { gap: 7px; }
 .nav--open .nv--hint { margin-bottom: 5px; }
-.nav--open .nav__links { gap: 12px; }
+.nav--open .nav__links { gap: 18px; }
 
 /* the collapsed rail's tooltip slide (translate on hover) must not
    reach the open rail's in-flow labels, or the text jumps up */
@@ -288,10 +288,14 @@ a, button, .nv, [role="button"],
   text-decoration: none;
   transition: width .3s cubic-bezier(.22,1,.36,1),
               height .3s cubic-bezier(.22,1,.36,1),
-              margin .3s cubic-bezier(.22,1,.36,1)   /* height and margin move together, so the rows below never shift */;
+              margin .3s cubic-bezier(.22,1,.36,1),
+              box-shadow .3s ease   /* height and margin move together, so the rows below never shift */;
 }
 
 .nav__mark img { display: block; width: 74%; height: auto; }
+
+/* hover: a soft blurred glow around the tile */
+.nav__mark:hover { box-shadow: 0 0 16px rgba(20,22,20,.16); }
 
 /* the icon column keeps a fixed width matching --nav-w, so nothing
    shifts sideways when the rail widens — only the labels arrive */
@@ -305,7 +309,7 @@ a, button, .nv, [role="button"],
 
 .nav::-webkit-scrollbar { display: none; }
 
-.nav__links { margin-top: 20px; gap: 5px; }
+.nav__links { margin-top: 30px; gap: 5px; }
 
 /* a full-width hairline between nav groups — a sibling of .nav__group
    rather than nested inside it, so 100% resolves against the rail's
@@ -319,7 +323,7 @@ a, button, .nv, [role="button"],
 }
 
 /* Product → Website: same space, no line */
-.nav__sep--blank { background: none; }
+.nav__sep--blank { background: none; margin: 13px 0; }
 
 /* every section is separated by the same 20px + rule + 20px */
 
@@ -356,18 +360,39 @@ a, button, .nv, [role="button"],
 
 .nv--contact svg { fill: currentColor; stroke: none; width: 15px; height: 15px; }
 
-/* work shortcut = the project's gradient chip */
-.nv__chip {
-  width: 7px;
-  height: 7px;
-  border-radius: 0;
-}
+/* contact icons take each service's own colour on hover */
+.nv--contact svg { transition: fill .22s ease; }
+.nv--linkedin:hover svg { fill: #0A66C2; }              /* LinkedIn blue */
+.nv--email:hover svg    { fill: url(#gmailGrad); }      /* the Gmail colours */
+.nv--phone:hover svg    { fill: #25D366; }              /* WhatsApp green */
 
-.c-hackdavis { background: linear-gradient(140deg, #B7D94A, #6FBF3A); }
-.c-pikspot   { background: linear-gradient(140deg, #B9D8F5, #8FBEEC); }
-.c-jvmc      { background: linear-gradient(140deg, #1E7A63, #10604E); }
-.c-jass      { background: linear-gradient(140deg, #E8607F, #2B2B54); }
-.c-bitewise  { background: linear-gradient(140deg, #E0B25C, #8A5A22); }
+/* work shortcut = an icon for the project, grey like the contact icons;
+   on hover it fills with the project's gradient (the old chip colour).
+   The icon is a mask, so the same box can show grey or the gradient */
+.nv__chip {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  background: currentColor;
+  -webkit-mask: var(--ic) center / contain no-repeat;
+          mask: var(--ic) center / contain no-repeat;
+}
+.nv__chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grad);
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+.nv:hover .nv__chip::after,
+.nv[aria-current="page"] .nv__chip::after { opacity: 1; }
+
+.c-hackdavis { --grad: linear-gradient(140deg, #B7D94A, #6FBF3A); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14'/%3E%3C/svg%3E"); }
+.c-pikspot   { --grad: linear-gradient(90deg, #96CDFA 0%, #96CDFA 25%, #597994 100%); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h3l2-2.5h6L17 8h3v11H4z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E"); }
+.c-jvmc      { --grad: linear-gradient(140deg, #1E7A63, #10604E); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 3h5v6.5H21v5h-6.5V21h-5v-6.5H3v-5h6.5z'/%3E%3C/svg%3E"); }
+.c-jass      { --grad: linear-gradient(140deg, #E8607F, #2B2B54); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5.5c6 1.3 12 1.3 18 0M5 9.5h14M7 6.6V21M17 6.6V21M12 7v2.5'/%3E%3C/svg%3E"); }
+.c-bitewise  { --grad: linear-gradient(140deg, #E0B25C, #8A5A22); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3v6a2 2 0 004 0V3M9 11v10M17 21V3c-2 1.5-3 4-3 8h3'/%3E%3C/svg%3E"); }
 
 /* --- hover label --- */
 .nv__label {
@@ -442,10 +467,11 @@ a, button, .nv, [role="button"],
 .nav:not(.nav--open) .nav__work,
 .nav:not(.nav--open) .nav__contact { gap: 7px; }
 .nav:not(.nav--open) .nv--hint { margin-bottom: 5px; }
-.nav:not(.nav--open) .nav__links { gap: 12px; }
+.nav:not(.nav--open) .nav__links { gap: 18px; }
 
 /* every icon centred in the same 18px column */
-.nav:not(.nav--open) .nv__chip { margin: 0 5.5px; }
+.nav:not(.nav--open) .nv__chip { margin: 0 1.5px; }
+.nav:not(.nav--open) .nv__br { display: none; }   /* the collapsed hover label stays on one line */
 .nav:not(.nav--open) .nv--contact svg { margin: 0 1.5px; }
 .nav:not(.nav--open) .nv--hint svg { width: 13px; height: 13px; margin: 0 2.5px; }   /* no taller than the header text it replaces */
 
@@ -671,19 +697,32 @@ a, button, .nv, [role="button"],
 }
 
 .prompt__label {
-  font-size: 12.5px;
+  font-size: 17px;            /* the section numbers: a clear step above the 11.5px eyebrows */
   letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--gray-soft);
-  margin: 0 0 28px;
+  margin: 0 0 clamp(44px, 5vw, 64px);   /* a clear gap before the section's first label */
 }
 
+/* the label over each heading, in eyebrow style */
 .prompt__cue {
+  font-size: 11.5px;
   font-style: italic;
-  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
   color: var(--gray);
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
+/* captions and asides keep the quiet italic */
+.lofi__cap, .more__cue, .pin-board-cue {
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.pin-board-cue { margin-bottom: 14px; }
 
 .prompt__body {
   font-size: 17px;
@@ -708,6 +747,13 @@ a, button, .nv, [role="button"],
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  /* italic letters lean past the end of the box, and the gradient (clipped to the
+     box) stopped short of them; a little extra room on the right, given back by
+     the negative margin, lets the last letter paint in full */
+  padding-right: .14em;
+  margin-right: -.14em;
+  -webkit-box-decoration-break: clone;
+          box-decoration-break: clone;
 }
 
 /* --- research / competitive analysis --- */
@@ -719,22 +765,27 @@ a, button, .nv, [role="button"],
 }
 
 .research__heading {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-style: italic;
-  font-weight: 600;
-  font-size: 20px;
+  font-weight: 500;
+  -webkit-text-stroke: .02em currentColor;
+  font-size: clamp(24px, 2.3vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -.015em;
   color: var(--ink);
-  margin: 0 0 18px;
+  margin: 0 0 16px;
 }
 
 .research__body {
   font-size: 15px;
   line-height: 1.6;
+  text-wrap: pretty;   /* no single word left alone on the last line */
   color: var(--ink-soft);
   margin: 0 0 48px;
 }
 
-.research__body strong { font-weight: 700; color: var(--ink); }
+.research__body strong { font-weight: 500; -webkit-text-stroke: .02em currentColor; color: var(--ink); }   /* medium */
+.main strong { font-weight: 500; -webkit-text-stroke: .02em currentColor; }
 
 /* back-to-back paragraphs read as one block, not two sections */
 .research__body:has(+ .research__body) { margin-bottom: 1em; }
@@ -776,16 +827,23 @@ a, button, .nv, [role="button"],
 }
 
 .pc-card__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
+  -webkit-text-stroke: .035em currentColor;   /* semibold on any font */
   color: var(--ink);
-  margin: 0 0 12px;
+  margin: 0 0 18px;
 }
+.pc-logo { flex: none; width: 18px; height: 18px; -webkit-text-stroke: 0; }
 
 .pc-card__pro, .pc-card__con {
+  /* the same grey, size and spacing as the Mobile / Desktop lists */
   font-size: 15px;
-  color: var(--ink-soft);
-  margin: 0 0 8px;
+  line-height: 1.4;
+  color: var(--gray);
+  margin: 0 0 14px;
   display: flex;
   align-items: center;
 }
@@ -885,6 +943,47 @@ a, button, .nv, [role="button"],
   .survey-results { flex-direction: column; align-items: flex-start; }
 }
 
+/* --- user surveys: text left; the two survey pages (angled, overlapping) and
+       the donut on the right, the layout of an intro block with a hero visual --- */
+.survey {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+  margin-top: 56px;
+}
+.survey__rule { height: 1px; border: 0; background: var(--hair); margin: 28px 0; }
+/* the stat leads in grey and lands in ink, in a step-up size */
+.survey__stat {
+  font-size: clamp(19px, 1.8vw, 23px);
+  line-height: 1.4;
+  font-weight: 500;
+  -webkit-text-stroke: .015em currentColor;
+  color: var(--gray);
+  margin: 0 0 14px;
+  text-wrap: pretty;
+}
+.survey__stat strong { color: var(--ink); -webkit-text-stroke: .015em currentColor; }
+
+.survey__cards { position: relative; aspect-ratio: 1 / .92; }
+.survey__card {
+  position: absolute;
+  width: 56%;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: var(--lift);
+  cursor: var(--cur-zoom-in);
+}
+/* the back page tilts right and up, the front page left and down, overlapping by about a third */
+.survey__card--back  { right: 3%; top: 0;   rotate: 6deg; }
+.survey__card--front { left: 3%;  top: 13%; rotate: -5deg; }
+
+.survey__chart { margin: clamp(28px, 3vw, 40px) auto 0; }
+
+@media (max-width: 760px) {
+  .survey { grid-template-columns: 1fr; }
+}
+
 /* --- user interviews: three consistent themes --- */
 
 .themes {
@@ -929,13 +1028,11 @@ a, button, .nv, [role="button"],
 
 /* --- Pinterest deep-dive: the FigJam sticky-note board --- */
 
-/* matches .pin-board-wrap's own padding, so this sits flush with the
-   left edge of the sticky notes inside it rather than the section's */
-.pin-board-cue { margin-left: clamp(14px, 2.4vw, 24px); }
+
 
 .pin-board-wrap {
   border-radius: 10px;
-  padding: clamp(14px, 2.4vw, 24px);
+  padding: 0 0 clamp(14px, 2.4vw, 24px);   /* the caption sits 14px above, as the lo-fi captions do */
   margin: 0 0 56px;
 }
 
@@ -946,20 +1043,21 @@ a, button, .nv, [role="button"],
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: start;
-  gap: 0;
+  column-gap: 4%;
+  margin: 0 -1.52%;
 }
 
 .pin-col { display: flex; flex-direction: column; }
 
 .sticky {
   display: block;
-  width: 82%;
+  width: 100%;
   height: auto;
   opacity: .82;
 }
 
 @media (max-width: 900px) {
-  .pin-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pin-board { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; column-gap: 0; }
 }
 
 @media (max-width: 520px) {
@@ -1035,6 +1133,16 @@ a, button, .nv, [role="button"],
   height: 16px;
   fill: #96CDFA;
 }
+
+/* Mobile / Desktop: the same dark semibold title and black icon as the platform cards */
+.versus__title--plain {
+  font-weight: 500;
+  -webkit-text-stroke: .035em currentColor;
+  background: none;
+  color: var(--ink);
+  gap: 8px;
+}
+.versus__title--plain .versus__icon { width: 18px; height: 18px; fill: #111; -webkit-text-stroke: 0; }
 
 .versus__list {
   list-style: none;
@@ -1176,7 +1284,7 @@ a, button, .nv, [role="button"],
   align-items: start;
 }
 
-.flow-grid img { display: block; height: auto; cursor: zoom-in; }
+.flow-grid img { display: block; height: auto; cursor: var(--cur-zoom-in); }
 
 /* column 1 is 748 units wide, column 2 is 745: widths are the chart's own
    unit count over its column's, so the scale is the same everywhere */
@@ -1209,7 +1317,7 @@ a, button, .nv, [role="button"],
   place-items: center;
   padding: 4vh 4vw;
   background: rgba(255,255,255,.94);
-  cursor: zoom-out;
+  cursor: var(--cur-zoom-out);
   opacity: 0;
   transition: opacity .25s ease;
 }
@@ -1230,6 +1338,19 @@ a, button, .nv, [role="button"],
   box-shadow: 0 24px 60px -30px rgba(20,22,20,.35);
 }
 
+/* phone screens open as the bare frame, with the final iterations' shadow, not on a sheet */
+.lightbox--phone img {
+  width: auto;
+  max-width: 92vw;
+  height: 88vh;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,.25)) drop-shadow(0 0 26px rgba(20,22,20,.18));
+}
+
 /* --- lo-fi sketches: my sheet with callouts, the team's beside it --- */
 /* row 1: my sheet | the team's two sheets; row 2: the captions.
    The right column sets the row height; my sheet fills that height, so
@@ -1248,18 +1369,24 @@ a, button, .nv, [role="button"],
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 0 22px rgba(20,22,20,.08);
+  box-shadow: var(--lift);
 }
 
 .lofi__card img { display: block; width: 100%; height: auto; }
-.lofi__card img { cursor: zoom-in; }
+.lofi__card img { cursor: var(--cur-zoom-in); }
 /* the sketches panel stays within the reading column (no breakout), so
    its sides sit closer in than the IA / user-flow panels */
 .lofi-frame {
   display: block;
   width: 100%;
   margin-left: 0;
+  /* no panel: the sketches sit on the page, across the full reading column */
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
 }
+.lofi-frame .lofi { max-width: none; margin-top: 0; }
 
 .lofi__stage { position: relative; }
 
@@ -1289,24 +1416,24 @@ a, button, .nv, [role="button"],
 .lofi__note::before {
   content: "";
   position: absolute;
-  left: 1.2px;
+  left: 0;
   top: 50%;
-  width: 5.6px;
-  height: 5.6px;
-  background: #96CDFA;
+  width: 6.6px;
+  height: 6.6px;
+  background: #96CDFA;          /* the final iteration's diamond end */
   transform: translateY(-50%) rotate(45deg);
 }
 
 .lofi__note::after {
   content: "";
   position: absolute;
-  left: 4px;
+  left: 4.6px;
   right: 0;
   top: 50%;
-  height: 3px;
+  height: 1.5px;
   translate: 0 -50%;
-  background: #96CDFA;
-  border-radius: 0 1.5px 1.5px 0;
+  /* the final iteration's callout line, straight: light at the diamond, dark at the far end */
+  background: linear-gradient(to right, #96CDFA, #597994);
 }
 
 /* eyebrow style */
@@ -1380,9 +1507,9 @@ a, button, .nv, [role="button"],
   display: block;
   width: 100%;
   height: auto;
-  cursor: zoom-in;
+  cursor: var(--cur-zoom-in);
   /* drop-shadow (not box-shadow) so the blur hugs the rounded frame */
-  filter: drop-shadow(0 0 26px rgba(20,22,20,.18));
+  filter: drop-shadow(var(--lift));
 }
 
 .iter figcaption {
@@ -1459,14 +1586,14 @@ a, button, .nv, [role="button"],
 /* every box's picture area is the same shape, so the cards line up */
 .pref__visual {
   position: relative;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 1 / 1;
   margin: 0 calc(-1 * clamp(18px, 2.4vw, 28px));   /* the pictures run out to the box edges */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.pref-crop { display: block; filter: drop-shadow(0 4px 18px rgba(20,22,20,.16)); }
+.pref-crop { display: block; }   /* flat inside the boxes, no shadow */
 
 /* preferred / not: a green tick or red cross on each picture's top-right corner */
 .mark {
@@ -1494,8 +1621,8 @@ a, button, .nv, [role="button"],
 
 /* 1: .03's banner tucked behind .01's weekly event card */
 .pref__visual--stack .pref-crop { position: absolute; }
-.pref__visual--stack .pref-crop--front { width: 80%; left: 6%;  top: 4%; z-index: 1; }
-.pref__visual--stack .pref-crop--back  { width: 66%; left: 28%; top: 45%; }   /* a clear gap under the card above */
+.pref__visual--stack .pref-crop--front { width: 92%; left: 3%;  top: 9%; z-index: 1; }
+.pref__visual--stack .pref-crop--back  { width: 84%; left: 11%; top: 47%; }   /* a clear gap under the card above */
 
 /* 2: one post from .02, framed like the phone screen it came from */
 .pref-crop--post {
@@ -1503,7 +1630,7 @@ a, button, .nv, [role="button"],
   top: 50%;
   left: 50%;
   translate: -50% -50%;
-  width: 90%;
+  width: 94%;
   height: auto;
   aspect-ratio: 238.48 / 186.29;
   background: #fff;
@@ -1511,19 +1638,19 @@ a, button, .nv, [role="button"],
 }
 
 /* 3: .01's dropdown and .02's tabs above the .03 chips users chose */
-.pref__visual--filters { flex-direction: column; gap: 16px; }
+.pref__visual--filters { flex-direction: column; gap: 22px; }
 .pref-ctrls { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
 .pref-pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 10px;
+  padding: 8px 13px;
   background: #fff;
-  border-radius: 7px;
-  font-size: 11.5px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
   color: #1F1F1F;
-  box-shadow: 0 2px 10px rgba(20,22,20,.08);
+  box-shadow: var(--lift);
 }
 .pref-pill svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .pref-pill__dim { font-weight: 400; color: #9A9D99; }
@@ -1534,14 +1661,14 @@ a, button, .nv, [role="button"],
   padding: 5px;
   background: #fff;
   border-radius: 999px;
-  box-shadow: 0 4px 18px rgba(20,22,20,.12);
+  box-shadow: var(--lift);
 }
 .pref-chip {
-  padding: 7px 14px;
+  padding: 9px 18px;
   border-radius: 999px;
   background: #525252;
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
 }
 .pref-chip.is-on { background: #1F1F1F; }
@@ -1571,6 +1698,151 @@ a, button, .nv, [role="button"],
   .split__rule { height: 56px; }
 }
 
+/* --- community events: the same layout as the home page block --- */
+.midfi-frame--ce { margin-top: clamp(96px, 11vw, 150px) !important; }
+
+/* 1: .01's banner over .03's */
+.pref-crop--ce01 { width: 90%; left: 3%;  top: 6%; z-index: 1; }
+.pref-crop--ce03 { width: 82%; left: 15%; top: 50%; }
+/* 2: .03's card on top of .02's sideways row */
+.pref-crop--cecard { width: 86%; left: 3%;  top: 4%; z-index: 1; }
+.pref-crop--cerow  { width: 52%; left: 45%; top: 57%; }
+/* 3: the two pages' tops, stacked and offset so each can be wide enough to read */
+.pref-crop--twin   { width: 58%; }
+.pref-crop--twin-a { left: 3%;  top: 2%; }
+.pref-crop--twin-b { left: 39%; top: 54%; }
+/* the look-alike sign between them */
+.pref-twin__sign {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--gray);
+}
+/* a question bubble on each page: users couldn't tell which one they were on */
+.mark--ask { background: #F0A830; }
+.mark--ask::before { content: "?"; font-size: 12px; }
+
+/* --- the rest of the app: three small pairs of screens, no callouts --- */
+.more { margin: clamp(96px, 11vw, 150px) 0 0; }
+.more .more__eyebrow { line-height: 16px; margin: 0 0 10px; }
+.more__cue { margin: 0 0 clamp(28px, 3.5vw, 44px); }
+
+.more__row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 44px);
+}
+.more__group { margin: 0; }
+
+/* each pair side by side, the second screen dropped a little for rhythm */
+.more__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.2vw, 16px);
+  align-items: start;
+}
+.more__pair img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 7%/3.2%;
+  cursor: var(--cur-zoom-in);
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.16)) drop-shadow(0 0 18px rgba(20,22,20,.12));
+  transition: translate .3s cubic-bezier(.22,1,.36,1);
+}
+.more__pair img:nth-child(2) { margin-top: 28px; }
+.more__pair img:hover { translate: 0 -4px; }
+
+/* the same blue title, with an icon, as Home Page and Community Events */
+.more__label { margin: 18px 0 0; }
+
+@media (max-width: 700px) {
+  .more__row { grid-template-columns: 1fr; }
+}
+
+/* --- usability testing: the same theme grid as the user interviews --- */
+.usab-cue { margin-top: clamp(96px, 11vw, 150px); }
+.usab { margin-top: 8px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.usab .theme { grid-column: span 2; }
+/* the last two (Photo Map, Profile) centred under the first three */
+.usab .theme:nth-child(4) { grid-column: 2 / 4; }
+.usab .theme:nth-child(5) { grid-column: 4 / 6; }
+@media (max-width: 700px) {
+  .usab { grid-template-columns: 1fr; }
+  .usab .theme, .usab .theme:nth-child(4), .usab .theme:nth-child(5) { grid-column: auto; }
+}
+
+/* --- 05 hi-fi: the design system, one panel per part (the feature-box panel) --- */
+/* Typography and Color share the first row (columns follow
+   each SVG's width, so both show at the same scale), Components gets its own */
+.ds {
+  display: grid;
+  grid-template-columns: 280fr 265fr;
+  gap: clamp(20px, 2.6vw, 36px);
+  margin: clamp(28px, 4vw, 48px) 0 0;   /* the full reading column, edge to edge */
+}
+.ds__part:nth-child(3) { grid-column: 1 / -1; }
+.ds__part:nth-child(3) .ds__card img { max-width: 420px; margin: 0 auto; }
+.ia-grid img { cursor: var(--cur-zoom-in); }
+.ds__part {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(18px, 2.2vw, 26px);
+  background: #FAFAF9;
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+}
+.ds .ds__eyebrow { line-height: 16px; margin: 0 0 16px; }
+.ds__card { flex: 1; }   /* the parts sit straight on the panel, no white card */
+.ds__card img { display: block; width: 100%; height: auto; cursor: var(--cur-zoom-in); }
+@media (max-width: 700px) {
+  .ds { grid-template-columns: 1fr; width: 100%; margin-left: 0; }
+}
+
+/* the magnifier cursor on anything that opens in the zoom view: a line icon in
+   the nav's style, + to open and &minus; to close. The hotspot is the lens centre */
+/* one shadow for every lifted element that isn't a final iteration: the initial
+   iterations, lo-fi sketch cards, and the pills and chips in the feature boxes */
+:root { --lift: 0 0 16px rgba(20,22,20,.2); }
+
+:root {
+  --cur-zoom-in: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='%2323261F' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5' fill='white'/%3E%3Cpath d='M15.5 15.5l5 5M8 10.5h5M10.5 8v5'/%3E%3C/svg%3E") 11 11, zoom-in;
+  --cur-zoom-out: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='%2323261F' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5' fill='white'/%3E%3Cpath d='M15.5 15.5l5 5M8 10.5h5'/%3E%3C/svg%3E") 11 11, zoom-out;
+}
+
+/* "click any screen…" — under every block that opens in the zoom view,
+   with the same magnifier as the cursor */
+.zoom-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 clamp(28px, 4vw, 48px);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--gray);
+}
+.zoom-hint svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+/* the title or text above it hands its gap down to the hint */
+.syn-sub:has(+ .zoom-hint),
+.midfi-frame .syn-sub:has(+ .zoom-hint) { margin-bottom: 10px; }
+.research__body:has(+ .zoom-hint) { margin-bottom: 14px; }
+/* in the rest-of-app line it follows the sentence on the same line */
+.zoom-hint--inline { display: inline-flex; vertical-align: -2px; margin: 0 0 0 12px; font-size: inherit; }
+.zoom-hint + .ds { margin-top: 0; }
+
 /* --- final iteration: two screens with their callouts --- */
 .midfi-frame .final-eyebrow { margin-top: 0; }   /* the second branch's band already holds the gap */
 
@@ -1595,14 +1867,17 @@ a, button, .nv, [role="button"],
   height: 100%;
   overflow: visible;
   fill: none;
-  stroke-width: 1.21;
+  stroke-width: 1.5px;
   pointer-events: none;
 }
+/* every callout line is 1.5px on screen, whatever the stage size, the same as the lo-fi sketch lines */
+.final-lines path, .final-lines circle { vector-effect: non-scaling-stroke; }
 .final-lines__dot { stroke: none; }
 
 .final-phone {
-  cursor: zoom-in;
-  filter: drop-shadow(0 0 26px rgba(20,22,20,.18));   /* same blur as the initial iterations */
+  cursor: var(--cur-zoom-in);
+  /* one shadow for every final-iteration phone (the SVGs' own shadows were removed) */
+  filter: drop-shadow(0 0 10px rgba(0,0,0,.25)) drop-shadow(0 0 26px rgba(20,22,20,.18));
 }
 
 /* =========================== BACK TO TOP =========================== */
@@ -1649,12 +1924,14 @@ a, button, .nv, [role="button"],
 
 /* a short centred hairline between numbered sections — it stops well
    short of the text column's left and right edges */
+/* a full-width hairline over each numbered section, on the same edges as
+   the text, with the section number just beneath it */
 .sec-rule {
-  width: min(56%, 620px);
+  width: calc(min(1180px, 100%) - 2 * clamp(30px, 5vw, 78px));
   height: 1px;
   border: 0;
   background: var(--hair);
-  margin: 0 auto var(--sec-gap);
+  margin: 0 auto 22px;
 }
 
 /* =========================== TRACKER =========================== */
@@ -1752,7 +2029,7 @@ a, button, .nv, [role="button"],
       <span class="nv__label">Product</span>
     </span>
     <a class="nv" href="../index.html#pikspot" aria-current="page"><span class="nv__chip c-pikspot"></span><span class="nv__label">Pikspot</span></a>
-    <a class="nv" href="#bitewise"><span class="nv__chip c-bitewise"></span><span class="nv__label">Bitewise</span></a>
+    <a class="nv" href="../index.html#bitewise"><span class="nv__chip c-bitewise"></span><span class="nv__label">Bitewise</span></a>
   </div>
 
   <div class="nav__sep nav__sep--blank"></div>
@@ -1762,9 +2039,9 @@ a, button, .nv, [role="button"],
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
       <span class="nv__label">Website</span>
     </span>
-    <a class="nv" href="#hackdavis"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
-    <a class="nv" href="#jvmc"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri Memorial Clinic</span></a>
-    <a class="nv" href="#jass"><span class="nv__chip c-jass"></span><span class="nv__label">Japanese American Student Society</span></a>
+    <a class="nv" href="../index.html#hackdavis"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
+    <a class="nv" href="../index.html#jvmc"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri<br class="nv__br"> Memorial Clinic</span></a>
+    <a class="nv" href="../index.html#jass"><span class="nv__chip c-jass"></span><span class="nv__label">Japanese American Student Society</span></a>
   </div>
 
   <div class="nav__sep"></div>
@@ -1774,8 +2051,8 @@ a, button, .nv, [role="button"],
       <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M13 10h5M13 14h5M5.5 16c.5-1.8 1.8-2.5 3-2.5s2.5.7 3 2.5"/></svg>
       <span class="nv__label">Contact</span>
     </span>
-    <a class="nv nv--contact" href="https://www.linkedin.com/in/emerson-lo" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.45-2.2 2.96V21H9z"/></svg><span class="nv__label">LinkedIn</span></a>
-    <a class="nv nv--contact" href="mailto:emersonrylo@gmail.com"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1zm9 8L4.2 7.3v10.2h15.6V7.3z"/></svg><span class="nv__label">Email</span></a>
+    <a class="nv nv--contact nv--linkedin" href="https://www.linkedin.com/in/emerson-lo" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.45-2.2 2.96V21H9z"/></svg><span class="nv__label">LinkedIn</span></a>
+    <a class="nv nv--contact nv--email" href="mailto:emersonrylo@gmail.com"><svg viewBox="0 0 24 24"><defs><linearGradient id="gmailGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#EA4335"/><stop offset=".33" stop-color="#FBBC05"/><stop offset=".66" stop-color="#34A853"/><stop offset="1" stop-color="#4285F4"/></linearGradient></defs><path d="M3 5h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1zm9 8L4.2 7.3v10.2h15.6V7.3z"/></svg><span class="nv__label">Email</span></a>
     <a class="nv nv--contact nv--phone" href="tel:+16264666774"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.6a1 1 0 01-.25 1z"/></svg><span class="nv__label"><span class="ph-a">Phone</span><span class="ph-b">626-466-6774</span></span></a>
   </div>
 
@@ -1863,22 +2140,22 @@ a, button, .nv, [role="button"],
 
     <div class="pc-grid">
       <div class="pc-card">
-        <h3 class="pc-card__title">Pinterest</h3>
+        <h3 class="pc-card__title"><svg class="pc-logo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#111"/><path fill="#fff" d="M12.3 5.2c-3.8 0-5.8 2.6-5.8 4.9 0 1.4.5 2.6 1.6 3 .2.1.4 0 .4-.2l.2-.7c.1-.2 0-.3-.1-.5-.3-.4-.6-1-.6-1.8 0-2.3 1.7-4.4 4.5-4.4 2.5 0 3.8 1.5 3.8 3.5 0 2.7-1.2 4.9-2.9 4.9-1 0-1.7-.8-1.5-1.8.3-1.2.8-2.4.8-3.3 0-.8-.4-1.4-1.3-1.4-1 0-1.8 1.1-1.8 2.5 0 .9.3 1.5.3 1.5l-1.2 5.2c-.3 1.5 0 3.4 0 3.6 0 .1.2.2.2.1.1-.1 1.1-1.4 1.5-2.8l.6-2.3c.3.6 1.2 1.1 2.1 1.1 2.8 0 4.6-2.5 4.6-5.9 0-2.6-2.2-5-5.4-5z"/></svg>Pinterest</h3>
         <p class="pc-card__pro"><span class="dot dot--pro"></span>Image-driven app curated for each user</p>
         <p class="pc-card__con"><span class="dot dot--con"></span>Low-user generated originality</p>
       </div>
       <div class="pc-card">
-        <h3 class="pc-card__title">Flicker</h3>
+        <h3 class="pc-card__title"><svg class="pc-logo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6.5" cy="12" r="4.8" fill="#111"/><circle cx="17.5" cy="12" r="4.8" fill="#111"/></svg>Flicker</h3>
         <p class="pc-card__pro"><span class="dot dot--pro"></span>High Quality photo sharing</p>
         <p class="pc-card__con"><span class="dot dot--con"></span>Limited playfulness</p>
       </div>
       <div class="pc-card">
-        <h3 class="pc-card__title">VSCO</h3>
+        <h3 class="pc-card__title"><svg class="pc-logo" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>VSCO</h3>
         <p class="pc-card__pro"><span class="dot dot--pro"></span>Aesthetically pleasing content that's curated</p>
         <p class="pc-card__con"><span class="dot dot--con"></span>Weak social interaction</p>
       </div>
       <div class="pc-card">
-        <h3 class="pc-card__title">Instagram</h3>
+        <h3 class="pc-card__title"><svg class="pc-logo" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#111" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1" fill="#111" stroke="none"/></svg>Instagram</h3>
         <p class="pc-card__pro"><span class="dot dot--pro"></span>Most popular method of sharing photos</p>
         <p class="pc-card__con"><span class="dot dot--con"></span>High pressure to perform</p>
       </div>
@@ -1923,12 +2200,23 @@ a, button, .nv, [role="button"],
     <h3 class="research__heading">So&hellip; what does each platform have to offer?</h3>
     <p class="research__body">Every successful product has one standout feature. With so many photo apps, ours needed one too, but what would set us apart? That question carried us from research into ideation.</p>
 
-    <p class="prompt__cue research-sub">User Surveys</p>
-    <h3 class="research__heading">What do users actually prefer?</h3>
-    <p class="research__body">To understand how people discover photo spots, we surveyed 50+ individuals aged 18&ndash;25 about their inspiration sources, equipment, and sharing habits. You can check out our survey by clicking <a class="prompt__accent" href="#">here!</a></p>
+    <!-- user surveys: the text on the left; the survey itself and its results on the right -->
+    <div class="survey">
+      <div class="survey__text">
+        <p class="prompt__cue">User Surveys</p>
+        <h3 class="research__heading">Spontaneity beats planning</h3>
+        <p class="research__body">To understand how people discover photo spots, we surveyed 50+ individuals aged 18&ndash;25 about their inspiration sources, equipment, and sharing habits. You can check out our survey by clicking <a class="prompt__accent" href="https://forms.gle/9ks4kvUhDHP4RTM69" target="_blank" rel="noopener">here!</a></p>
+        <hr class="survey__rule">
+        <p class="survey__stat">67% discover photo spots spontaneously, <strong>and only 20% plan ahead.</strong></p>
+        <p class="research__body">73% explore in person rather than through social media. <strong>Key insight:</strong> spontaneous, real-world discovery feels more exciting than searching&nbsp;online.</p>
+      </div>
 
-    <div class="survey-results">
-      <div class="survey-results__chart">
+      <div class="survey__media">
+        <div class="survey__cards">
+          <img class="survey__card survey__card--back" src="images/survey/survey-2.png" width="646" height="822" loading="lazy" alt="Photo Spots Survey questions: photography experience, equipment used, and what people mainly photograph">
+          <img class="survey__card survey__card--front" src="images/survey/survey-1.png" width="649" height="825" loading="lazy" alt="Photo Spots Survey: introduction for photographers of all skill levels, taking under 5 minutes">
+        </div>
+        <div class="survey-results__chart survey__chart">
         <figure class="donut" role="img" aria-label="Donut chart: 67% of respondents explore spontaneously, 20% plan ahead, 13% other.">
           <div class="donut__ring"></div>
           <figcaption class="donut__center">
@@ -1941,11 +2229,7 @@ a, button, .nv, [role="button"],
           <li><span class="donut-legend__sw donut-legend__sw--p"></span>Planned<b>20%</b></li>
           <li><span class="donut-legend__sw donut-legend__sw--o"></span>Other<b>13%</b></li>
         </ul>
-      </div>
-      <div class="survey-results__text">
-        <p class="prompt__cue">User Survey Results</p>
-        <h3 class="research__heading">Key Insights for the future!</h3>
-        <p class="research__body">67% discover photo spots spontaneously, and only 20% plan ahead. 73% explore in person rather than through social media. <strong>Key insight:</strong> spontaneous, real-world discovery feels more exciting than searching online.</p>
+        </div>
       </div>
     </div>
 
@@ -1980,7 +2264,7 @@ a, button, .nv, [role="button"],
     <div class="versus">
       <img class="versus__art" src="images/mobilevsdesktop.svg" width="719" height="714" loading="lazy" alt="">
       <div class="versus__side versus__side--left">
-        <h3 class="versus__title"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 012 2v16a2 2 0 01-2 2H8a2 2 0 01-2-2V4a2 2 0 012-2zm4 17.2a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zM8 5v12h8V5z"/></svg>Mobile</h3>
+        <h3 class="versus__title versus__title--plain"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 012 2v16a2 2 0 01-2 2H8a2 2 0 01-2-2V4a2 2 0 012-2zm4 17.2a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4zM8 5v12h8V5z"/></svg>Mobile</h3>
         <ul class="versus__list">
           <li>Push notifications</li>
           <li>Works offline</li>
@@ -1989,7 +2273,7 @@ a, button, .nv, [role="button"],
         </ul>
       </div>
       <div class="versus__side versus__side--right">
-        <h3 class="versus__title"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 012 2v9a2 2 0 01-2 2h-5.5l.8 2H17a1 1 0 010 2H7a1 1 0 010-2h1.7l.8-2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v9h16V6z"/></svg>Desktop</h3>
+        <h3 class="versus__title versus__title--plain"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 012 2v9a2 2 0 01-2 2h-5.5l.8 2H17a1 1 0 010 2H7a1 1 0 010-2h1.7l.8-2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v9h16V6z"/></svg>Desktop</h3>
         <ul class="versus__list">
           <li>Can&rsquo;t shoot on the go</li>
           <li>Suits polished, pro uploads</li>
@@ -2004,6 +2288,7 @@ a, button, .nv, [role="button"],
 
     <figure class="ia-frame">
       <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v5H9zM2 16h6v5H2zM9 16h6v5H9zM16 16h6v5h-6zM11.5 7h1v4.5h-1zM4.5 11.5h15v1h-15zM4.5 12h1v4h-1zM18.5 12h1v4h-1zM11.5 12.5h1v3.5h-1z"/></svg> Information Architecture</h3>
+      <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
       <div class="ia-grid">
         <img class="ia-home" src="images/home-map-info-arc.svg" width="539" height="458" loading="lazy"
              alt="Information architecture for the Home and Map screens">
@@ -2016,6 +2301,7 @@ a, button, .nv, [role="button"],
 
     <figure class="ia-frame flow-frame">
       <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v6H3zM14 15h7v6h-7zM6 9h1.5v5.25H14v1.5H6z"/></svg> User Flow</h3>
+      <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
       <!-- legend: the three block types used in every flow below -->
       <div class="flow-key" aria-label="User flow legend">
         <span class="flow-key__label">Legend</span>
@@ -2047,6 +2333,7 @@ a, button, .nv, [role="button"],
     <p class="prompt__cue research-sub">Lo-fi Sketches</p>
     <h3 class="research__heading">Concepts start to take shape</h3>
     <p class="research__body">Lo-fi sketches let me explore ideas quickly before committing to wireframes, turning research insights into tangible layouts and workflows. Each designer took two pages; mine were the <strong>home page</strong>, which I iterated twice, and the <strong>events page</strong>.</p>
+    <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
 
     <figure class="ia-frame lofi-frame">
     <div class="lofi">
@@ -2082,6 +2369,7 @@ a, button, .nv, [role="button"],
 
     <figure class="ia-frame midfi-frame">
       <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 7.5V20a1 1 0 01-1 1h-5.5v-6h-5v6H4a1 1 0 01-1-1v-9.5z"/></svg> Home Page</h3>
+      <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
     <p class="midfi-eyebrow">Initial iterations</p>
 
     <div class="split">
@@ -2112,8 +2400,8 @@ a, button, .nv, [role="button"],
           <div class="pref__visual pref__visual--stack">
             <svg class="pref-crop pref-crop--back" viewBox="6.66 99.69 220.73 107.29" aria-hidden="true"><image href="images/midfi/home-initial-3.svg" width="239" height="517"/></svg>
             <svg class="pref-crop pref-crop--front" viewBox="10 113 219.06 69.78" aria-hidden="true"><image href="images/midfi/home-initial-1.svg" width="239" height="517"/></svg>
-            <span class="mark mark--yes" style="left:86%;top:4%" aria-label="Preferred"></span>
-            <span class="mark mark--no" style="left:94%;top:45%" aria-label="Less preferred"></span>
+            <span class="mark mark--yes" style="left:95%;top:9%" aria-label="Preferred"></span>
+            <span class="mark mark--no" style="left:95%;top:47%" aria-label="Less preferred"></span>
           </div>
           <div class="pref__card">
             <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="iterGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#96CDFA"/><stop offset=".25" stop-color="#96CDFA"/><stop offset="1" stop-color="#597994"/></linearGradient></defs><path fill-rule="evenodd" d="M12 3a9 9 0 110 18 9 9 0 010-18zm-.9 4.2v5.4l4.4 2.6.9-1.5-3.5-2.1V7.2z"/></svg>A visible countdown</h4>
@@ -2124,7 +2412,7 @@ a, button, .nv, [role="button"],
         <div class="pref">
           <div class="pref__visual">
             <svg class="pref-crop pref-crop--post" viewBox="0 105.59 238.48 186.29" aria-hidden="true"><image href="images/midfi/home-initial-2.svg" width="239" height="518"/></svg>
-            <span class="mark mark--yes" style="left:95%;top:6.06%" aria-label="Preferred"></span>
+            <span class="mark mark--yes" style="left:97%;top:13.3%" aria-label="Preferred"></span>
           </div>
           <div class="pref__card">
             <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zm1 2v9.6l3.6-3.6 3 3 4.4-4.4L19 13.6V6zm3.5 1.5a1.75 1.75 0 110 3.5 1.75 1.75 0 010-3.5z"/></svg>Photos that fill the screen</h4>
@@ -2207,6 +2495,206 @@ a, button, .nv, [role="button"],
       </div>
     </div>
     </figure>
+
+    <figure class="ia-frame midfi-frame midfi-frame--ce">
+      <h3 class="versus__title syn-sub"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v2h6V2h2v2h2a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2zm-2 7v10h14V9z"/></svg> Community Events</h3>
+      <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
+    <p class="midfi-eyebrow">Initial iterations</p>
+
+    <div class="split">
+    <div class="iters-wrap">
+    <div class="iters">
+      <figure class="iter">
+        <img src="images/midfi/ce/ce-initial-1.svg" width="238" height="517" loading="lazy" alt="Community events, iteration 1: weekly challenge banner, Near You event cards and other submissions">
+        <figcaption>.01</figcaption>
+      </figure>
+      <figure class="iter">
+        <img src="images/midfi/ce/ce-initial-2.svg" width="238" height="517" loading="lazy" alt="Community events, iteration 2: For You and Saved Events rows of horizontally scrolling event cards">
+        <figcaption>.02</figcaption>
+      </figure>
+      <figure class="iter">
+        <img src="images/midfi/ce/ce-initial-3.svg" width="237" height="517" loading="lazy" alt="Community events, iteration 3: global weekly photo challenge, filter chips and a vertical list of challenge cards">
+        <figcaption>.03</figcaption>
+      </figure>
+    </div>
+    </div>
+
+    <div class="split__span">
+    <div class="split__rule" aria-hidden="true"></div>
+
+    <div class="prefs">
+      <p class="midfi-eyebrow prefs__eyebrow">Feature design preferences</p>
+      <div class="prefs__grid">
+        <div class="pref">
+          <div class="pref__visual pref__visual--stack">
+            <svg class="pref-crop pref-crop--ce01" viewBox="0 86 238 104" aria-hidden="true"><image href="images/midfi/ce/ce-initial-1.svg" width="238" height="517"/></svg>
+            <svg class="pref-crop pref-crop--ce03" viewBox="6 53 225 113" aria-hidden="true"><image href="images/midfi/ce/ce-initial-3.svg" width="238" height="517"/></svg>
+            <span class="mark mark--yes" style="left:93%;top:6%" aria-label="Preferred"></span>
+            <span class="mark mark--yes" style="left:97%;top:50%" aria-label="Preferred"></span>
+          </div>
+          <div class="pref__card">
+            <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v4a5 5 0 01-10 0zM4 4h2v3.5A2.5 2.5 0 014 10zM20 4h-2v3.5a2.5 2.5 0 002 2.5zM10.5 13.6h3V17h-3zM8 18h8v3H8z"/></svg>Challenges front and center</h4>
+            <p class="pref__body">Photo challenge banners from <b class="pref-num">.01</b> and <b class="pref-num">.03</b> were desired by users for easy accessibility.</p>
+          </div>
+        </div>
+
+        <div class="pref">
+          <div class="pref__visual pref__visual--stack">
+            <svg class="pref-crop pref-crop--cecard" viewBox="6 203 225 135" aria-hidden="true"><image href="images/midfi/ce/ce-initial-3.svg" width="238" height="517"/></svg>
+            <svg class="pref-crop pref-crop--cerow" viewBox="6 88 232 180" aria-hidden="true"><image href="images/midfi/ce/ce-initial-2.svg" width="238" height="517"/></svg>
+            <span class="mark mark--yes" style="left:89%;top:4%" aria-label="Preferred"></span>
+            <span class="mark mark--no" style="left:97%;top:57%" aria-label="Less preferred"></span>
+          </div>
+          <div class="pref__card">
+            <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l5 5h-3.5v10H17l-5 5-5-5h3.5V7H7z"/></svg>A natural vertical scroll</h4>
+            <p class="pref__body">Photo and information card layouts from <b class="pref-num">.03</b> were preferred for their natural vertical scroll.</p>
+          </div>
+        </div>
+
+        <div class="pref">
+          <div class="pref__visual pref__visual--stack">
+            <svg class="pref-crop pref-crop--twin pref-crop--twin-a" viewBox="0 4 238 182" aria-hidden="true"><image href="images/midfi/home-initial-1.svg" width="238" height="517"/></svg>
+            <svg class="pref-crop pref-crop--twin pref-crop--twin-b" viewBox="0 20 238 182" aria-hidden="true"><image href="images/midfi/ce/ce-initial-1.svg" width="238" height="517"/></svg>
+            <span class="pref-twin__sign" aria-hidden="true">&asymp;</span>
+            <span class="mark mark--ask" style="left:61%;top:2%" aria-label="Home page: unclear"></span>
+            <span class="mark mark--ask" style="left:97%;top:54%" aria-label="Community events page: unclear"></span>
+          </div>
+          <div class="pref__card">
+            <h4 class="pref__title"><svg class="iter-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M4 3h10a1 1 0 011 1v3h-2V5H5v10h3v2H4a1 1 0 01-1-1V4a1 1 0 011-1zm6 6h10a1 1 0 011 1v10a1 1 0 01-1 1H10a1 1 0 01-1-1V10a1 1 0 011-1zm1 2v8h8v-8z"/></svg>Telling the pages apart</h4>
+            <p class="pref__body">Users expressed concern with differentiating between the home and community events pages.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split__rule" aria-hidden="true"></div>
+    </div>
+
+      <p class="midfi-eyebrow final-eyebrow">Final iteration</p>
+
+      <div class="final-stage" style="--x0:37.44;--y0:46;--sw:734.56;--sh:688.55">
+        <img class="final-p final-phone" style="--x:170.4;--y:64.4;--w:219.1" src="images/midfi/ce/final/ce-final-1.svg" width="238" height="720" loading="lazy" alt="Final mid-fi community events page: header with create, saved and past events; weekly photo challenge with more detail; vertical feed of event cards">
+        <img class="final-p final-phone" style="--x:413.1;--y:57;--w:233.83" src="images/midfi/ce/final/ce-final-2.svg" width="254" height="736" loading="lazy" alt="Final mid-fi event page: Golden Hour challenge with time remaining, prompt, map of the location, and hidden submissions">
+
+        <img class="final-p" style="--x:37.44;--y:120;--w:118.31" src="images/midfi/ce/final/textbox1.svg" width="184" height="77" loading="lazy" alt="Create Event, Saved Events, Past Events in order">
+        <img class="final-p" style="--x:37.44;--y:300;--w:111.88" src="images/midfi/ce/final/textbox2.svg" width="174" height="96" loading="lazy" alt="Weekly Photo Challenge. This time displaying more information.">
+        <img class="final-p" style="--x:37.44;--y:510;--w:107.38" src="images/midfi/ce/final/textbox3.svg" width="167" height="77" loading="lazy" alt="Vertical scroll similar to the home feed">
+        <img class="final-p" style="--x:662.69;--y:270;--w:109.31" src="images/midfi/ce/final/textbox4.svg" width="170" height="58" loading="lazy" alt="Map showing location of event">
+        <img class="final-p" style="--x:668.48;--y:512;--w:103.52" src="images/midfi/ce/final/textbox5.svg" width="161" height="58" loading="lazy" alt="Submissions are anonymous">
+
+        <svg class="final-lines" viewBox="37.44 46 734.56 688.55" aria-hidden="true">
+          <defs>
+            <linearGradient id="cl1" gradientUnits="userSpaceOnUse" x1="349.5" y1="0" x2="159.5" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="cl2" gradientUnits="userSpaceOnUse" x1="184" y1="0" x2="153.1" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="cl3" gradientUnits="userSpaceOnUse" x1="184" y1="0" x2="148.6" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="cl4" gradientUnits="userSpaceOnUse" x1="622" y1="0" x2="658.9" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="cl5" gradientUnits="userSpaceOnUse" x1="617" y1="0" x2="664.7" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient>
+            <linearGradient id="cl6" gradientUnits="userSpaceOnUse" x1="340" y1="0" x2="450" y2="0"><stop stop-color="#96CDFA"/><stop offset="1" stop-color="#597994"/></linearGradient>
+          </defs>
+          <path d="M349.5 100L349.5 56A6 6 0 0 0 343.5 50L171.5 50A6 6 0 0 0 165.5 56L165.5 149A3 3 0 0 1 162.5 152L159.5 152" stroke="url(#cl1)"/>
+          <path d="M184 239L171.5 239A6 6 0 0 0 165.5 245L165.5 339A6 6 0 0 1 159.5 345L153.1 345" stroke="url(#cl2)"/>
+          <path d="M184 470L171.5 470A6 6 0 0 0 165.5 476L165.5 539A6 6 0 0 1 159.5 545L148.6 545" stroke="url(#cl3)"/>
+          <path d="M622 420.6L644.5 420.6A6 6 0 0 0 650.5 414.6L650.5 292.8A4.2 4.2 0 0 1 654.7 288.6L658.9 288.6" stroke="url(#cl4)"/>
+          <path d="M617 580.1L644.5 580.1A6 6 0 0 0 650.5 574.1L650.5 536.6A6 6 0 0 1 656.5 530.6L664.7 530.6" stroke="url(#cl5)"/>
+          <path class="final-lines__dot" d="M156 152L159.5 148.5L163 152L159.5 155.5Z" fill="#96CDFA"/>
+          <path class="final-lines__dot" d="M149.6 345L153.1 341.5L156.6 345L153.1 348.5Z" fill="#96CDFA"/>
+          <path class="final-lines__dot" d="M145.1 545L148.6 541.5L152.1 545L148.6 548.5Z" fill="#96CDFA"/>
+          <path class="final-lines__dot" d="M655.4 288.6L658.9 285.1L662.4 288.6L658.9 292.1Z" fill="#96CDFA"/>
+          <path class="final-lines__dot" d="M661.2 530.6L664.7 527.1L668.2 530.6L664.7 534.1Z" fill="#96CDFA"/>
+          <!-- the flow: tapping the Golden Hour card (or View Event) opens its page -->
+          <g class="final-flow">
+            <circle cx="340" cy="443.5" r="7" stroke="url(#cl6)"/>
+            <circle class="final-lines__dot" cx="340" cy="443.5" r="2.5" fill="#96CDFA"/>
+            <path d="M347 443.5H397A8 8 0 0 0 405 435.5V164A8 8 0 0 1 413 156H450" stroke="url(#cl6)"/>
+            <path d="M444.5 151.5L450 156L444.5 160.5" stroke="#597994" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    </figure>
+
+    <!-- the rest of the app: pages my teammates led, kept light -->
+    <figure class="more">
+      <p class="midfi-eyebrow more__eyebrow">The rest of the app</p>
+      <p class="prompt__cue more__cue">My teammates led these pages. They&rsquo;re here so you can see the full app.<span class="zoom-hint zoom-hint--inline"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</span></p>
+      <div class="more__row">
+        <figure class="more__group">
+          <div class="more__pair">
+            <img src="images/midfi/more/photomap-1.svg" width="209" height="451" loading="lazy" alt="Photo map: map of nearby photo spots">
+            <img src="images/midfi/more/photomap-2.svg" width="210" height="456" loading="lazy" alt="Photo map: a highlighted area with the photos taken there">
+          </div>
+          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3l6 2 6-2v16l-6 2-6-2-6 2V5zm1 2.4v13.2l4 1.33V6.73z"/></svg> Photo map</figcaption>
+        </figure>
+        <figure class="more__group">
+          <div class="more__pair">
+            <img src="images/midfi/more/upload-1.svg" width="209" height="454" loading="lazy" alt="Photo upload: picking a shot from the camera roll">
+            <img src="images/midfi/more/upload-2.svg" width="210" height="454" loading="lazy" alt="Photo upload: adding a title, location and tags before posting">
+          </div>
+          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l5 5h-3.5v6h-3V8H7zM4 15h3v3h10v-3h3v5a1 1 0 01-1 1H5a1 1 0 01-1-1z"/></svg> Photo upload</figcaption>
+        </figure>
+        <figure class="more__group">
+          <div class="more__pair">
+            <img src="images/midfi/more/profile-1.svg" width="209" height="455" loading="lazy" alt="Profile: bio, top achievements and posts">
+            <img src="images/midfi/more/profile-2.svg" width="210" height="457" loading="lazy" alt="Profile: unlocked and locked achievements">
+          </div>
+          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 10.5c4.4 0 8 2.4 8 5.5V21H4v-2c0-3.1 3.6-5.5 8-5.5z"/></svg> Profile</figcaption>
+        </figure>
+      </div>
+    </figure>
+
+    <!-- usability testing: what the two rounds turned up, page by page -->
+    <p class="prompt__cue research-sub usab-cue">Usability Testing</p>
+    <h3 class="research__heading">What do the streets think?</h3>
+    <p class="research__body">After the mid-fi prototypes, we ran <strong>2 rounds of usability testing</strong> with <strong>8 UC Davis students</strong>. Each round surfaced <strong>friction points</strong> in our flows, and those findings drove every change from my initial iterations to the final home and community events pages.</p>
+
+    <div class="themes usab">
+      <div class="theme">
+        <h4 class="theme__title"><svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 7.5V20a1 1 0 01-1 1h-5.5v-6h-5v6H4a1 1 0 01-1-1v-9.5z"/></svg>Home</h4>
+        <p class="theme__body">Features felt natural and easy to reach, but users couldn&rsquo;t tell home and events apart.</p>
+      </div>
+      <div class="theme">
+        <h4 class="theme__title"><svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h2v2h6V2h2v2h2a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2zm-2 7v10h14V9z"/></svg>Community Events</h4>
+        <p class="theme__body">The banner, trophy icon and saved events all led somewhere users didn&rsquo;t expect.</p>
+      </div>
+      <div class="theme">
+        <h4 class="theme__title"><svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l5 5h-3.5v6h-3V8H7zM4 15h3v3h10v-3h3v5a1 1 0 01-1 1H5a1 1 0 01-1-1z"/></svg>Upload</h4>
+        <p class="theme__body">Submitting to an event made users pick the same event twice.</p>
+      </div>
+      <div class="theme">
+        <h4 class="theme__title"><svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3l6 2 6-2v16l-6 2-6-2-6 2V5zm1 2.4v13.2l4 1.33V6.73z"/></svg>Photo Map</h4>
+        <p class="theme__body">Too many unlabeled icons and pins. Users found features by trial and error, and +/&minus; zoom felt unnecessary on a phone.</p>
+      </div>
+      <div class="theme">
+        <h4 class="theme__title"><svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 10.5c4.4 0 8 2.4 8 5.5V21H4v-2c0-3.1 3.6-5.5 8-5.5z"/></svg>Profile</h4>
+        <p class="theme__body">Achievements were unclear; asked to edit them, users wandered across pages.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="sec-rule">
+
+  <section class="research" id="hifi">
+    <p class="prompt__label">05. Hi-Fi Prototyping</p>
+    <p class="prompt__cue">Design System</p>
+    <h2 class="research__heading">Final touches to the UI</h2>
+    <p class="research__body">To keep every page consistent, we built a design system that standardized <strong>typography</strong>, <strong>color</strong> and <strong>components</strong>. Albert Sans keeps text clean and easy to read, a simple palette lets the photos stand out, and <strong>reusable components</strong> kept the team in sync. I built my high-fidelity screens on this foundation for a <strong>polished</strong> experience.</p>
+
+    <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
+
+    <div class="ds">
+      <figure class="ds__part">
+        <p class="midfi-eyebrow ds__eyebrow">Typography</p>
+        <div class="ds__card"><img src="images/hifi/ds-1.svg" width="280" height="350" loading="lazy" alt="Typography: Albert Sans in four styles, Title/Header 1 bold 24px, Header 2 semibold 20px, Body regular 16px, Caption regular 12px"></div>
+      </figure>
+      <figure class="ds__part">
+        <p class="midfi-eyebrow ds__eyebrow">Color</p>
+        <div class="ds__card"><img src="images/hifi/ds-2.svg" width="265" height="349" loading="lazy" alt="Color: blue #35A3FC primary, off-black #353935 body text, off-white #F8F8F8 background, gray #C3D6E4 helper text"></div>
+      </figure>
+      <figure class="ds__part">
+        <p class="midfi-eyebrow ds__eyebrow">Components</p>
+        <div class="ds__card"><img src="images/hifi/ds-3.svg" width="298" height="412" loading="lazy" alt="Components: nav bars, page headers, filter chips, toggles, icons and buttons"></div>
+      </figure>
+    </div>
   </section>
 
 </main>
@@ -2269,6 +2757,13 @@ a, button, .nv, [role="button"],
     var nav = document.querySelector('.nav');
     var btn = document.querySelector('.nav__toggle');
     if (!nav || !btn) return;
+    /* phones start with the rail collapsed, as on the home page */
+    if (window.innerWidth <= 640) {
+      nav.classList.remove('nav--open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Expand navigation');
+      btn.setAttribute('data-tip', 'Expand');
+    }
     btn.addEventListener('click', function () {
       var open = nav.classList.toggle('nav--open');
       btn.setAttribute('aria-expanded', open);
@@ -2303,7 +2798,7 @@ a, button, .nv, [role="button"],
 <script>
   /* user flows and lo-fi sketches: click one to view it large; click, or press Esc, to close */
   (function () {
-    var imgs = document.querySelectorAll('.flow-grid img, .lofi__card img, .iter img, .final-phone');
+    var imgs = document.querySelectorAll('.flow-grid img, .lofi__card img, .iter img, .final-phone, .more__pair img, .ds img, .ia-grid img, .survey__card');
     if (!imgs.length) return;
     var box = null;
     function close() {
@@ -2315,7 +2810,7 @@ a, button, .nv, [role="button"],
     imgs.forEach(function (img) {
       img.addEventListener('click', function () {
         box = document.createElement('div');
-        box.className = 'lightbox';
+        box.className = img.matches('.final-phone, .more__pair img') ? 'lightbox lightbox--phone' : 'lightbox';
         box.setAttribute('role', 'dialog');
         box.setAttribute('aria-label', img.alt);
         var big = document.createElement('img');
