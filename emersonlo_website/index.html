@@ -723,7 +723,7 @@ a, button, .nv, .tile, [role="button"],
 
 .r-wide   { aspect-ratio: 4 / 3; }
 .r-tall   { aspect-ratio: 3 / 2; }
-.r-short  { aspect-ratio: 13 / 10; }   /* JVMC — a touch taller than the 7:5 mockup, which scales to the height and trims only empty grey at the sides */
+.r-short  { aspect-ratio: 13 / 10; }   /* JVMC, JASS, Bitewise — a touch taller than the 7:5 mockup, which scales to the height and trims only empty grey at the sides */
 .r-xshort { aspect-ratio: 7 / 4; }   /* shorter than r-short — HackDavis */
 
 /* artwork inside a card, placed in the card's own proportions */
@@ -1548,7 +1548,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
     <div class="grid">
 
       <div class="col">
-        <a class="tile" id="hackdavis" href="#">
+        <a class="tile" id="hackdavis" href="preview/hackdavis.html">
           <div class="tile__vis r-xshort">
             <div class="tile__art tile__art--hd">
               <img class="hd__wave" src="images/hackdavis/wave.png" width="1969" height="2651" alt="">
@@ -1561,11 +1561,13 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
         </a>
 
-        <a class="tile" id="jass" href="#">
-          <div class="tile__vis r-wide"></div>
+        <a class="tile" id="bitewise" href="#">
+          <div class="tile__vis r-short">
+            <iframe class="tile__mock" src="../Bitewise/Bitewise_Card/index.html" title="Bitewise app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+          </div>
           <div class="tile__meta">
-            <h3 class="tile__title"><span class="tile__name">Japanese American Student Society</span><span class="tile__year">2024</span></h3>
-            <p class="tile__sub">Club Website</p>
+            <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
+            <p class="tile__sub">Dietary App</p>
           </div>
         </a>
       </div>
@@ -1581,17 +1583,19 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
         </a>
 
-        <a class="tile" id="bitewise" href="#">
-          <div class="tile__vis r-tall"></div>
+        <a class="tile" id="jass" href="#">
+          <div class="tile__vis r-short">
+            <iframe class="tile__mock" src="../JASS/JASS_Card/index.html" title="JASS website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+          </div>
           <div class="tile__meta">
-            <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
-            <p class="tile__sub">Dietary App</p>
+            <h3 class="tile__title"><span class="tile__name">Japanese American Student Society</span><span class="tile__year">2024</span></h3>
+            <p class="tile__sub">Club Website</p>
           </div>
         </a>
       </div>
 
       <div class="col">
-        <a class="tile" id="jvmc" href="#">
+        <a class="tile" id="jvmc" href="preview/jvmc.html">
           <div class="tile__vis r-short">
             <iframe class="tile__mock" src="../JVMC/JVMC_Card/index.html" title="JVMC website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
@@ -1647,7 +1651,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
     tile.addEventListener('mouseleave', function () { v.pause(); });
   });
 
-  /* the card mockups (Pikspot, JVMC) loop on their own, no hover needed. Each only
+  /* the card mockups (Pikspot, JVMC, JASS, Bitewise) loop on their own, no hover needed. Each only
      rests while the card is scrolled out of view (nobody can see it, so
      it saves the battery), and stays still if reduced motion is asked for. */
   document.querySelectorAll('.tile__mock').forEach(function (frame) {

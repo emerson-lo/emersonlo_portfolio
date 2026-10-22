@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:#F5F5F4;} a{color:rgb(44,56,104);} a:hover{color:rgb(244,127,143);}</style>
+<script>window.OM_SCENES = '[{"name":"Intro","dur":2.0,"desc":"Hero settles, both sites scroll to Who We Are"},{"name":"About","dur":2.4,"desc":"Phone swipes to the Japanese slide; both scroll to Join us for our..."},{"name":"Events","dur":3.0,"desc":"Cursor hovers each event card and clicks RSVP; phone swipes the events carousel"},{"name":"Return","dur":1.8,"desc":"Both glide back to the top for a seamless loop"}]';</script>
+<script>window.OM_PLAYBACK = '{"mode":"loop"}';</script>
+</helmet>
+<x-import component-from-global-scope="JASSVideo" from="./animations-v3.jsx ./jass-piece.jsx" hint-size="100%,100%" style="position:fixed;inset:0;"></x-import>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,2580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+  /* case study pages open at the top, same as the landing page */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HackDavis — Emerson Lo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400&family=Lexend:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<!-- Sentient is a Fontshare face, not a Google one — it needs its own sheet -->
+<link href="https://api.fontshare.com/v2/css?f%5B%5D=sentient@400,500,700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   HackDavis — case study
+   Structure follows the reference case-study layout: a fixed
+   section rail on the left, a hero band, then the project
+   metadata grid beneath a hairline.
+   ============================================================ */
+
+:root {
+  --ink: #2E312E;
+  --ink-soft: #4A4E4A;
+  --gray: #8A8D8A;
+  --gray-soft: #A8ABA7;
+  --hair: #DFDFDB;
+  --paper: #FFFFFF;          /* white, same as the home page */
+  --nav-w: 72px;
+  --sec-gap: clamp(40px, 6vh, 65px);   /* half the space between numbered sections — the rule sits in the middle */
+  /* the Figma "PhotoSpots Blue" text gradient: #96CDFA at 0% → #597994 at 29% */
+  --blue-grad: linear-gradient(140deg, #B7D94A, #6FBF3A);   /* this project's accent (its nav chip colours); the name is kept so every shared rule picks it up */
+
+  --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --mark: "Sentient", var(--serif);
+  --serif: "Merriweather", "Times New Roman", serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   CURSOR — a green dot in place of the arrow, matching the home
+   page.  Whole feature lives in this block; delete it to get the
+   system cursor back.  The colour is baked into the SVG, since a
+   data URI can't read a custom property.  The pair of numbers
+   after the url is the hotspot — the dot's centre.
+   ============================================================ */
+
+body {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5' fill='%234CC46A'/%3E%3C/svg%3E") 7 7, auto;
+}
+
+a, button, .nv, [role="button"],
+.nav__toggle, .nv--hint, .btn {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='9' fill='%234CC46A'/%3E%3C/svg%3E") 12 12, pointer;
+}
+
+@media (pointer: coarse) {
+  body,
+  a, button, .nv, [role="button"],
+  .nav__toggle, .nv--hint, .btn { cursor: auto; }
+}
+
+/* =========================== NAV =========================== */
+/* this page's ink is a touch lighter than the home page's; pin the
+   rail to the home values so it matches exactly */
+.nav { --ink: #23261F; --hair: #E6E6E2; --paper: #FFFFFF; }
+
+
+.nav {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--nav-w);
+  background: #fff;
+  border-right: 1px solid #E6E6E2;
+  /* 32px of air above the mark, matched by the 32px below it */
+  padding: 32px 0 22px;
+  /* safety net: on a short window the rail scrolls instead of
+     burying the toggle below the fold */
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 50;
+  transition: width .3s cubic-bezier(.22,1,.36,1),
+              box-shadow .3s cubic-bezier(.22,1,.36,1);
+}
+
+/* ---- expanded rail ---- */
+
+.nav--open {
+  width: 196px;
+  align-items: flex-start;
+  box-shadow: none;           /* no shadow — the right edge is just the 1px hairline */
+}
+
+/* the logo tile grows and moves onto the shared left edge */
+.nav--open .nav__mark {
+  width: 76px;
+  height: 56px;
+  margin-left: 28px;          /* on the same left edge as the links below */
+}
+
+
+/* open: everything starts from one shared left edge (22px in) rather
+   than being centred in the icon column — squares, contact icons,
+   section headers and the top links all line up on it */
+.nav--open .nav__group { align-items: flex-start; padding-left: 28px; }
+.nav--open .nv { justify-items: start; }
+
+/* the hover pill becomes a plain standing label. It takes pointer
+   events here, so the text itself is the hover and click target */
+.nav--open .nv__label {
+  opacity: 1;
+  transform: translate(0, -50%);
+  background: none;
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0;
+  left: 19px;                 /* 7px square + 12px gap */
+  pointer-events: auto;
+  transition: color .2s ease;
+  white-space: normal;        /* long project names wrap instead of overflowing */
+  width: 148px;
+  line-height: 1.2;           /* tightened so two-line names clear each other */
+}
+
+/* the two long project names wrap to two lines and were landing 2px
+   apart; a little row spacing keeps them legible as separate items */
+.nav--open .nav__work { gap: 4px; }
+
+/* hover lives on the text only: a small step darker, nothing else */
+.nav--open .nv[aria-current="page"] .nv__label { color: var(--ink); }
+
+/* hover: the text turns the grey of the hero name — no movement */
+.nav--open .nv__label:hover { color: #6E716C; }
+
+/* contact icons are 15px wide, so their text sits a little further in */
+.nav--open .nav__contact .nv__label { left: 24px; }
+
+/* PRODUCT / WEBSITE / CONTACT: set like the page's "MY WORK" eyebrow,
+   flush with the shared left edge, and inert — no hover of any kind */
+.nav--open .nv--hint .nv__label {
+  left: 0;
+  color: var(--gray);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* their icons only stand in for them while the rail is collapsed */
+.nav--open .nv--hint svg { display: none; }
+
+/* About / Idea / Resume: no marker, so the text starts on the edge */
+.nav--open .nav__links .nv__label {
+  left: 0;
+  font-size: 21px;
+  font-weight: 500;
+  -webkit-text-stroke: .35px currentColor;   /* a hair bolder than 500, on any font */
+  color: var(--ink);            /* black, no glow */
+}
+
+/* the top links' icons only stand in for them while collapsed */
+.nav--open .nav__links svg { display: none; }
+
+/* Phone: the number replaces the word on hover (open or collapsed) */
+.nv--phone .ph-b { display: none; }
+.nv--phone:hover .ph-a, .nv--phone:focus-visible .ph-a { display: none; }
+.nv--phone:hover .ph-b, .nv--phone:focus-visible .ph-b { display: inline; }
+
+/* a lighter version of the link's own ink colour, not an accent swap */
+/* these already use the hero grey, so their hover goes a step lighter */
+.nav--open .nav__links .nv__label:hover { color: #9A9D99; }   /* grey on hover */
+
+/* open: every row sizes to its own text instead of a fixed 38px slot,
+   so one-line and two-line names sit the same distance apart and the
+   header-to-list spacing reads like a compact index */
+.nav--open .nv {
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav--open .nv__label { position: static; transform: none; }
+.nav--open .nav__work,
+.nav--open .nav__contact { gap: 7px; }
+.nav--open .nv--hint { margin-bottom: 5px; }
+.nav--open .nav__links { gap: 18px; }
+
+/* the collapsed rail's tooltip slide (translate on hover) must not
+   reach the open rail's in-flow labels, or the text jumps up */
+.nav--open .nv:hover .nv__label,
+.nav--open .nv:focus-visible .nv__label { transform: none; }
+
+/* toggle */
+.nav__toggle {
+  width: 72px;
+  height: 38px;
+  margin-top: 14px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: #B8BBB7;
+  transition: color .22s ease;
+}
+
+.nav__toggle:hover { color: var(--ink); }
+
+/* hover tip saying what the arrow does. Open rail: sits to the right of
+   the arrow. Collapsed rail (72px wide, clips sideways): sits above it.
+   The text comes from data-tip, which the toggle script keeps current. */
+.nav__toggle { position: relative; }
+
+.nav__toggle::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  translate: -50% 2px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  background: #1B1E19;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, translate .25s cubic-bezier(.22,1,.36,1);
+}
+
+.nav--open .nav__toggle::after {
+  left: calc(50% + 16px);
+  bottom: auto;
+  top: 50%;
+  translate: -4px -50%;
+}
+
+.nav__toggle:hover::after,
+.nav__toggle:focus-visible::after { opacity: 1; translate: -50% -4px; }
+
+.nav--open .nav__toggle:hover::after,
+.nav--open .nav__toggle:focus-visible::after { translate: 0 -50%; }
+
+.nav__toggle svg {
+  width: 17px; height: 17px;
+  fill: none; stroke: currentColor;
+  stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform .5s cubic-bezier(.22,1,.36,1);
+}
+
+.nav--open .nav__toggle svg { transform: rotate(180deg); }
+
+/* the LoLogo mark, set in a soft grey tile; it links home */
+.nav__mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 32px;
+  border-radius: 6px;
+  background: #EDEDEB;
+  text-decoration: none;
+  transition: width .3s cubic-bezier(.22,1,.36,1),
+              height .3s cubic-bezier(.22,1,.36,1),
+              margin .3s cubic-bezier(.22,1,.36,1),
+              box-shadow .3s ease   /* height and margin move together, so the rows below never shift */;
+}
+
+.nav__mark img { display: block; width: 74%; height: auto; }
+
+/* hover: a soft blurred glow around the tile */
+.nav__mark:hover { box-shadow: 0 0 16px rgba(20,22,20,.16); }
+
+/* the icon column keeps a fixed width matching --nav-w, so nothing
+   shifts sideways when the rail widens — only the labels arrive */
+.nav__group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 72px;
+  flex: none;
+}
+
+.nav::-webkit-scrollbar { display: none; }
+
+.nav__links { margin-top: 30px; gap: 5px; }
+
+/* a full-width hairline between nav groups — a sibling of .nav__group
+   rather than nested inside it, so 100% resolves against the rail's
+   own width (72px collapsed, 196px open) and runs edge to edge in
+   both states with no separate open/collapsed rule needed */
+.nav__sep {
+  width: 100%;
+  height: 1px;
+  background: #E6E6E2;
+  margin: 20px 0;
+}
+
+/* Product → Website: same space, no line */
+.nav__sep--blank { background: none; margin: 13px 0; }
+
+/* every section is separated by the same 20px + rule + 20px */
+
+/* --- one hit target: icon or swatch, plus its hover label --- */
+
+.nv {
+  position: relative;
+  width: 30px;
+  height: 38px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  color: #A4A7A3;
+  transition: color .22s ease;
+}
+
+.nv:hover, .nv[aria-current="page"] { color: var(--ink); }
+
+/* the "these are previous works" marker — a label, not a link */
+/* pointer-events:none makes it fully inert: no colour change, no
+   tooltip, no pointer cursor — in either rail state */
+.nv--hint { color: #C6C9C5; height: 34px; pointer-events: none; }
+.nv--hint svg { width: 15px; height: 15px; }
+
+.nv svg {
+  width: 18px; height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nv--contact svg { fill: currentColor; stroke: none; width: 15px; height: 15px; }
+
+/* contact icons take each service's own colour on hover */
+.nv--contact svg { transition: fill .22s ease; }
+.nv--linkedin:hover svg { fill: #0A66C2; }              /* LinkedIn blue */
+.nv--email:hover svg    { fill: url(#gmailGrad); }      /* the Gmail colours */
+.nv--phone:hover svg    { fill: #25D366; }              /* WhatsApp green */
+
+/* work shortcut = an icon for the project, grey like the contact icons;
+   on hover it fills with the project's gradient (the old chip colour).
+   The icon is a mask, so the same box can show grey or the gradient */
+.nv__chip {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  background: currentColor;
+  -webkit-mask: var(--ic) center / contain no-repeat;
+          mask: var(--ic) center / contain no-repeat;
+}
+.nv__chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grad);
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+.nv:hover .nv__chip::after,
+.nv[aria-current="page"] .nv__chip::after { opacity: 1; }
+
+.c-hackdavis { --grad: linear-gradient(140deg, #B7D94A, #6FBF3A); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14'/%3E%3C/svg%3E"); }
+.c-pikspot   { --grad: linear-gradient(90deg, #96CDFA 0%, #96CDFA 25%, #597994 100%); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h3l2-2.5h6L17 8h3v11H4z'/%3E%3Ccircle cx='12' cy='13' r='3.5'/%3E%3C/svg%3E"); }
+.c-jvmc      { --grad: linear-gradient(140deg, #1E7A63, #10604E); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 3h5v6.5H21v5h-6.5V21h-5v-6.5H3v-5h6.5z'/%3E%3C/svg%3E"); }
+.c-jass      { --grad: linear-gradient(140deg, #E8607F, #2B2B54); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5.5c6 1.3 12 1.3 18 0M5 9.5h14M7 6.6V21M17 6.6V21M12 7v2.5'/%3E%3C/svg%3E"); }
+.c-bitewise  { --grad: linear-gradient(140deg, #E0B25C, #8A5A22); --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3v6a2 2 0 004 0V3M9 11v10M17 21V3c-2 1.5-3 4-3 8h3'/%3E%3C/svg%3E"); }
+
+/* --- hover label --- */
+.nv__label {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #1B1E19;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-4px, -50%);
+  transition: opacity .2s ease, transform .32s cubic-bezier(.22,1,.36,1);
+  z-index: 60;
+}
+
+.nv:hover .nv__label,
+.nv:focus-visible .nv__label {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+
+/* ---- collapsed rail keeps the open rail's vertical rhythm ----
+   Every row sits at the same height in both states, so collapsing never
+   pushes anything down — the arrow stays right under the pointer. Rows
+   are laid out exactly as when open; the labels stay in the flow (they
+   set each row's height, two-line names included) but are invisible,
+   and the icons take their place. */
+.nav:not(.nav--open) .nav__mark { width: 40px; height: 40px; margin-block: 8px; }   /* 40 + 16 = the open tile's 56 */
+
+.nav:not(.nav--open) .nav__group { align-items: flex-start; padding-left: 27px; }   /* centres an 18px icon in the 72px rail */
+
+.nav:not(.nav--open) .nv {
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav:not(.nav--open) .nv__label {
+  position: static;
+  transform: none;
+  padding: 0;
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: normal;
+  width: 148px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .15s ease, visibility 0s linear .15s;
+}
+
+.nav:not(.nav--open) .nv--hint .nv__label {
+  font-size: 11.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nav:not(.nav--open) .nav__links .nv__label { font-size: 21px; font-weight: 500; -webkit-text-stroke: .35px currentColor; }
+
+.nav:not(.nav--open) .nav__work,
+.nav:not(.nav--open) .nav__contact { gap: 7px; }
+.nav:not(.nav--open) .nv--hint { margin-bottom: 5px; }
+.nav:not(.nav--open) .nav__links { gap: 18px; }
+
+/* every icon centred in the same 18px column */
+.nav:not(.nav--open) .nv__chip { margin: 0 1.5px; }
+.nav:not(.nav--open) .nv__br { display: none; }   /* the collapsed hover label stays on one line */
+.nav:not(.nav--open) .nv--contact svg { margin: 0 1.5px; }
+.nav:not(.nav--open) .nv--hint svg { width: 13px; height: 13px; margin: 0 2.5px; }   /* no taller than the header text it replaces */
+
+/* collapsed rail: the arrow's tip can't sit inside a 72px rail that
+   clips sideways, so it's a separate element beside the rail, to the
+   right of the arrow (see the nav-tip script) */
+.nav:not(.nav--open) .nav__toggle::after { display: none; }
+
+.nav-tip {
+  position: fixed;
+  z-index: 70;
+  translate: -4px -50%;
+  padding: 5px 7px;
+  border-radius: 5px;
+  background: #1B1E19;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, translate .25s cubic-bezier(.22,1,.36,1);
+}
+
+.nav-tip.is-shown { opacity: 1; translate: 0 -50%; }
+
+/* =========================== HERO =========================== */
+
+.main {
+  margin-left: var(--nav-w);
+  overflow-x: clip;     /* wide decorative art (the vs. glow) never adds a sideways scroll */
+  transition: margin-left .5s cubic-bezier(.22,1,.36,1);
+}
+
+.nav--open ~ .main { margin-left: 196px; }
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  /* the band fills the window except a strip at the bottom, where the top of the
+     case study title peeks in as a cue to scroll */
+  height: calc(100vh - 140px);
+  min-height: 460px;
+  padding: 0 clamp(30px, 5vw, 78px);
+}
+/* the backdrop: a small pre-rendered gradient image (pale sky at the top, white
+   through the middle, soft cool grey at the floor) stretched smooth. It lives on
+   its own layer and is sized to the window rather than the band, so when the
+   nav opens or closes it only slides; nothing gets repainted */
+.hero__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  background: url("images/hero/hero-bg.png") center / 100% 100% no-repeat;
+  will-change: transform;
+  pointer-events: none;
+}
+/* a quiet pill in the lower left of the band, in eyebrow type */
+.hero__proto {
+  position: absolute;
+  /* left edge lines up with the tip of the back arrow above (same inset from
+     the nav, plus the arrow's 8px inset inside its hover circle) */
+  left: calc(clamp(18px, 2.2vw, 28px) + 8px);
+  bottom: clamp(24px, 4vw, 44px);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 16px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color .2s ease, border-color .2s ease;
+}
+.hero__proto:hover { color: var(--ink); border-color: #C9CBC7; }
+/* a line icon like the zoom magnifier: 1.8 stroke, rounded */
+.hero__proto svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* the wooden hand rises from the bottom edge, holding the phone up on the right */
+.hero__hand {
+  position: absolute;
+  left: 50%;
+  translate: -45% 0;   /* the phone sits a little left of the image's middle, so this centres the phone */
+  bottom: -10%;   /* sits lower in the band; the wrist runs off the bottom edge */
+  height: 112%;   /* taller than the band, so the hand fills more of it */
+  aspect-ratio: 3234 / 3253;   /* the mockup's original canvas, so placement is unchanged */
+  pointer-events: none;
+  user-select: none;
+}
+/* every part is placed in the canvas's own proportions */
+.hero__hand > img { position: absolute; display: block; }
+.hero__frame { left: 23.5%; top: 17.893%; width: 63%; height: 82.107%; z-index: 1; }
+.hero__screen {
+  left: 31.1%;
+  top: 19.78%;
+  width: 26.65%;
+  height: 56.86%;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 12% / 5.6%;
+}
+/* the home screen fades in and out over the map: 4s each, a 0.6s crossfade */
+.hero__screen--home { animation: heroSwap 9.2s ease-in-out infinite; }
+@keyframes heroSwap {
+  0%, 43.5%  { opacity: 1; }
+  50%, 93.5% { opacity: 0; }
+  100%       { opacity: 1; }
+}
+
+/* the faded blue glow, kept from the reference — it sits behind the
+   device shot, anchoring the right side of the band */
+.hero__glow {
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  width: clamp(360px, 38vw, 620px);
+  aspect-ratio: 1 / 1;
+  translate: 0 -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(120,172,228,.52) 0%,
+    rgba(142,187,235,.34) 30%,
+    rgba(170,205,238,.16) 52%,
+    rgba(190,216,240,.05) 70%,
+    rgba(190,216,240,0) 82%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+/* the device shot sits on top of the glow, right where it was left
+   room to go */
+.hero__device {
+  position: absolute;
+  top: 50%;
+  right: 20%;
+  width: clamp(170px, 17vw, 220px);   /* a bare phone shot, tall and narrow — sized by height, not the hand shot's width */
+  translate: 0 -50%;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero__inner { position: relative; z-index: 1; max-width: 640px; }
+
+.hero__year {
+  font-size: 17px;
+  letter-spacing: .16em;
+  color: var(--gray-soft);
+  margin: 0 0 10px;
+}
+
+.hero__title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(60px, 7.4vw, 112px);
+  line-height: 1.02;
+  letter-spacing: -.015em;
+  margin: 0 0 22px;
+  color: #232622;
+}
+
+.hero__lede {
+  font-size: clamp(19px, 1.6vw, 24px);
+  line-height: 1.5;
+  color: var(--gray);
+  margin: 0 0 38px;
+  max-width: 30em;
+}
+
+.hero__actions { display: flex; flex-wrap: wrap; gap: 14px; }
+
+.btn {
+  font-size: 17.5px;
+  letter-spacing: -.01em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border: 1px solid #CFCFC9;
+  border-radius: 999px;
+  padding: 16px 28px;
+  background: rgba(255,255,255,.5);
+  transition: background .25s ease, border-color .25s ease,
+              color .25s ease, transform .4s cubic-bezier(.22,1,.36,1);
+}
+
+.btn:hover {
+  background: #fff;
+  border-color: #B7B7B0;
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+/* =========================== META =========================== */
+
+.meta {
+  /* the full-width rule closes off the blank hero band, which is
+     reserved for an image */
+  border-top: 1px solid var(--hair);
+  /* bottom value matches .prompt/.research's own padding-bottom, so the
+     gap before every numbered section (Overview → 01 → 02) is identical */
+  padding: 0 clamp(30px, 5vw, 78px) var(--sec-gap);
+  text-align: center;
+}
+
+/* title block above the details: title, lede, rule, story, rule */
+.meta__intro {
+  /* same measure as .prompt / .research: a 1180px box that includes its
+     own side padding, so the left edge and right edge line up with them */
+  max-width: calc(1180px - 2 * clamp(30px, 5vw, 78px));
+  margin: 0 auto clamp(40px, 6vh, 64px);
+  padding-top: clamp(56px, 9vh, 96px);
+  text-align: left;
+}
+
+.intro__title {
+  font-family: var(--sans);        /* the site-wide face (SF Pro on Apple devices) */
+  font-weight: 500;
+  font-size: clamp(44px, 5.6vw, 78px);
+  line-height: 1.1;
+  letter-spacing: -.025em;
+  color: #23261F;
+  margin: 0 0 18px;
+}
+
+.intro__lede {
+  font-size: 21px;
+  line-height: 1.5;
+  color: #ADB0AD;
+  margin: 0 0 clamp(36px, 5vh, 52px);
+}
+
+.intro__story {
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  padding: clamp(28px, 4vh, 40px) 0;
+}
+
+.intro__story p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 1.1em;
+}
+
+.intro__story p:last-child { margin-bottom: 0; }
+
+.meta__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(34px, 5vh, 56px) clamp(24px, 4vw, 60px);
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.meta__label {
+  font-size: 12.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  display: inline-block;
+  background: var(--blue-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 0 0 12px;
+}
+
+.meta__value {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .meta__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .meta__grid { grid-template-columns: 1fr; }
+}
+
+/* --- prompt / problem statement --- */
+
+.prompt {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(30px, 5vw, 78px) var(--sec-gap);
+}
+
+.prompt__label {
+  font-size: 17px;            /* the section numbers: a clear step above the 11.5px eyebrows */
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gray-soft);
+  margin: 0 0 clamp(44px, 5vw, 64px);   /* a clear gap before the section's first label */
+}
+
+/* the label over each heading, in eyebrow style */
+.prompt__cue {
+  font-size: 11.5px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin: 0 0 10px;
+}
+/* captions and asides keep the quiet italic */
+.lofi__cap, .more__cue, .pin-board-cue {
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.pin-board-cue { margin-bottom: 14px; }
+
+.prompt__body {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 36px;
+}
+
+.prompt__hmw {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(22px, 2.6vw, 30px);
+  line-height: 1.45;
+  color: var(--ink);
+  margin: 0;
+}
+
+.prompt__accent {
+  font-weight: 500;
+  background: var(--blue-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* italic letters lean past the end of the box, and the gradient (clipped to the
+     box) stopped short of them; a little extra room on the right, given back by
+     the negative margin, lets the last letter paint in full */
+  padding-right: .14em;
+  margin-right: -.14em;
+  -webkit-box-decoration-break: clone;
+          box-decoration-break: clone;
+}
+
+/* --- research / competitive analysis --- */
+
+.research {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(30px, 5vw, 78px) var(--sec-gap);
+}
+
+.research__heading {
+  font-family: var(--sans);
+  font-style: italic;
+  font-weight: 500;
+  -webkit-text-stroke: .02em currentColor;
+  font-size: clamp(24px, 2.3vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -.015em;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+
+.research__body {
+  font-size: 15px;
+  line-height: 1.6;
+  text-wrap: pretty;   /* no single word left alone on the last line */
+  color: var(--ink-soft);
+  margin: 0 0 48px;
+}
+
+.research__body strong { font-weight: 500; -webkit-text-stroke: .02em currentColor; color: var(--ink); }   /* medium */
+.main strong { font-weight: 500; -webkit-text-stroke: .02em currentColor; }
+
+/* back-to-back paragraphs read as one block, not two sections */
+.research__body:has(+ .research__body) { margin-bottom: 1em; }
+
+/* eyebrow style */
+.pc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin: 0 0 32px;
+}
+
+/* a check for pros, a cross for cons */
+.dot {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.dot--pro { color: #3FAE5C; }
+.dot--pro::before { content: "\2713"; }
+.dot--con { color: #E24C4C; }
+.dot--con::before { content: "\2715"; }
+
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 36px clamp(24px, 6vw, 90px);
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.pc-card__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  -webkit-text-stroke: .035em currentColor;   /* semibold on any font */
+  color: var(--ink);
+  margin: 0 0 18px;
+}
+.pc-logo { flex: none; width: 18px; height: 18px; -webkit-text-stroke: 0; }
+
+.pc-card__pro, .pc-card__con {
+  /* the same grey, size and spacing as the Mobile / Desktop lists */
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--gray);
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .pc-grid { grid-template-columns: 1fr; }
+}
+
+/* separates a new sub-block of "02. Research" from the one above it —
+   noticeably less than the gap between numbered sections */
+/* one gap between every sub-section of a numbered section */
+:root { --sub-gap: clamp(76px, 7.5vw, 104px); }
+.research-sub { margin-top: var(--sub-gap); }
+
+/* --- user survey: chart + findings side by side --- */
+
+.survey-results {
+  display: flex;
+  align-items: center;      /* text sits level with the chart's centre */
+  gap: clamp(24px, 5vw, 64px);
+  margin-top: 36px;
+}
+
+.survey-results__chart {
+  width: clamp(190px, 20vw, 240px);
+  flex: none;
+}
+
+/* thin donut: Spontaneous 67% · Planned 20% · Other 13%.
+   One conic gradient: each slice is a solid, readable band, and the edges
+   are hard stops, no blending */
+.donut {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.donut__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    #597994 0%   67%,    /* Spontaneous 0–67%  */
+    #8EC6F5 67%  87%,    /* Planned    67–87% */
+    #B6BFC8 87% 100%);   /* Other      87–100% */
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 15px), #000 calc(100% - 14px));
+}
+
+.donut__center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.donut__big {
+  font-size: clamp(30px, 3vw, 36px);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.donut__small {
+  margin-top: 6px;
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.donut-legend {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+}
+
+.donut-legend li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.donut-legend b { margin-left: auto; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.donut-legend__sw { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.donut-legend__sw--s { background: #597994; }
+.donut-legend__sw--p { background: #8EC6F5; }
+.donut-legend__sw--o { background: #B6BFC8; }
+.survey-results__text { flex: 1; min-width: 0; transform: translateY(-34px); }   /* nudged up from centre */
+
+@media (max-width: 560px) {
+  .survey-results { flex-direction: column; align-items: flex-start; }
+}
+
+/* --- user surveys: text left; the two survey pages (angled, overlapping) and
+       the donut on the right, the layout of an intro block with a hero visual --- */
+.survey {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+  gap: clamp(40px, 5vw, 80px);
+  align-items: center;   /* the cards sit centred against the whole text column */
+  margin-top: var(--sub-gap);
+}
+.survey__rule { height: 1px; border: 0; background: var(--hair); margin: 28px 0; }
+/* the stat leads in grey and lands in ink, in a step-up size */
+.survey__stat {
+  font-size: clamp(19px, 1.8vw, 23px);
+  font-style: italic;
+  line-height: 1.4;
+  font-weight: 500;
+  -webkit-text-stroke: .015em currentColor;
+  color: var(--gray);
+  margin: 0 0 14px;
+  text-wrap: pretty;
+}
+.survey__stat strong { color: var(--ink); -webkit-text-stroke: .015em currentColor; }
+
+.survey__cards { position: relative; aspect-ratio: 1 / .98; }
+.survey__card {
+  position: absolute;
+  width: 64%;
+  height: auto;
+  border-radius: 14px;
+  /* no forced compositing layer: as a layer the card was painted once as a
+     small bitmap and then rotated, which softened the text. Painted directly,
+     the rotated text is drawn sharp at its real size */
+  box-shadow: var(--lift);
+  cursor: var(--cur-zoom-in);
+}
+/* a layered deck: both pages slanted the same way (a flat 2D slant rather than a
+   3D turn, which the browser would flatten into a soft bitmap; this keeps the
+   text sharp), the back one set a
+   little behind, to the left and lower, so its left and bottom edges peek out */
+.survey__card--front { left: 24%; top: 3%; transform: skewY(-3deg) scaleX(.97); z-index: 1; }
+.survey__card--back  { left: 15%; top: 8%; transform: skewY(-3deg) scaleX(.97); }
+
+/* the results sit under the findings in the text column, on its left edge:
+   a donut and its legend side by side, no card */
+.survey__chart {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--hair);
+}
+.survey__chart .donut { width: 112px; flex: none; }
+.survey__chart .donut__ring {
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+}
+.survey__chart .donut__big { font-size: 21px; }
+.survey__chart .donut__small { margin-top: 3px; font-size: 7.5px; letter-spacing: .1em; }
+.survey__chart .donut-legend { margin: 0; gap: 9px; min-width: 170px; }
+.survey__chart .donut-legend li { font-size: 14px; gap: 10px; }
+
+@media (max-width: 760px) {
+  .survey { grid-template-columns: 1fr; }
+}
+
+/* --- the survey pages, rebuilt in HTML from the live Google Form so the text is
+       sharp at any size: Lexend, the form's cream page and gold accent --- */
+.gf {
+  container-type: inline-size;
+  overflow: hidden;
+  aspect-ratio: 649 / 825;
+  background: #F7F3E9;
+  font-family: "Lexend", -apple-system, "Segoe UI", sans-serif;
+  color: #202124;
+  text-align: left;
+  --u: calc(100cqw / 649);
+}
+.gf p { margin: 0; }
+.gf__banner {
+  height: calc(162 * var(--u));
+  margin: 0 calc(4 * var(--u));
+  border-radius: calc(8 * var(--u)) calc(8 * var(--u)) 0 0;
+  background: url("images/survey/banner.png") center / cover;
+}
+.gf__box {
+  margin: calc(12 * var(--u)) calc(4 * var(--u)) 0;
+  padding: calc(24 * var(--u)) calc(24 * var(--u)) calc(20 * var(--u));
+  background: #fff;
+  border: calc(1 * var(--u)) solid #DADCE0;
+  border-radius: calc(8 * var(--u));
+}
+.gf__box--title { border-top: calc(10 * var(--u)) solid #C7B269; padding-top: calc(18 * var(--u)); padding-bottom: 0; }
+.gf__box--cut { margin-top: calc(-14 * var(--u)); border-top: 0; border-radius: 0 0 calc(8 * var(--u)) calc(8 * var(--u)); padding-top: 0; }
+.gf__title { font-size: calc(32 * var(--u)); line-height: 1.35; margin-bottom: calc(12 * var(--u)) !important; }
+.gf__desc { font-size: calc(14.6 * var(--u)); line-height: 1.55; }
+.gf__desc--gap { margin-top: calc(44 * var(--u)) !important; }
+.gf__desc b, .gf__opt b { font-weight: 600; }
+.gf__req {
+  margin: calc(22 * var(--u)) calc(-24 * var(--u)) 0 !important;
+  padding: calc(14 * var(--u)) calc(24 * var(--u));
+  border-top: calc(1 * var(--u)) solid #DADCE0;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: calc(14 * var(--u));
+  color: #D93025;
+}
+.gf__q { font-size: calc(16 * var(--u)); line-height: 1.5; margin-bottom: calc(14 * var(--u)) !important; }
+.gf__q span { color: #D93025; }
+.gf__opt {
+  position: relative;
+  padding: calc(9 * var(--u)) 0 calc(9 * var(--u)) calc(32 * var(--u));
+  font-size: calc(14.6 * var(--u));
+  line-height: 1.45;
+}
+.gf__opt::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: calc(9 * var(--u));
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  box-sizing: border-box;
+  border: calc(2 * var(--u)) solid #5F6368;
+}
+.gf__opt--radio::before { border-radius: 50%; }
+.gf__opt--check::before { width: calc(18 * var(--u)); height: calc(18 * var(--u)); border-radius: calc(2 * var(--u)); top: calc(10 * var(--u)); }
+.gf__opt--sys { font-family: Roboto, Arial, sans-serif; font-size: calc(14 * var(--u)); color: #3C4043; }
+.gf__opt--other { display: flex; align-items: flex-end; gap: calc(16 * var(--u)); }
+.gf__line { flex: 1; height: 0; border-bottom: calc(1 * var(--u)) solid #DADCE0; margin-bottom: calc(4 * var(--u)); }
+
+.gf__box--first { margin-top: calc(6 * var(--u)); }
+/* the 1–5 linear scale: numbers over the circles, a label at each end */
+.gf__scale {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(5, calc(34 * var(--u))) minmax(0, 1fr);
+  align-items: center;
+  justify-items: center;
+  row-gap: calc(18 * var(--u));
+  column-gap: calc(4 * var(--u));
+  margin-top: calc(18 * var(--u));
+  font-size: calc(14 * var(--u));
+}
+.gf__scale-end { font-size: calc(14 * var(--u)); line-height: 1.3; text-align: center; }
+.gf__scale i {
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+  box-sizing: border-box;
+  border: calc(2 * var(--u)) solid #5F6368;
+  border-radius: 50%;
+}
+/* a long question keeps its asterisk at the far right, as the form does */
+.gf__q--split { display: flex; justify-content: space-between; gap: calc(40 * var(--u)); }
+
+/* on the page the form is drawn 1.5x larger inside the card (a narrower, phone-width
+   view of it) so its text is readable while scanning; the zoom view keeps the full width */
+.survey__card.gf { --u: calc(100cqw / 430); }
+
+/* opened in the zoom view: the same card, drawn large */
+.lightbox .gf--big { width: min(80vw, calc(88vh * 649 / 825)); border-radius: 14px; box-shadow: 0 24px 60px -30px rgba(20,22,20,.35); }
+
+/* --- user interviews: three consistent themes --- */
+
+.themes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px clamp(24px, 4vw, 56px);
+  margin-top: 8px;
+}
+
+.theme__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  background: var(--blue-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 0 0 14px;
+}
+
+/* icons sit at the gradient's start, so they take its first colour */
+.theme__icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: #96CDFA;
+}
+
+.theme__body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--gray);          /* same grey as the "User Interviews / Results" cue */
+  margin: 0;
+}
+
+/* every theme grid (user interviews, usability testing): dark title and black icon, like Mobile / Desktop */
+.themes .theme__title {
+  font-weight: 500;
+  -webkit-text-stroke: .035em currentColor;
+  background: none;
+  color: var(--ink);
+  gap: 8px;
+}
+.themes .theme__icon { width: 18px; height: 18px; fill: #111; -webkit-text-stroke: 0; }
+
+@media (max-width: 700px) {
+  .themes { grid-template-columns: 1fr; }
+}
+
+/* --- Pinterest deep-dive: the FigJam sticky-note board --- */
+
+
+
+.pin-board-wrap {
+  border-radius: 10px;
+  padding: 0;   /* the caption sits 14px above, as the lo-fi captions do */
+  margin: 0;
+}
+
+/* no gap of our own: each note's SVG already carries ~10px of
+   transparent margin on every side for its drop shadow, which is
+   exactly the spacing the original board had between notes */
+/* four narrower columns spread edge to edge. Each note SVG carries 10/149 of
+   empty margin on each side; the board's small negative margins cancel that
+   on the outer notes so their coloured edges meet the text column's edges
+   (worked out for 20%-wide columns) */
+.pin-board {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 0 -1.379%;
+}
+.pin-board > .pin-col { width: 20%; }
+
+.pin-col { display: flex; flex-direction: column; }
+
+.sticky {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: .82;
+}
+
+@media (max-width: 900px) {
+  .pin-board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; }
+  .pin-board > .pin-col { width: auto; }
+}
+
+@media (max-width: 520px) {
+  .pin-board { grid-template-columns: 1fr; }
+}
+
+/* --- entrance, matching the landing page's restraint --- */
+
+.rise {
+  animation: rise-in .9s cubic-bezier(.22,1,.36,1) backwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes rise-in {
+  from { opacity: 0; translate: 0 20px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; }
+  .btn { transition: none; }
+}
+/* --- synthesis: mobile vs. desktop comparison --- */
+
+/* the SVG is the blue hourglass + "vs." with its glow; it sits centred
+   behind a three-column grid whose middle column is the hourglass */
+.versus {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(92px, 11vw, 125px) minmax(0, 1fr);
+  /* both columns hang from the same top edge, so the two titles and the
+     first bullets line up; the padding drops the pair to the hourglass's
+     middle */
+  align-items: start;
+  padding-top: clamp(70px, 8.5vw, 100px);
+  min-height: clamp(260px, 32vw, 360px);
+  margin-top: 8px;
+}
+
+/* the divider: a thin line fading light blue to slate, with a ringed "vs." badge */
+.versus__mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 0;
+}
+.versus__mark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  translate: -50% 0;
+  background: linear-gradient(180deg, transparent, #96CDFA 25%, #597994 75%, transparent);
+}
+.versus__badge {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #96CDFA, 0 8px 24px rgba(89,121,148,.25);
+  font: italic 400 22px/1 var(--serif);
+  color: #597994;
+}
+
+.versus__side { position: relative; z-index: 1; }
+.versus__side--left { grid-column: 1; align-self: start; justify-self: end; padding-right: 20px; }
+.versus__side--right { grid-column: 3; align-self: start; justify-self: start; padding-left: 20px; }
+
+/* same treatment as the theme titles: blue, semibold, icon in front */
+.versus__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  background: var(--blue-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 0 0 18px;
+}
+
+.versus__icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: #96CDFA;
+}
+
+/* Mobile / Desktop: the same dark semibold title and black icon as the platform cards */
+.versus__title--plain {
+  font-weight: 500;
+  -webkit-text-stroke: .035em currentColor;
+  background: none;
+  color: var(--ink);
+  gap: 8px;
+}
+.versus__title--plain .versus__icon { width: 18px; height: 18px; fill: #111; -webkit-text-stroke: 0; }
+
+.versus__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.versus__list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--gray);          /* same grey as the theme descriptions */
+}
+
+/* small blue triangle bullets */
+.versus__list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: .42em;
+  border-left: 7px solid #668CAB;
+  border-top: 4.5px solid transparent;
+  border-bottom: 4.5px solid transparent;
+}
+
+@media (max-width: 700px) {
+  .versus { grid-template-columns: 1fr; gap: 32px; min-height: 0; padding-top: 0; }
+  .versus__mark { display: none; }
+  .versus__side--left, .versus__side--right { grid-column: 1; justify-self: start; padding: 0; }
+}
+
+/* sub-section title inside a numbered section: wears the .versus__title
+   look (blue, semibold, icon) and only adds the space above it */
+/* the IA / User Flow titles sit inside their panels, as the first line,
+   on the panel's own left padding edge */
+.syn-sub { margin: 0 0 clamp(28px, 4vw, 48px); }
+
+/* the panels now carry the gap that used to sit above the titles */
+.ia-frame { margin-top: clamp(28px, 4vh, 44px) !important; }
+
+/* a soft full-bleed band the information-architecture diagrams sit in.
+   It breaks out of the section's reading column to span the whole page
+   area (100cqw = .main's width, via the container set on it) */
+.main {
+  container-type: inline-size;
+  --ia-inset: clamp(20px, 4vw, 72px);   /* how far the IA / user-flow panels sit in from the page edges */
+}
+
+.ia-frame {
+  /* wider than the reading column, but inset from the page edges */
+  width: calc(100cqw - 2 * var(--ia-inset));
+  margin: 22px 0 0 calc(50% - 50cqw + var(--ia-inset));
+  padding: clamp(36px, 5vw, 72px) clamp(24px, 4vw, 64px);
+  background: #FAFAF9;
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+}
+
+/* triangle: Home & Map and CE side by side, Profile centred beneath.
+   Column widths follow each SVG's own width, so all three diagrams are
+   drawn at the same scale */
+.ia-grid {
+  display: grid;
+  grid-template-columns: 539fr 667fr;
+  align-items: center;
+  gap: clamp(40px, 5vw, 80px) clamp(32px, 4vw, 72px);
+  max-width: 1160px;        /* caps the diagrams' overall size — lower to shrink them */
+  margin: 0 auto;
+}
+
+.ia-grid img { display: block; width: 100%; height: auto; }
+
+.ia-grid .ia-profile {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 26%;              /* 312 / (539 + 667): same scale as the row above */
+  min-width: 220px;
+}
+
+@media (max-width: 900px) {
+  .ia-grid { grid-template-columns: 1fr; }
+  .ia-grid .ia-profile { width: 60%; }
+}
+
+/* --- user flow: key + flows inside the same panel as the IA --- */
+.flow-frame { display: block; }
+
+/* legend + grid share one 1160px measure, centred the same way as the
+   info-architecture grid above, so their left edges line up */
+.flow-key,
+.flow-grid { max-width: 1160px; margin-left: auto; margin-right: auto; }
+
+.flow-key {
+  display: flex;
+  container-type: inline-size;   /* lets the blocks size against this row's own width */
+  align-items: center;
+  justify-content: center;       /* centred over the graphs below */
+  gap: clamp(16px, 2.6vw, 36px);
+  margin-bottom: clamp(32px, 4vw, 52px);
+}
+
+/* the box the three legend blocks sit in */
+.flow-key__box {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.6vw, 36px);
+  padding: 14px clamp(16px, 2vw, 28px);
+  background: #fff;
+  border: 1px solid #E6E6E2;
+  border-radius: 10px;
+}
+
+/* eyebrow style */
+.flow-key__label {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+/* same scale as the flows: the row's width minus the grid's column gap,
+   divided over the grid's 748 + 745 units */
+.flow-key img {
+  display: block;
+  flex: none;
+  width: calc((100cqw - clamp(28px, 3vw, 48px)) * var(--w) / 1493);
+  height: auto;
+}
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: 748fr 745fr;   /* each column = its widest chart */
+  gap: clamp(40px, 5vw, 72px) clamp(28px, 3vw, 48px);
+  align-items: start;
+}
+
+.flow-grid img { display: block; height: auto; cursor: var(--cur-zoom-in); }
+
+/* column 1 is 748 units wide, column 2 is 745: widths are the chart's own
+   unit count over its column's, so the scale is the same everywhere */
+.flow-left { width: calc(var(--w) * 100% / 748); }
+.flow-right-top { width: calc(var(--w) * 100% / 745); }
+.flow-grid > .flow-left:first-child,
+.flow-right-top { align-self: center; }
+
+.flow-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(36px, 4.5vw, 64px);
+}
+
+.flow-right img { width: calc(var(--w) * 100% / 745); }
+
+@media (max-width: 900px) {
+  .flow-grid { grid-template-columns: 1fr; }
+  .flow-left, .flow-right-top { width: 100%; max-width: calc(var(--w) * 1px); }
+  .flow-key { flex-wrap: wrap; }
+}
+
+/* click a flow to see it large */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 4vh 4vw;
+  background: rgba(255,255,255,.94);
+  cursor: var(--cur-zoom-out);
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.lightbox.is-open { opacity: 1; }
+
+.lightbox img {
+  /* a fixed large sheet: the charts and sketches are SVGs with small
+     intrinsic sizes, so they are scaled up to fill it rather than shown
+     at their exported size */
+  width: min(92vw, 1200px);
+  height: 88vh;
+  object-fit: contain;
+  background: #FAFAF9;
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+  padding: clamp(16px, 3vw, 40px);
+  box-shadow: 0 24px 60px -30px rgba(20,22,20,.35);
+}
+
+/* phone screens open as the bare frame, with the final iterations' shadow, not on a sheet */
+.lightbox--phone img {
+  width: auto;
+  max-width: 92vw;
+  height: 88vh;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.22)) drop-shadow(0 0 14px rgba(20,22,20,.14));
+}
+
+/* --- lo-fi sketches: my sheet with callouts, the team's beside it --- */
+/* row 1: my sheet | the team's two sheets; row 2: the captions.
+   The right column sets the row height; my sheet fills that height, so
+   the left card's top and bottom line up with the two on the right. */
+.lofi {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  column-gap: clamp(48px, 7vw, 110px);   /* room for the callout labels to hang into */
+  row-gap: 14px;
+  align-items: stretch;
+  max-width: 860px;
+  margin: 8px auto 0;
+}
+
+.lofi__card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--lift);
+}
+
+.lofi__card img { display: block; width: 100%; height: auto; }
+.lofi__card img { cursor: var(--cur-zoom-in); }
+/* the sketches panel stays within the reading column (no breakout), so
+   its sides sit closer in than the IA / user-flow panels */
+.lofi-frame {
+  display: block;
+  width: 100%;
+  margin-left: 0;
+  /* no panel: the sketches sit on the page, across the full reading column */
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+.lofi-frame .lofi { max-width: none; margin-top: 0; }
+
+.lofi__stage { position: relative; }
+
+/* my sheet: out of flow, filling the stretched cell; the sketch is drawn
+   on white paper, so any spare room around it just reads as more paper */
+.lofi__card--mine { position: absolute; inset: 0; }
+.lofi__card--mine img { width: 100%; height: 100%; object-fit: contain; }
+
+.lofi__team { display: flex; flex-direction: column; gap: clamp(18px, 2.4vw, 28px); }
+
+/* a callout: the blue line's diamond tip sits on the sketch, the label
+   rides above its far end and may hang past the card's edge */
+.lofi__note {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--len, clamp(100px, 12vw, 140px));   /* --len: per-callout line length */
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+/* the blue callout line: a diamond tip on the left, a 3px line with a
+   rounded right end. Drawn in CSS so the thickness never changes with
+   the line's length */
+.lofi__note { height: 8px; }
+
+.lofi__note::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 6.6px;
+  height: 6.6px;
+  background: #96CDFA;          /* the final iteration's diamond end */
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.lofi__note::after {
+  content: "";
+  position: absolute;
+  left: 4.6px;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  translate: 0 -50%;
+  /* the final iteration's callout line, straight: light at the diamond, dark at the far end */
+  background: linear-gradient(to right, #96CDFA, #597994);
+}
+
+/* eyebrow style */
+.lofi__note b {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.lofi__note b {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  /* right edge sits flush with the blue line's right end; the negative
+     margin cancels the letter-spacing trailing the last character */
+  margin-right: -.2em;
+}
+
+/* captions use .prompt__cue (italic grey, like the FigJam board's cue) */
+.lofi__cap { margin: 0; }
+
+@media (max-width: 760px) {
+  .lofi { grid-template-columns: 1fr; }
+  .lofi__stage { aspect-ratio: 336 / 423; }
+  .lofi__note b { translate: 0 0; }
+}
+
+/* --- mid-fi: page title (IA / User Flow look), eyebrow, iteration row --- */
+.midfi-frame {
+  display: block;
+  width: 100%;          /* stays inside the reading column, like the lo-fi sketches panel */
+  margin-left: 0;
+  --mf-gap: clamp(24px, 3vw, 44px);       /* the one column gap for every row under Home Page */
+  --mf-sec: var(--sub-gap);               /* the same gap as between every sub-section */
+}
+.midfi-frame .syn-sub { margin-bottom: 56px; }   /* air between the title and the eyebrow */
+
+/* eyebrow style */
+.midfi-eyebrow {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin: 0 0 18px;
+}
+
+.iters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--mf-gap);
+  margin: 0 auto;
+}
+
+/* centred with the screens, so each finding stays under its screen */
+.iter-notes { max-width: 900px; column-gap: clamp(24px, 3.4vw, 52px); margin-left: auto; margin-right: auto; }
+
+/* "INITIAL ITERATIONS" starts on the left edge of the first screen */
+.midfi-frame .midfi-eyebrow { line-height: 16px; margin: 0 0 24px; }   /* every eyebrow sits the same distance above its row */
+
+/* the findings lead with an icon instead of a number */
+.iter-icon { width: 20px; height: 20px; fill: url(#iterGrad); }   /* the case study's blue text gradient */
+
+.iter { margin: 0; }
+
+.iter img {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: var(--cur-zoom-in);
+  /* drop-shadow (not box-shadow) so the blur hugs the rounded frame */
+  filter: drop-shadow(var(--lift));
+}
+
+.iter figcaption {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #ADB0AD;
+}
+
+.iter-notes { margin-top: clamp(36px, 5vw, 60px); }
+
+@media (max-width: 700px) {
+  .iters { grid-template-columns: 1fr; }
+}
+
+/* --- home page: no panel; iterations, a bracket rule, feature preferences --- */
+.midfi-frame {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;      /* no panel any more, so no inner padding to add to the gaps */
+  padding-bottom: 0;
+}
+
+/* the iterations and the preferences share one 900px column; a hairline
+   bracket runs down its left side, from the screens into the first row of
+   boxes, with a branch reaching in between the two */
+.split {
+  --rail: clamp(24px, 3.2vw, 44px);   /* how far the bracket sits left of the content */
+  --rule: #BDBFBB;
+}
+.split__rule, .split__span { position: relative; z-index: 1; }
+
+.split::after {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--rail));
+  width: 1px;
+  background: var(--rule);
+}
+.split__rule { height: var(--mf-sec); }
+/* the spine: the full height of the block, from the top of the first
+   screens to the foot of the final iteration */
+.split { position: relative; }
+.split::after { top: 0; bottom: 0; }
+
+/* the branch: from the bracket to the middle of the first screen */
+.split__rule::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(-1 * var(--rail));
+  width: calc(var(--rail) + (100% - 2 * var(--mf-gap)) / 6);
+  height: 1px;
+  background: var(--rule);
+}
+
+
+/* the three boxes side by side */
+.prefs__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--mf-gap);
+}
+
+.pref {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(18px, 2.4vw, 28px);
+  background: #FAFAF9;          /* same panel as the IA / user-flow boxes */
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+}
+
+/* every box's picture area is the same shape, so the cards line up */
+.pref__visual {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  margin: 0 calc(-1 * clamp(18px, 2.4vw, 28px));   /* the pictures run out to the box edges */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pref-crop { display: block; }   /* flat inside the boxes, no shadow */
+
+/* preferred / not: a green tick or red cross on each picture's top-right corner */
+.mark {
+  position: absolute;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(20,22,20,.18);
+}
+.mark--yes { background: #3FAE5C; }
+.mark--yes::before { content: "\2713"; }
+.mark--no { background: #E24C4C; }
+.mark--no::before { content: "\2715"; }
+/* on the pills and the chip track the badge sits on their own corner */
+.pref-pill, .pref-chips { position: relative; }
+.pref-pill .mark, .pref-chips .mark { left: 100%; top: 0; translate: -35% -50%; }
+
+/* 1: .03's banner tucked behind .01's weekly event card */
+.pref__visual--stack .pref-crop { position: absolute; }
+.pref__visual--stack .pref-crop--front { width: 92%; left: 3%;  top: 9%; z-index: 1; }
+.pref__visual--stack .pref-crop--back  { width: 84%; left: 11%; top: 47%; }   /* a clear gap under the card above */
+
+/* 2: one post from .02, framed like the phone screen it came from */
+.pref-crop--post {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 94%;
+  height: auto;
+  aspect-ratio: 238.48 / 186.29;
+  background: #fff;
+  border-radius: 12px;
+}
+
+/* 3: .01's dropdown and .02's tabs above the .03 chips users chose */
+.pref__visual--filters { flex-direction: column; gap: 22px; }
+.pref-ctrls { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.pref-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 13px;
+  background: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1F1F1F;
+  box-shadow: var(--lift);
+}
+.pref-pill svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pref-pill__dim { font-weight: 400; color: #9A9D99; }
+
+.pref-chips {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: var(--lift);
+}
+.pref-chip {
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: #525252;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+}
+.pref-chip.is-on { background: #1F1F1F; }
+
+/* the finding: icon + short title, the detail beneath */
+.pref__card {
+  flex: 1;
+  margin-top: clamp(18px, 2.4vw, 26px);
+}
+.pref__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 500;
+  -webkit-text-stroke: .035em currentColor;   /* semibold, like the Mobile / Desktop titles */
+  color: var(--ink);
+}
+.pref__title .iter-icon { flex: none; width: 18px; height: 18px; fill: #111; -webkit-text-stroke: 0; }   /* black, like theirs */
+.pref__body { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }   /* same as the body copy */
+.pref-num { font-weight: 600; color: #000; }   /* the iteration numbers stand out in black */
+
+@media (max-width: 700px) {
+  .prefs__grid { grid-template-columns: 1fr; }
+  .split::after, .split__rule::before { display: none; }
+  .split__rule { height: 56px; }
+}
+
+/* --- community events: the same layout as the home page block --- */
+.midfi-frame--ce { margin-top: var(--sub-gap) !important; }
+
+/* 1: .01's banner over .03's */
+.pref-crop--ce01 { width: 90%; left: 3%;  top: 6%; z-index: 1; }
+.pref-crop--ce03 { width: 82%; left: 15%; top: 50%; }
+/* 2: .03's card on top of .02's sideways row */
+.pref-crop--cecard { width: 86%; left: 3%;  top: 4%; z-index: 1; }
+.pref-crop--cerow  { width: 52%; left: 45%; top: 57%; }
+/* 3: the two pages' tops, stacked and offset so each can be wide enough to read */
+.pref-crop--twin   { width: 58%; }
+.pref-crop--twin-a { left: 3%;  top: 2%; }
+.pref-crop--twin-b { left: 39%; top: 54%; }
+/* the look-alike sign between them */
+.pref-twin__sign {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--gray);
+}
+/* a question bubble on each page: users couldn't tell which one they were on */
+.mark--ask { background: #F0A830; }
+.mark--ask::before { content: "?"; font-size: 12px; }
+
+/* --- the rest of the app: three small pairs of screens, no callouts --- */
+.more { margin: var(--sub-gap) 0 0; }
+.more .more__eyebrow { line-height: 16px; margin: 0 0 10px; }
+.more__cue { margin: 0 0 clamp(28px, 3.5vw, 44px); }
+
+.more__row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 44px);
+}
+.more__group { margin: 0; }
+
+/* each pair side by side, the second screen dropped a little for rhythm */
+.more__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.2vw, 16px);
+  align-items: start;
+}
+.more__pair img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 7%/3.2%;
+  cursor: var(--cur-zoom-in);
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.16)) drop-shadow(0 0 18px rgba(20,22,20,.12));
+  transition: translate .3s cubic-bezier(.22,1,.36,1);
+}
+.more__pair img:nth-child(2) { margin-top: 28px; }
+.more__pair img:hover { translate: 0 -4px; }
+
+/* the same blue title, with an icon, as Home Page and Community Events */
+.more__label { margin: 18px 0 0; }
+
+@media (max-width: 700px) {
+  .more__row { grid-template-columns: 1fr; }
+}
+
+/* --- usability testing: the same theme grid as the user interviews --- */
+.usab-cue { margin-top: var(--sub-gap); }
+.usab { margin-top: 8px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.usab .theme { grid-column: span 2; }
+/* the last two (Photo Map, Profile) centred under the first three */
+.usab .theme:nth-child(4) { grid-column: 2 / 4; }
+.usab .theme:nth-child(5) { grid-column: 4 / 6; }
+@media (max-width: 700px) {
+  .usab { grid-template-columns: 1fr; }
+  .usab .theme, .usab .theme:nth-child(4), .usab .theme:nth-child(5) { grid-column: auto; }
+}
+
+/* --- 05 hi-fi: text on the left; Typography and Color as two white cards,
+       overlapping and slightly angled, on the right; Components in a panel below --- */
+.dsx {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  --row-gap: clamp(14px, 1.6vw, 20px);
+  column-gap: clamp(36px, 4vw, 64px);
+  row-gap: 0;
+  align-items: start;
+}
+/* the first text block is centred against Typography + Color */
+.dsx__text--top { align-self: center; }
+.dsx__text--top .research__body { margin-bottom: 14px; }
+.dsx__text--top .zoom-hint { margin-bottom: 0; }
+/* a short rule under the first text block, then the components sentence and strip
+   running the full width */
+.dsx__rule { grid-column: 1; height: 1px; border: 0; background: var(--hair); margin: 36px 0; }
+.dsx__text--bottom { grid-column: 1 / -1; }
+.dsx__text--bottom .research__body { margin-bottom: 14px; }
+.dsx .dsx__comp { grid-column: 1 / -1; margin-top: clamp(24px, 3vw, 36px); }
+.ds-comp { display: flex; align-items: flex-start; gap: clamp(20px, 2.6vw, 36px); cursor: var(--cur-zoom-in); }
+.ds-comp__crop { flex-basis: 0; min-width: 0; height: auto; }
+.dsx__text .research__body:has(+ .zoom-hint) { margin-bottom: 14px; }
+.dsx__text .zoom-hint { margin-bottom: 0; }
+/* the right column: Typography and Color side by side (columns follow each SVG's
+   width, so both show at one scale), Components across both underneath */
+.dsx__pair {
+  display: grid;
+  grid-template-columns: 280fr 265fr;
+  gap: var(--row-gap);
+  margin-top: clamp(24px, 3vw, 40px);   /* dropped a little below the section number, as the survey cards sit */
+}
+@media (max-width: 760px) {
+  .dsx { grid-template-columns: 1fr; }
+  .dsx__rule { display: none; }
+  .ds-comp { flex-wrap: wrap; }
+  .ds-comp__crop { flex-basis: 40%; }
+}
+
+/* --- 05 hi-fi: the design system, one panel per part (the feature-box panel) --- */
+/* Typography and Color share the first row (columns follow
+   each SVG's width, so both show at the same scale), Components gets its own */
+.ds {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(20px, 2.6vw, 36px);
+  margin: clamp(40px, 5vw, 64px) 0 0;
+}
+.ia-grid img { cursor: var(--cur-zoom-in); }
+.ds__part {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(18px, 2.2vw, 26px);
+  background: #FAFAF9;
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+}
+.ds .ds__eyebrow { line-height: 16px; margin: 0 0 16px; }
+.ds__card { flex: 1; }   /* the parts sit straight on the panel, no white card */
+.ds__card img { display: block; width: 100%; height: auto; cursor: var(--cur-zoom-in); }
+@media (max-width: 700px) {
+  .ds { grid-template-columns: 1fr; width: 100%; margin-left: 0; }
+}
+
+/* the magnifier cursor on anything that opens in the zoom view: a line icon in
+   the nav's style, + to open and &minus; to close. The hotspot is the lens centre */
+/* one shadow for every lifted element that isn't a final iteration: the initial
+   iterations, lo-fi sketch cards, and the pills and chips in the feature boxes */
+:root { --lift: 0 0 16px rgba(20,22,20,.2); }
+
+:root {
+  --cur-zoom-in: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='%2323261F' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5' fill='white'/%3E%3Cpath d='M15.5 15.5l5 5M8 10.5h5M10.5 8v5'/%3E%3C/svg%3E") 11 11, zoom-in;
+  --cur-zoom-out: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='%2323261F' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5' fill='white'/%3E%3Cpath d='M15.5 15.5l5 5M8 10.5h5'/%3E%3C/svg%3E") 11 11, zoom-out;
+}
+
+/* "click any screen…" — under every block that opens in the zoom view,
+   with the same magnifier as the cursor */
+.zoom-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 clamp(28px, 4vw, 48px);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--gray);
+}
+.zoom-hint svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+/* the title or text above it hands its gap down to the hint */
+.syn-sub:has(+ .zoom-hint),
+.midfi-frame .syn-sub:has(+ .zoom-hint) { margin-bottom: 10px; }
+.research__body:has(+ .zoom-hint) { margin-bottom: 14px; }
+/* in the rest-of-app line it follows the sentence on the same line */
+.zoom-hint--inline { display: inline-flex; vertical-align: -2px; margin: 0 0 0 12px; font-size: inherit; }
+.zoom-hint + .ds { margin-top: 0; }
+
+/* --- final iteration: two screens with their callouts --- */
+.midfi-frame .final-eyebrow { margin-top: 0; }   /* the second branch's band already holds the gap */
+
+.final-stage {
+  position: relative;
+  aspect-ratio: var(--sw) / var(--sh);
+}
+
+.final-p {
+  position: absolute;
+  display: block;
+  height: auto;
+  left: calc((var(--x) - var(--x0)) / var(--sw) * 100%);
+  top: calc((var(--y) - var(--y0)) / var(--sh) * 100%);
+  width: calc(var(--w) / var(--sw) * 100%);
+}
+
+.final-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke-width: 1.5px;
+  pointer-events: none;
+}
+/* every callout line is 1.5px on screen, whatever the stage size, the same as the lo-fi sketch lines */
+.final-lines path, .final-lines circle { vector-effect: non-scaling-stroke; }
+.final-lines__dot { stroke: none; }
+
+.final-phone {
+  cursor: var(--cur-zoom-in);
+  /* one shadow for every final-iteration phone (the SVGs' own shadows were removed) */
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.22)) drop-shadow(0 0 14px rgba(20,22,20,.14));
+}
+
+/* =========================== BACK TO TOP =========================== */
+
+/* rises out of the foot of the nav once the reader reaches Overview.
+   Text is set in the nav "eyebrow" style (PRODUCT / WEBSITE / CONTACT) */
+.nav__top {
+  margin-top: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0 0;
+  background: none;
+  border: 0;
+  color: var(--gray);
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(18px);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .45s cubic-bezier(.22,1,.36,1), color .2s ease;
+}
+
+.nav__top.is-shown { opacity: 1; transform: none; pointer-events: auto; }
+.nav__top:hover { color: var(--ink-soft); }
+
+.nav__top svg {
+  width: 14px; height: 14px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* open rail: on the shared left edge; collapsed: just the arrow, centred */
+.nav--open .nav__top { align-self: flex-start; margin-left: 28px; }
+.nav:not(.nav--open) .nav__top { width: 72px; justify-content: center; }
+.nav:not(.nav--open) .nav__top-label { display: none; }
+
+/* =========================== SECTION RULES =========================== */
+
+/* a short centred hairline between numbered sections — it stops well
+   short of the text column's left and right edges */
+/* a full-width hairline over each numbered section, on the same edges as
+   the text, with the section number just beneath it */
+.sec-rule {
+  width: calc(min(1180px, 100%) - 2 * clamp(30px, 5vw, 78px));
+  height: 1px;
+  border: 0;
+  background: var(--hair);
+  margin: 0 auto 22px;
+}
+
+/* =========================== BACK ARROW =========================== */
+/* a quiet line arrow pinned to the top-left of the page, just right of the nav;
+   it follows the nav as it opens and closes */
+.page-back {
+  position: fixed;
+  top: clamp(18px, 2.2vw, 28px);
+  left: calc(var(--nav-w) + clamp(18px, 2.2vw, 28px));
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  width: 28px;   /* a tight hover circle around the 20px arrow */
+  height: 28px;
+  border-radius: 50%;
+  color: var(--gray);
+  transition: color .2s ease, background .2s ease, left .5s cubic-bezier(.22,1,.36,1);
+}
+.nav--open ~ .page-back { left: calc(196px + clamp(18px, 2.2vw, 28px)); }
+.page-back:hover { color: var(--ink); background: rgba(35,38,31,.05); }
+.page-back svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* =========================== TRACKER =========================== */
+
+/* fixed on the right: a tick per section, the current one longer and
+   blue. Hovering the rail reveals every label. Sections that aren't
+   written yet are listed but greyed out and not clickable. */
+.tracker {
+  position: fixed;
+  top: 50%;
+  right: clamp(14px, 1.6vw, 28px);
+  translate: 0 -50%;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 14px 0 14px 18px;
+  margin: 0;
+  list-style: none;
+}
+
+.tracker__item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 12.5px;
+  line-height: 1.2;
+  color: var(--gray);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tracker__label {
+  opacity: 0;
+  translate: 6px 0;
+  /* zero width while hidden, so the invisible labels don't sit over the
+     text and catch the pointer */
+  max-width: 0;
+  overflow: hidden;
+  padding: 3px 0;
+  pointer-events: none;   /* plain text: no box behind the label */
+  transition: opacity .22s ease, translate .3s cubic-bezier(.22,1,.36,1),
+              max-width .35s cubic-bezier(.22,1,.36,1), padding .35s cubic-bezier(.22,1,.36,1);
+}
+
+.tracker__tick {
+  flex: none;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: #C9CBC7;
+  transition: width .3s cubic-bezier(.22,1,.36,1), background .3s ease;
+}
+
+.tracker__item.is-active .tracker__tick { width: 28px; background: var(--blue-grad); }
+.tracker__item.is-active { color: var(--ink); }
+
+.tracker__item.is-soon { color: #BDBFBB; cursor: default; }
+.tracker__item.is-soon .tracker__tick { background: #E2E3E0; }
+
+/* hover the rail: all labels slide in */
+.tracker:hover .tracker__label { opacity: 1; translate: 0 0; max-width: 360px; padding: 3px 10px 3px 0; pointer-events: auto; }
+.tracker__item:not(.is-soon):hover { color: var(--ink); }
+
+/* on very wide screens there's room to keep the current label showing */
+@media (min-width: 1700px) {
+  .tracker__item.is-active .tracker__label { opacity: 1; translate: 0 0; max-width: 360px; padding: 3px 10px 3px 0; }
+}
+
+@media (max-width: 900px) {
+  .tracker { display: none; }
+}
+/* ---- this page: the hero band is a placeholder until its artwork is chosen ---- */
+.hero__bg { background: linear-gradient(180deg, rgba(183,217,74,.20) 0%, #fff 55%, #F3F3F1 100%); }
+.main .placeholder { color: var(--gray-soft); }   /* "to come" text, until the real copy is in */
+</style>
+</head>
+<body>
+
+<nav class="nav nav--open">
+  <a class="nav__mark" href="../index.html" aria-label="Home"><img src="../images/lo-mark.svg" alt=""></a>
+
+  <div class="nav__group nav__links">
+    <a class="nv" href="../about.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/></svg><span class="nv__label">About</span></a>
+    <a class="nv" href="#"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/></svg><span class="nv__label">Ideas</span></a>
+    <a class="nv" href="https://drive.google.com/file/d/1cuFnkDeGFxUhMmO6HalkI4RZM-2yYmgN/view?usp=sharing" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M6 2.5h8l4 4V21a.5.5 0 01-.5.5h-11A.5.5 0 016 21z"/><path d="M14 2.5V7h4M9 12h6M9 16h6"/></svg><span class="nv__label">Resume</span></a>
+  </div>
+
+  <div class="nav__sep"></div>
+
+  <div class="nav__group nav__work">
+    <span class="nv nv--hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      <span class="nv__label">Product</span>
+    </span>
+    <a class="nv" href="../index.html#pikspot"><span class="nv__chip c-pikspot"></span><span class="nv__label">Pikspot</span></a>
+    <a class="nv" href="../index.html#bitewise"><span class="nv__chip c-bitewise"></span><span class="nv__label">Bitewise</span></a>
+  </div>
+
+  <div class="nav__sep nav__sep--blank"></div>
+
+  <div class="nav__group nav__work">
+    <span class="nv nv--hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+      <span class="nv__label">Website</span>
+    </span>
+    <a class="nv" href="../index.html#hackdavis" aria-current="page"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
+    <a class="nv" href="../index.html#jvmc"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri<br class="nv__br"> Memorial Clinic</span></a>
+    <a class="nv" href="../index.html#jass"><span class="nv__chip c-jass"></span><span class="nv__label">Japanese American Student Society</span></a>
+  </div>
+
+  <div class="nav__sep"></div>
+
+  <div class="nav__group nav__contact">
+    <span class="nv nv--hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M13 10h5M13 14h5M5.5 16c.5-1.8 1.8-2.5 3-2.5s2.5.7 3 2.5"/></svg>
+      <span class="nv__label">Contact</span>
+    </span>
+    <a class="nv nv--contact nv--linkedin" href="https://www.linkedin.com/in/emerson-lo" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.45-2.2 2.96V21H9z"/></svg><span class="nv__label">LinkedIn</span></a>
+    <a class="nv nv--contact nv--email" href="mailto:emersonrylo@gmail.com"><svg viewBox="0 0 24 24"><defs><linearGradient id="gmailGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#EA4335"/><stop offset=".33" stop-color="#FBBC05"/><stop offset=".66" stop-color="#34A853"/><stop offset="1" stop-color="#4285F4"/></linearGradient></defs><path d="M3 5h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1zm9 8L4.2 7.3v10.2h15.6V7.3z"/></svg><span class="nv__label">Email</span></a>
+    <a class="nv nv--contact nv--phone" href="tel:+16264666774"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.6a1 1 0 01-.25 1z"/></svg><span class="nv__label"><span class="ph-a">Phone</span><span class="ph-b">626-466-6774</span></span></a>
+  </div>
+
+  <button class="nav__toggle" type="button" aria-expanded="true" aria-label="Collapse navigation" data-tip="Minimize menu">
+    <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+
+  <button class="nav__top" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+    <span class="nav__top-label">Back to top</span>
+  </button>
+</nav>
+
+<main class="main">
+
+  <header class="hero">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <!-- hero artwork goes here -->
+  </header>
+
+  <section class="meta" id="overview">
+   <div class="meta__intro">
+    <h1 class="intro__title">HackDavis</h1>
+    <p class="intro__lede">Collegiate Hackathon</p>
+
+    <div class="intro__story">
+      <p class="placeholder">Intro story to come.</p>
+    </div>
+   </div>
+
+   <div class="meta__grid">
+
+    <div>
+      <p class="meta__label">Role</p>
+      <p class="meta__value placeholder">To come</p>
+    </div>
+
+    <div>
+      <p class="meta__label">Team</p>
+      <p class="meta__value placeholder">To come</p>
+    </div>
+
+    <div>
+      <p class="meta__label">Timeline</p>
+      <p class="meta__value">2026</p>
+    </div>
+
+    <div>
+      <p class="meta__label">Skills</p>
+      <p class="meta__value placeholder">To come</p>
+    </div>
+
+    <div>
+      <p class="meta__label">Tools</p>
+      <p class="meta__value placeholder">To come</p>
+    </div>
+
+    <div>
+      <p class="meta__label">Read Time</p>
+      <p class="meta__value placeholder">To come</p>
+    </div>
+
+   </div>
+  </section>
+
+</main>
+
+<!-- back to the work page: fixed at the top left, beside the nav -->
+<a class="page-back" href="../index.html?static" aria-label="Back to all work"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+
+<!-- reading tracker: add an entry per numbered section as the case study grows -->
+<nav class="tracker" aria-label="Case study sections">
+  <a class="tracker__item" href="#overview"><span class="tracker__label">Overview</span><span class="tracker__tick"></span></a>
+</nav>
+
+<script>
+  /* reading tracker — highlights the section crossing the middle of the
+     window. To hook up a new section, give it the id its entry points
+     at (synthesis, midfi, hifi) and it switches on automatically. */
+  (function () {
+    var items = [].slice.call(document.querySelectorAll('.tracker__item'));
+    var live = [];
+
+    items.forEach(function (item) {
+      var sec = document.querySelector(item.getAttribute('href'));
+      if (!sec) {
+        item.classList.add('is-soon');
+        item.removeAttribute('href');
+        item.setAttribute('aria-disabled', 'true');
+        return;
+      }
+      live.push({ item: item, sec: sec });
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    function setActive(item) {
+      items.forEach(function (i) { i.classList.toggle('is-active', i === item); });
+    }
+
+    if (live.length) setActive(live[0].item);
+    if (!('IntersectionObserver' in window)) return;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        live.forEach(function (l) { if (l.sec === e.target) setActive(l.item); });
+      });
+    }, { rootMargin: '-45% 0px -54% 0px' });
+
+    live.forEach(function (l) { io.observe(l.sec); });
+  })();
+</script>
+
+<script>
+  /* the rail expands to show every label at once — ported from the
+     home page so it behaves identically here */
+  (function () {
+    var nav = document.querySelector('.nav');
+    var btn = document.querySelector('.nav__toggle');
+    if (!nav || !btn) return;
+    /* phones start with the rail collapsed, as on the home page */
+    if (window.innerWidth <= 640) {
+      nav.classList.remove('nav--open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Expand navigation');
+      btn.setAttribute('data-tip', 'Expand');
+    }
+    btn.addEventListener('click', function () {
+      var open = nav.classList.toggle('nav--open');
+      btn.setAttribute('aria-expanded', open);
+      btn.setAttribute('aria-label', open ? 'Collapse navigation' : 'Expand navigation');
+      btn.setAttribute('data-tip', open ? 'Minimize menu' : 'Expand');
+    });
+  })();
+</script>
+
+<script>
+  /* back to top: shown once the Overview section reaches the middle of
+     the window, hidden again above it */
+  (function () {
+    var btn = document.querySelector('.nav__top');
+    var mark = document.getElementById('overview');
+    if (!btn || !mark) return;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      btn.classList.toggle('is-shown', mark.getBoundingClientRect().top < window.innerHeight * .5);
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
+</script>
+
+<script>
+  /* user flows and lo-fi sketches: click one to view it large; click, or press Esc, to close */
+  (function () {
+    var imgs = document.querySelectorAll('.flow-grid img, .lofi__card img, .iter img, .final-phone, .more__pair img, .dsx__pair img, .ds-comp, .ia-grid img, .survey__card');
+    if (!imgs.length) return;
+    var box = null;
+    function close() {
+      if (!box) return;
+      var b = box; box = null;
+      b.classList.remove('is-open');
+      setTimeout(function () { b.remove(); }, 250);
+    }
+    imgs.forEach(function (img) {
+      img.addEventListener('click', function () {
+        box = document.createElement('div');
+        box.className = img.matches('.final-phone, .more__pair img') ? 'lightbox lightbox--phone' : 'lightbox';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-label', img.alt || img.getAttribute('aria-label'));
+        var big;
+        if (img.tagName === 'IMG' || img.dataset.src) {
+          big = document.createElement('img');
+          big.src = img.src || img.dataset.src;
+          big.alt = img.alt || img.getAttribute('aria-label');
+        } else {
+          big = img.cloneNode(true);
+          big.className = 'gf gf--big';
+        }
+        box.appendChild(big);
+        box.addEventListener('click', close);
+        document.body.appendChild(box);
+        requestAnimationFrame(function () { box.classList.add('is-open'); });
+      });
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+</script>
+
+<script>
+  /* the arrow's hover tip while the rail is collapsed — placed just to
+     the right of the arrow, outside the rail (which would clip it) */
+  (function () {
+    var nav = document.querySelector('.nav');
+    var btn = nav && nav.querySelector('.nav__toggle');
+    if (!btn) return;
+    var tip = document.createElement('div');
+    tip.className = 'nav-tip';
+    tip.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(tip);
+    function show() {
+      if (nav.classList.contains('nav--open')) return;   /* open rail uses its own in-rail tip */
+      tip.textContent = btn.getAttribute('data-tip') || '';
+      tip.style.left = (nav.offsetWidth + 8) + 'px';
+      tip.style.top = (btn.offsetTop - nav.scrollTop + btn.offsetHeight / 2) + 'px';
+      tip.classList.add('is-shown');
+    }
+    function hide() { tip.classList.remove('is-shown'); }
+    btn.addEventListener('mouseenter', show);
+    btn.addEventListener('focus', show);
+    btn.addEventListener('mouseleave', hide);
+    btn.addEventListener('blur', hide);
+    btn.addEventListener('click', function () {
+      hide();
+      /* once the rail has finished collapsing, show it again if the
+         pointer is still on the arrow */
+      setTimeout(function () { if (btn.matches(':hover')) show(); }, 320);
+    });
+  })();
+</script>
+
+</body>
+</html>

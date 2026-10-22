@@ -1041,7 +1041,7 @@ a, button, .nv, [role="button"],
 }
 .survey__stat strong { color: var(--ink); -webkit-text-stroke: .015em currentColor; }
 
-.survey__cards { position: relative; aspect-ratio: 1 / .98; }
+.survey__cards { position: relative; aspect-ratio: 1 / .98; perspective: 1500px; perspective-origin: 35% 45%; }
 .survey__card {
   position: absolute;
   width: 64%;
@@ -1053,12 +1053,12 @@ a, button, .nv, [role="button"],
   box-shadow: var(--lift);
   cursor: var(--cur-zoom-in);
 }
-/* a layered deck: both pages slanted the same way (a flat 2D slant rather than a
-   3D turn, which the browser would flatten into a soft bitmap; this keeps the
-   text sharp), the back one set a
-   little behind, to the left and lower, so its left and bottom edges peek out */
-.survey__card--front { left: 24%; top: 3%; transform: skewY(-3deg) scaleX(.97); z-index: 1; }
-.survey__card--back  { left: 15%; top: 8%; transform: skewY(-3deg) scaleX(.97); }
+/* a layered deck in real perspective: both pages turn the same way, facing the
+   text on the left (their left edges recede, the tops lean back only slightly), and
+   the back page sits further away, up and to the left, so its left and top
+   edges peek out from behind the front one */
+.survey__card--front { left: 21%; top: 11%; transform: rotateY(-24deg) rotateX(4deg) rotateZ(-2deg); z-index: 1; box-shadow: -18px 30px 60px rgba(20,22,20,.16), -4px 8px 16px rgba(20,22,20,.08); }
+.survey__card--back  { left: 1%; top: 2%; transform: rotateY(-24deg) rotateX(4deg) rotateZ(-2deg) translateZ(-60px); box-shadow: -12px 20px 40px rgba(20,22,20,.12); }
 
 /* the results sit under the findings in the text column, on its left edge:
    a donut and its legend side by side, no card */
@@ -1973,7 +1973,7 @@ a, button, .nv, [role="button"],
 }
 .more__group { margin: 0; }
 
-/* each pair side by side, the second screen dropped a little for rhythm */
+/* each pair side by side, both screens on the same top line */
 .more__pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1989,11 +1989,10 @@ a, button, .nv, [role="button"],
   filter: drop-shadow(0 0 6px rgba(0,0,0,.16)) drop-shadow(0 0 18px rgba(20,22,20,.12));
   transition: translate .3s cubic-bezier(.22,1,.36,1);
 }
-.more__pair img:nth-child(2) { margin-top: 28px; }
 .more__pair img:hover { translate: 0 -4px; }
 
-/* the same blue title, with an icon, as Home Page and Community Events */
-.more__label { margin: 18px 0 0; }
+/* the same blue title, with an icon, as Home Page and Community Events — above its screens */
+.more__label { margin: 0 0 16px; }
 
 @media (max-width: 700px) {
   .more__row { grid-template-columns: 1fr; }
@@ -2961,25 +2960,25 @@ a, button, .nv, [role="button"],
       <p class="prompt__cue more__cue">My teammates led these pages. They&rsquo;re here so you can see the full app.<span class="zoom-hint zoom-hint--inline"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</span></p>
       <div class="more__row">
         <figure class="more__group">
+          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3l6 2 6-2v16l-6 2-6-2-6 2V5zm1 2.4v13.2l4 1.33V6.73z"/></svg> Photo map</figcaption>
           <div class="more__pair">
             <img src="images/midfi/more/photomap-1.svg" width="209" height="451" loading="lazy" alt="Photo map: map of nearby photo spots">
             <img src="images/midfi/more/photomap-2.svg" width="210" height="456" loading="lazy" alt="Photo map: a highlighted area with the photos taken there">
           </div>
-          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3l6 2 6-2v16l-6 2-6-2-6 2V5zm1 2.4v13.2l4 1.33V6.73z"/></svg> Photo map</figcaption>
         </figure>
         <figure class="more__group">
+          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l5 5h-3.5v6h-3V8H7zM4 15h3v3h10v-3h3v5a1 1 0 01-1 1H5a1 1 0 01-1-1z"/></svg> Photo upload</figcaption>
           <div class="more__pair">
             <img src="images/midfi/more/upload-1.svg" width="209" height="454" loading="lazy" alt="Photo upload: picking a shot from the camera roll">
             <img src="images/midfi/more/upload-2.svg" width="210" height="454" loading="lazy" alt="Photo upload: adding a title, location and tags before posting">
           </div>
-          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l5 5h-3.5v6h-3V8H7zM4 15h3v3h10v-3h3v5a1 1 0 01-1 1H5a1 1 0 01-1-1z"/></svg> Photo upload</figcaption>
         </figure>
         <figure class="more__group">
+          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 10.5c4.4 0 8 2.4 8 5.5V21H4v-2c0-3.1 3.6-5.5 8-5.5z"/></svg> Profile</figcaption>
           <div class="more__pair">
             <img src="images/midfi/more/profile-1.svg" width="209" height="455" loading="lazy" alt="Profile: bio, top achievements and posts">
             <img src="images/midfi/more/profile-2.svg" width="210" height="457" loading="lazy" alt="Profile: unlocked and locked achievements">
           </div>
-          <figcaption class="versus__title more__label"><svg class="versus__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 10.5c4.4 0 8 2.4 8 5.5V21H4v-2c0-3.1 3.6-5.5 8-5.5z"/></svg> Profile</figcaption>
         </figure>
       </div>
     </figure>
