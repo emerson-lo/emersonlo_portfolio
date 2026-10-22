@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:rgb(199,227,249);} a{color:rgb(53,163,252);} a:hover{color:rgb(53,57,53);}</style>
+<script>window.OM_SCENES = '[{"name":"Feed","dur":2.75,"nat":2.2,"desc":"Home feed scrolls, user taps the Golden Gate post"},{"name":"Detail","dur":2.75,"nat":2.2,"desc":"Post detail slides in, user likes it, scrolls to the map and taps View in Map"},{"name":"Map","dur":2.4,"nat":1.9,"desc":"Map with photo markers pops in, user taps a spot and the location gallery rises"},{"name":"Events","dur":2.1,"nat":1.7,"desc":"Community Events tab scrolls, then back to Home for a seamless loop"}]';</script>
+<script>window.OM_PLAYBACK = '{"mode":"loop"}';</script>
+</helmet>
+<x-import component-from-global-scope="PikspotVideo" from="./animations-v3.jsx ./pikspot-piece.jsx" hint-size="100%,100%" style="position:fixed;inset:0;"></x-import>
+</x-dc>
+</body>
+</html>

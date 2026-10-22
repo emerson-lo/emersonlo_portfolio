@@ -719,18 +719,35 @@ a, button, .nv, .tile, [role="button"],
 }
 
 /* hover: the glow spreads and deepens; the box itself never changes size */
-.tile:hover .tile__vis { box-shadow: 0 0 0 1px rgba(20,22,20,.05), 0 6px 24px rgba(20,22,20,.10); }
+.tile:hover .tile__vis { box-shadow: 0 0 0 1px rgba(20,22,20,.06), 0 10px 40px rgba(20,22,20,.14); }
 
 .r-wide   { aspect-ratio: 4 / 3; }
 .r-tall   { aspect-ratio: 3 / 2; }
-.r-short  { aspect-ratio: 7 / 5; }   /* JVMC */
+.r-short  { aspect-ratio: 13 / 10; }   /* JVMC — a touch taller than the 7:5 mockup, which scales to the height and trims only empty grey at the sides */
 .r-xshort { aspect-ratio: 7 / 4; }   /* shorter than r-short — HackDavis */
 
 /* artwork inside a card, placed in the card's own proportions */
 .tile__art { position: absolute; display: block; height: auto; max-width: none; pointer-events: none; }
 /* the cow sits dead centre; the wave runs off the card's edges */
-.tile__art--cow { width: 120%; left: 5.2%; top: -24.7%; }   /* zoomed out: the cow centred, the wave curling around it */
+/* wave runs off the card's left + bottom edges; cow bobs on top.
+   To move or zoom the artwork, change only width/left/top here —
+   the .hd__cow numbers line the cow up with its spot in the wave. */
+.tile__art--hd { width: 150%; left: -17%; top: -38%; aspect-ratio: 1969 / 2651; }
+.hd__wave { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hd__cow {
+  position: absolute; left: 24.81%; top: 18.163%; width: 23.032%; height: auto; display: block;
+  transform-origin: 50% 85%;
+  animation: cow-bob 2.8s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes cow-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-7%) rotate(-2.5deg); }
+}
+@media (prefers-reduced-motion: reduce) { .hd__cow { animation: none; } }
 .r-xtall  { aspect-ratio: 1 / 1; }   /* taller than r-tall, shorter than before — Pikspot */
+/* the live phone mockup fills the card; clicks pass through to the tile link */
+.tile__mock { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
 
 .tile__meta { padding: 16px 2px 0; }
 
@@ -1532,7 +1549,12 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
       <div class="col">
         <a class="tile" id="hackdavis" href="#">
-          <div class="tile__vis r-xshort"><img class="tile__art tile__art--cow" src="images/cowfloat.svg" width="1969" height="2651" alt="HackDavis cow mascot riding a colourful wave"></div>
+          <div class="tile__vis r-xshort">
+            <div class="tile__art tile__art--hd">
+              <img class="hd__wave" src="images/hackdavis/wave.png" width="1969" height="2651" alt="">
+              <img class="hd__cow" src="images/hackdavis/cow.png" width="454" height="438" alt="HackDavis cow mascot riding a colourful wave">
+            </div>
+          </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">HackDavis</span><span class="tile__year">2026</span></h3>
             <p class="tile__sub">Collegiate Hackathon</p>
@@ -1550,7 +1572,9 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
       <div class="col">
         <a class="tile" id="pikspot" href="preview/pikspot.html">
-          <div class="tile__vis r-xtall"></div>
+          <div class="tile__vis r-xtall">
+            <iframe class="tile__mock" src="../Pikspot/Pikspot_Card/index.html" title="Pikspot app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+          </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
             <p class="tile__sub">Spontaneous Photo Sharing</p>
@@ -1568,7 +1592,9 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
       <div class="col">
         <a class="tile" id="jvmc" href="#">
-          <div class="tile__vis r-short"></div>
+          <div class="tile__vis r-short">
+            <iframe class="tile__mock" src="../JVMC/JVMC_Card/index.html" title="JVMC website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+          </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
             <p class="tile__sub">Clinic Website</p>
@@ -1619,6 +1645,26 @@ body.is-handoff .row--name .big { visibility: hidden; }
       if (p && p.catch) p.catch(function () {});   /* no source yet: keep the poster */
     });
     tile.addEventListener('mouseleave', function () { v.pause(); });
+  });
+
+  /* the card mockups (Pikspot, JVMC) loop on their own, no hover needed. Each only
+     rests while the card is scrolled out of view (nobody can see it, so
+     it saves the battery), and stays still if reduced motion is asked for. */
+  document.querySelectorAll('.tile__mock').forEach(function (frame) {
+    var tile = frame.closest('.tile');
+    var send = function (cmd) {
+      if (frame.contentWindow) frame.contentWindow.postMessage({ pikspot: cmd }, '*');
+    };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var seen = true;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        seen = entries[0].isIntersecting;
+        send(seen ? 'play' : 'pause');
+      }).observe(tile);
+    }
+    /* the frame may finish loading after the card is already in view */
+    frame.addEventListener('load', function () { if (seen) send('play'); });
   });
 
   /* the footer is fixed and sized by its content, but the sheet above
