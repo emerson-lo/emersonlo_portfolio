@@ -44,7 +44,10 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Emerson Lo — Work</title>
+<title>Emerson Lo</title>
+<link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="images/favicon.png" type="image/png" sizes="180x180">
+<link rel="apple-touch-icon" href="images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
@@ -652,7 +655,7 @@ a, button, .nv, .tile, [role="button"],
    uses and needs to stay tight */
 /* no bottom padding: the closing rule is the section's last line, so
    the footer's top gap is measured straight from it */
-.work { padding: clamp(64px, calc(10 * var(--vh)), 128px) clamp(24px, calc(3.4 * var(--vw)), 56px) 0; }
+.work { padding: clamp(36px, calc(5 * var(--vh)), 72px) clamp(24px, calc(3.4 * var(--vw)), 56px) 0; }
 
 .work__head {
   display: flex;
@@ -890,7 +893,9 @@ a, button, .nv, .tile, [role="button"],
 
 .hero--sign {
   position: relative;
-  min-height: calc(100 * var(--vh));
+  /* a little under a full screen, so the top of My Work peeks in below it
+     and the headline (centred in what's left) sits higher */
+  min-height: calc(100 * var(--vh) - 200px);
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -916,18 +921,72 @@ a, button, .nv, .tile, [role="button"],
    and left unmirrored so the kanji and blade lettering stay legible.
    scale(1.08) gives the slight rotate room to clear the corners
    without exposing bare paper at the edges. */
+/* One wrapper holds the whole drawing and carries its tilt and shift, so the
+   nav glide moves a single layer. Inside it, .sword__stage is the drawing's
+   own box (2752 × 1536), placed like object-fit: contain at 70% 60% using
+   container units, so no script has to measure it. */
 .sign__bg {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: 70% 60%;
-  transform: rotate(-3deg) scale(1.2);
-  mix-blend-mode: multiply;
+  inset: 0 0 auto 0;
+  height: calc(100 * var(--vh));   /* a full screen tall, so the shorter hero doesn't shrink the sword */
+  container-type: size;
+  --sword-shift: 8%;   /* how far right the sword sits (% of the art's width); the nav glide script reads this */
+  transform: translateX(var(--sword-shift)) rotate(-3deg) scale(1.2);
+  will-change: transform;
   pointer-events: none;
   user-select: none;
-  visibility: hidden;   /* TEMPORARILY HIDDEN — delete this line to bring the sword back */
+}
+.sword__stage {
+  --w: min(100cqw, 100cqh * 1.79167);   /* 1.79167 = 2752 / 1536 */
+  position: absolute;
+  width: var(--w);
+  aspect-ratio: 2752 / 1536;
+  left: calc((100cqw - var(--w)) * .7);
+  top: calc((100cqh - var(--w) / 1.79167) * .6);
+}
+.sword__stage img { position: absolute; display: block; height: auto; }
+.sword__base { left: 0; top: 0; width: 100%; }
+
+/* the grass, zoomed in around the foot of the blade so it grows outward and
+   upward from there; the sword itself keeps its size and spot. Raise or lower
+   the scale to taste. */
+.sword__grass {
+  position: absolute;
+  inset: 0;
+  transform: scale(1.25);
+  transform-origin: 50.5% 89.2%;   /* where the blade meets the ground */
+}
+
+/* wind from the right: the grass leans left in gusts (the right-hand clump
+   first, the left a beat later) and the headband tails swing. The moving
+   pieces are cropped to just their own pixels and positioned in % of the
+   drawing; each pivots on its transform-origin (the ground line for the
+   grass, the knot for the headband). Plain fixed keyframes, transform only,
+   each on its own small layer, so it all runs on the GPU like the carousel. */
+.sword__grass-r { left: 50.2544%; top: 41.9922%; width: 49.7456%; transform-origin: 50% 97.05%; }
+.sword__grass-l { left: 0;        top: 38.2812%; width: 50.8358%; transform-origin: 50% 95.95%; }
+.sword__band    { left: 57.9215%; top: 26.8229%; width: 9.1206%;  transform-origin: 5.58% 11.62%; }
+.sword__grass-r,
+.sword__grass-l { animation: wind-grass 6.4s ease-in-out infinite; will-change: transform; }
+.sword__grass-l { animation-delay: -5.9s; }   /* half a second behind the right-hand grass */
+.sword__band    { animation: wind-band 3.4s ease-in-out infinite; will-change: transform; }
+
+@keyframes wind-grass {
+  0%, 100% { transform: skewX(0deg); }
+  30%      { transform: skewX(2.6deg); }
+  45%      { transform: skewX(1.2deg); }
+  62%      { transform: skewX(2deg); }
+  80%      { transform: skewX(.5deg); }
+}
+@keyframes wind-band {
+  0%, 100% { transform: rotate(0deg) skewY(0deg); }
+  25%      { transform: rotate(7deg) skewY(-2deg); }
+  45%      { transform: rotate(3deg) skewY(1deg); }
+  70%      { transform: rotate(9deg) skewY(-3deg); }
+}
+.hero:not(.is-in-view) .sword__stage img { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .sword__stage img { animation: none; }
 }
 
 /* plain white hero, like the rest of the site: no press-grain speckle and no
@@ -939,7 +998,7 @@ a, button, .nv, .tile, [role="button"],
    (e.g. the tab minimized/restored at a tiny size) — cover crops
    instead of gapping, so the art always fills the hero */
 @media (max-width: 640px) {
-  .sign__bg { object-fit: cover; }
+  .sword__stage { --w: max(100cqw, 100cqh * 1.79167); }
 }
 
 /* washes the image back out to paper along the left, bottom and right
@@ -950,7 +1009,7 @@ a, button, .nv, .tile, [role="button"],
   pointer-events: none;
   background-image:
     linear-gradient(to right, rgba(255,255,255,.78) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 64%, var(--paper) 100%),
-    linear-gradient(to top, var(--paper) 0%, rgba(255,255,255,0) 28%);
+    linear-gradient(to top, var(--paper) 0%, rgba(255,255,255,.7) 7%, rgba(255,255,255,0) 24%);
 }
 
 /* ============================================================
@@ -1192,7 +1251,7 @@ a, button, .nv, .tile, [role="button"],
 .row {
   position: relative;
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;   /* the small notes sit on the headline's baseline */
   justify-content: space-between;
   gap: clamp(24px, calc(6 * var(--vw)), 90px);
   padding-bottom: clamp(20px, calc(2.6 * var(--vw)), 38px);
@@ -1315,6 +1374,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
 .roll {
   display: inline-block;
   overflow: hidden;
+  overflow: clip;   /* clips the same, but keeps the word's baseline so the note lines up with it */
   height: 1.06em;
   vertical-align: bottom;
 }
@@ -1450,7 +1510,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
       <span class="nv__label">Product</span>
     </span>
-    <a class="nv" href="#pikspot"><span class="nv__chip c-pikspot"></span><span class="nv__label">Pikspot</span></a>
+    <a class="nv" href="preview/pikspot.html"><span class="nv__chip c-pikspot"></span><span class="nv__label">Pikspot</span></a>
     <a class="nv" href="#bitewise"><span class="nv__chip c-bitewise"></span><span class="nv__label">Bitewise</span></a>
   </div>
 
@@ -1461,8 +1521,8 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
       <span class="nv__label">Website</span>
     </span>
-    <a class="nv" href="#hackdavis"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
-    <a class="nv" href="#jvmc"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri<br class="nv__br"> Memorial Clinic</span></a>
+    <a class="nv" href="preview/hackdavis.html"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
+    <a class="nv" href="preview/jvmc.html"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri<br class="nv__br"> Memorial Clinic</span></a>
     <a class="nv" href="#jass"><span class="nv__chip c-jass"></span><span class="nv__label">Japanese American Student Society</span></a>
   </div>
 
@@ -1512,7 +1572,19 @@ body.is-handoff .row--name .big { visibility: hidden; }
     <span class="metal__shadow"></span>
   </div>
 
-  <img class="sign__bg" src="images/bustersword.jpg" alt="" aria-hidden="true">
+  <!-- the sword art, split into layers that line up exactly (same canvas, same CSS):
+       the still sword, the grass either side of the blade, and the headband tails.
+       Built from images/bustersword.jpg, recoloured to the headline grey. -->
+  <div class="sign__bg" aria-hidden="true">
+    <div class="sword__stage">
+      <img class="sword__base" src="images/sword/sword-base.webp" alt="">
+      <div class="sword__grass">
+        <img class="sword__grass-r" src="images/sword/grass-right.webp" alt="">
+        <img class="sword__grass-l" src="images/sword/grass-left.webp" alt="">
+      </div>
+      <img class="sword__band" src="images/sword/headband.webp" alt="">
+    </div>
+  </div>
   <div class="sign__fade" aria-hidden="true"></div>
 
   <div class="rows">
@@ -1660,22 +1732,40 @@ body.is-handoff .row--name .big { visibility: hidden; }
   /* the card mockups (Pikspot, JVMC, JASS, Bitewise) loop on their own, no hover needed. Each only
      rests while the card is scrolled out of view (nobody can see it, so
      it saves the battery), and stays still if reduced motion is asked for. */
-  document.querySelectorAll('.tile__mock').forEach(function (frame) {
-    var tile = frame.closest('.tile');
-    var send = function (cmd) {
-      if (frame.contentWindow) frame.contentWindow.postMessage({ pikspot: cmd }, '*');
+  /* Each mockup redraws itself every frame on the page's own main thread, so
+     they only play once the card is mostly on screen (not while it just peeks
+     up under the hero), and window.holdCards(ms) pauses them all briefly, e.g.
+     while the nav slides, so they don't compete with it. */
+  (function () {
+    var cards = [];
+    var held = false;
+    function sync(c) { c.send(c.seen && !held ? 'play' : 'pause'); }
+    window.holdCards = function (ms) {
+      if (!cards.length) return;
+      held = true;
+      cards.forEach(sync);
+      clearTimeout(window.holdCards.t);
+      window.holdCards.t = setTimeout(function () { held = false; cards.forEach(sync); }, ms);
     };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var seen = true;
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) {
-        seen = entries[0].isIntersecting;
-        send(seen ? 'play' : 'pause');
-      }).observe(tile);
-    }
-    /* the frame may finish loading after the card is already in view */
-    frame.addEventListener('load', function () { if (seen) send('play'); });
-  });
+    document.querySelectorAll('.tile__mock').forEach(function (frame) {
+      var c = {
+        seen: !('IntersectionObserver' in window),
+        send: function (cmd) {
+          if (frame.contentWindow) frame.contentWindow.postMessage({ pikspot: cmd }, '*');
+        }
+      };
+      cards.push(c);
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          c.seen = entries[0].intersectionRatio >= .4;
+          sync(c);
+        }, { threshold: [0, .4] }).observe(frame.closest('.tile'));
+      }
+      /* the frame may finish loading after the card is already in view */
+      frame.addEventListener('load', function () { sync(c); });
+    });
+  })();
 
   /* the footer is fixed and sized by its content, but the sheet above
      needs a matching bottom margin to uncover it — keep --foot-h equal
@@ -1719,26 +1809,26 @@ body.is-handoff .row--name .big { visibility: hidden; }
       }, 360);   /* the slide is .3s */
     }
 
-    /* The sword art is the other heavy layer: a 2752px image, rescaled
-       to the hero's width (object-fit: contain) and multiply-blended, so
-       every frame of the slide re-scaled and re-blended it. Instead it's
-       laid out once at its final size right away, and a transform
-       (compositor-only, no redraw) carries it from where it was to where
-       it lands — the same path the layout version took, without the
-       per-frame work. The math mirrors .sign__bg's CSS: contain,
-       object-position 70% 60%, rotate(-3deg) scale(1.2). */
+    /* The sword art is the other heavy layer: big images that would be
+       re-laid-out and redrawn every frame of the slide. Instead the one
+       wrapper holding them is laid out once at its final size right away,
+       and a transform (compositor-only, no redraw) carries it from where
+       it was to where it lands — the same path the layout version took,
+       without the per-frame work. The math mirrors the CSS: the drawing
+       contained at 70% 60%, translateX(--sword-shift), rotate(-3deg) scale(1.2). */
     var sign = document.querySelector('.sign__bg');
     var signRelease = null;
     var EASE = 'cubic-bezier(.22,1,.36,1)';
+    var phone = window.matchMedia('(max-width: 640px)');   /* phones crop (cover) instead */
     function glideSign() {
-      if (!sign || !sign.naturalWidth) return;
-      if (getComputedStyle(sign).objectFit !== 'contain') return;   /* phones use cover */
+      if (!sign || phone.matches) return;
       clearTimeout(signRelease);
       sign.style.transition = 'none';
       sign.style.left = ''; sign.style.width = ''; sign.style.translate = ''; sign.style.scale = '';
       var W1 = sign.offsetWidth, H = sign.offsetHeight;
       var W2 = W1 + (nav.classList.contains('nav--open') ? 124 : -124);
-      var R = sign.naturalWidth / sign.naturalHeight;
+      var R = 2752 / 1536;
+      var SHIFT = (parseFloat(getComputedStyle(sign).getPropertyValue('--sword-shift')) || 0) / 100;   /* the art's sideways shift, in widths */
       var A = -3 * Math.PI / 180, C = Math.cos(A) * 1.2, S = Math.sin(A) * 1.2;
       /* the drawn picture's on-screen centre and width for a box W wide,
          measured from the hero's right edge (which never moves) */
@@ -1746,7 +1836,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
         var w = Math.min(W, H * R), h = w / R;
         var cx = -W / 2, cy = H / 2;
         var vx = -W + (W - w) * .7 + w / 2 - cx, vy = (H - h) * .6 + h / 2 - cy;
-        return { x: cx + C * vx - S * vy, y: cy + S * vx + C * vy, w: w, cx: cx, cy: cy };
+        return { x: cx + SHIFT * W + C * vx - S * vy, y: cy + S * vx + C * vy, w: w, cx: cx, cy: cy };
       }
       var a = geo(W1), b = geo(W2), k = a.w / b.w;
       var dx = a.x - b.cx - k * (b.x - b.cx), dy = a.y - b.cy - k * (b.y - b.cy);
@@ -1764,10 +1854,41 @@ body.is-handoff .row--name .big { visibility: hidden; }
       }, 360);
     }
 
+    /* The page below the hero (the work grid, with its live card mockups) is
+       the heaviest thing the rail pushes over: sliding its margin re-laid-out
+       the grid and resized every card's iframe on every frame. Same trick as
+       the sword: it jumps to its final layout at once (one reflow), and a
+       transform (compositor-only) carries it from its old box to the new one,
+       scaling about the top of the screen with the right edge held still,
+       which is the path the reflowing version took. */
+    var main = document.querySelector('.main');
+    var mainRelease = null;
+    function glideMain(toggle) {
+      if (!main) { toggle(); return; }
+      clearTimeout(mainRelease);
+      main.style.transition = main.style.transform = main.style.transformOrigin = '';
+      var a = main.getBoundingClientRect();
+      main.style.transition = 'none';
+      toggle();
+      var b = main.getBoundingClientRect();   /* forces the one reflow, at the final size */
+      if (!b.width || Math.abs(b.width - a.width) < 1) { main.style.transition = ''; return; }
+      var k = a.width / b.width;
+      main.style.transformOrigin = '100% ' + (-b.top) + 'px';   /* right edge, top of the screen */
+      main.style.transform = 'scale(' + k + ')';
+      void main.offsetWidth;   /* commit the start pose before animating */
+      main.style.transition = 'transform .3s ' + EASE;
+      main.style.transform = 'none';
+      mainRelease = setTimeout(function () {
+        main.style.transition = main.style.transform = main.style.transformOrigin = '';
+      }, 360);
+    }
+
     btn.addEventListener('click', function () {
+      if (window.holdCards) window.holdCards(400);   /* card mockups rest while the rail slides */
       freezeMetal();
       glideSign();
-      var open = nav.classList.toggle('nav--open');
+      var open;
+      glideMain(function () { open = nav.classList.toggle('nav--open'); });
       btn.setAttribute('aria-expanded', open);
       btn.setAttribute('aria-label', open ? 'Collapse navigation' : 'Expand navigation');
       btn.setAttribute('data-tip', open ? 'Minimize menu' : 'Expand');

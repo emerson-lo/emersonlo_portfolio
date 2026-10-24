@@ -7,7 +7,10 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pikspot — Emerson Lo</title>
+<title>Emerson Lo</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../images/favicon.png" type="image/png" sizes="180x180">
+<link rel="apple-touch-icon" href="../images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
@@ -1072,8 +1075,9 @@ a, button, .nv, [role="button"],
 }
 .survey__chart .donut { width: 112px; flex: none; }
 .survey__chart .donut__ring {
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
-          mask: radial-gradient(farthest-side, transparent calc(100% - 11px), #000 calc(100% - 10px));
+  /* a 2px ring, the same weight as the "vs." badge's ring in Why mobile won */
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.6px), #000 calc(100% - 2px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 2.6px), #000 calc(100% - 2px));
 }
 .survey__chart .donut__big { font-size: 21px; }
 .survey__chart .donut__small { margin-top: 3px; font-size: 7.5px; letter-spacing: .1em; }
@@ -1691,6 +1695,52 @@ a, button, .nv, [role="button"],
 
 /* captions use .prompt__cue (italic grey, like the FigJam board's cue) */
 .lofi__cap { margin: 0; }
+
+/* --- lo-fi sketches, survey layout: text left, an angled deck right. The
+       sheets turn the same way as the survey pages (facing the text); my sheet
+       is in front, the team's two sit further back, up and to the left --- */
+.lofix__key { list-style: none; margin: 0 0 18px; padding: 0; display: flex; gap: 32px; }
+.lofix__key li { font-size: 15px; color: var(--ink); }
+.lofix__key b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+/* the sheets, flat and side by side: the team's column sets the height and my
+   sheet fills it, so both columns' tops and bottoms line up */
+.lofix__pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(14px, 1.6vw, 20px);
+  align-items: stretch;
+}
+.lofix__mine { position: relative; }
+.lofix__mine .lofi__card { position: absolute; inset: 0; }
+.lofix__mine .lofi__card img { width: 100%; height: 100%; object-fit: contain; }
+@media (max-width: 760px) {
+  .lofix__pair { margin-top: 12px; }
+}
+
+/* the zoom view of my sheet, with its callouts: the sheet is sized to the
+   sketch's own shape so the callouts land where they point */
+.lightbox .lb-notes {
+  position: relative;
+  width: min(70vw, 84vh * 336 / 423);
+  aspect-ratio: 336 / 423;
+  background: #fff;
+  border: 1px solid #E6E6E2;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px -30px rgba(20,22,20,.35);
+}
+.lightbox .lb-notes img {
+  width: 100%; height: 100%;
+  padding: 0; border: 0; border-radius: 12px; background: none; box-shadow: none;
+}
+.lightbox .lb-notes .lofi__note b { font-size: 13px; }
 
 @media (max-width: 760px) {
   .lofi { grid-template-columns: 1fr; }
@@ -2317,7 +2367,7 @@ a, button, .nv, [role="button"],
       <svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
       <span class="nv__label">Product</span>
     </span>
-    <a class="nv" href="../index.html#pikspot" aria-current="page"><span class="nv__chip c-pikspot"></span><span class="nv__label">Pikspot</span></a>
+    <a class="nv" href="pikspot.html" aria-current="page"><span class="nv__chip c-pikspot"></span><span class="nv__label">Pikspot</span></a>
     <a class="nv" href="../index.html#bitewise"><span class="nv__chip c-bitewise"></span><span class="nv__label">Bitewise</span></a>
   </div>
 
@@ -2328,8 +2378,8 @@ a, button, .nv, [role="button"],
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
       <span class="nv__label">Website</span>
     </span>
-    <a class="nv" href="../index.html#hackdavis"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
-    <a class="nv" href="../index.html#jvmc"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri<br class="nv__br"> Memorial Clinic</span></a>
+    <a class="nv" href="hackdavis.html"><span class="nv__chip c-hackdavis"></span><span class="nv__label">HackDavis</span></a>
+    <a class="nv" href="jvmc.html"><span class="nv__chip c-jvmc"></span><span class="nv__label">Joan Viteri<br class="nv__br"> Memorial Clinic</span></a>
     <a class="nv" href="../index.html#jass"><span class="nv__chip c-jass"></span><span class="nv__label">Japanese American Student Society</span></a>
   </div>
 
@@ -2671,33 +2721,42 @@ a, button, .nv, [role="button"],
       </div>
     </figure>
 
-    <p class="prompt__cue research-sub">Lo-fi Sketches</p>
-    <h3 class="research__heading">Concepts start to take shape</h3>
-    <p class="research__body">Lo-fi sketches let me explore ideas quickly before committing to wireframes, turning research insights into tangible layouts and workflows. Each designer took two pages; mine were the <strong>home page</strong>, which I iterated twice, and the <strong>events page</strong>.</p>
-    <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any screen to take a closer look.</p>
+    <!-- lo-fi sketches: the text on the left; the sheets on the right as an angled
+         deck, laid out like the user surveys (mine in front, the team's behind) -->
+    <div class="survey lofix">
+      <div class="survey__text">
+        <p class="prompt__cue">Lo-fi Sketches</p>
+        <h3 class="research__heading">Concepts start to take shape</h3>
+        <p class="research__body">Lo-fi sketches let me explore ideas quickly before committing to wireframes, turning research insights into tangible layouts and workflows. Each designer took two pages; mine were the <strong>home page</strong>, which I iterated twice, and the <strong>events page</strong>.</p>
+        <hr class="survey__rule">
+        <ul class="lofix__key">
+          <li><b>Left</b>My iterations</li>
+          <li><b>Right</b>The team&rsquo;s work</li>
+        </ul>
+        <p class="zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5l5 5M8 10.5h5M10.5 8v5"/></svg>Click any sketch to take a closer look.</p>
+      </div>
 
-    <figure class="ia-frame lofi-frame">
-    <div class="lofi">
-      <div class="lofi__stage">
-        <div class="lofi__card lofi__card--mine">
-          <img src="images/lofi/mylofi.svg" width="336" height="423" loading="lazy"
-               alt="My lo-fi sketches: two versions of the home page and the events page">
+      <!-- flat, side by side: my sheet, then the team's two stacked -->
+      <div class="lofix__pair">
+        <div class="lofix__mine">
+          <div class="lofi__card">
+            <img src="images/lofi/mylofi.svg" width="336" height="423" loading="lazy"
+                 alt="My lo-fi sketches: two versions of the home page and the events page">
+          </div>
+          <!-- callouts, shown only in the zoom view: --x / --y place the arrow's
+               tip on the sketch, --len is the line's length (all % of the sheet) -->
+          <div class="lofi-notes" hidden>
+            <span class="lofi__note" style="--x:40%; --y:21%; --len:36%"><b>home page v1.</b></span>
+            <span class="lofi__note" style="--x:62%; --y:46%; --len:36%"><b>home page v2.</b></span>
+            <span class="lofi__note" style="--x:61%; --y:83%; --len:39%"><b>events page v1.</b></span>
+          </div>
         </div>
-        <!-- callouts: --x / --y place the arrow's tip on the sketch (as % of the card) -->
-        <span class="lofi__note" style="--x:40%; --y:21%"><b>home page v1.</b></span>
-        <span class="lofi__note" style="--len:140px; --x:calc(100% + 27px - 140px); --y:46%"><b>home page v2.</b></span>
-        <span class="lofi__note" style="--len:clamp(125px, 14.5vw, 165px); --x:61%; --y:83%"><b>events page v1.</b></span>
+        <div class="lofi__team">
+          <div class="lofi__card"><img src="images/lofi/teamlofi1.svg" width="210" height="269" loading="lazy" alt="Teammates' lo-fi sketches"></div>
+          <div class="lofi__card"><img src="images/lofi/teamlofi2.svg" width="210" height="160" loading="lazy" alt="More of the team's lo-fi sketches"></div>
+        </div>
       </div>
-
-      <div class="lofi__team">
-        <div class="lofi__card"><img src="images/lofi/teamlofi1.svg" width="210" height="269" loading="lazy" alt="Teammates' lo-fi sketches"></div>
-        <div class="lofi__card"><img src="images/lofi/teamlofi2.svg" width="210" height="160" loading="lazy" alt="More of the team's lo-fi sketches"></div>
-      </div>
-
-      <p class="prompt__cue lofi__cap">My iterations</p>
-      <p class="prompt__cue lofi__cap">The team&rsquo;s work</p>
     </div>
-    </figure>
   </section>
 
   <hr class="sec-rule">
@@ -3178,6 +3237,16 @@ a, button, .nv, [role="button"],
         } else {
           big = img.cloneNode(true);
           big.className = 'gf gf--big';
+        }
+        /* my lo-fi sheet opens with its callouts, which stay hidden on the page */
+        var notes = img.closest('.lofix__mine');
+        notes = notes && notes.querySelector('.lofi-notes');
+        if (notes) {
+          var sheet = document.createElement('div');
+          sheet.className = 'lb-notes';
+          sheet.appendChild(big);
+          [].forEach.call(notes.children, function (n) { sheet.appendChild(n.cloneNode(true)); });
+          big = sheet;
         }
         box.appendChild(big);
         box.addEventListener('click', close);
