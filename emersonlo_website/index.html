@@ -927,7 +927,13 @@ a, button, .nv, .tile, [role="button"],
   mix-blend-mode: multiply;
   pointer-events: none;
   user-select: none;
+  visibility: hidden;   /* TEMPORARILY HIDDEN — delete this line to bring the sword back */
 }
+
+/* plain white hero, like the rest of the site: no press-grain speckle and no
+   pearl/shadow sheen along the edges. Delete this rule to bring the texture back. */
+.hero--sign::after { display: none; }
+.hero--sign .metal { visibility: hidden; }
 
 /* contain leaves paper showing at the edges once the window gets small
    (e.g. the tab minimized/restored at a tiny size) — cover crops
