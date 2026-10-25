@@ -838,47 +838,84 @@ a, button, .nv, .tile, [role="button"],
   user-select: none;
 }
 
-/* the top gap (rule above → headline) is this padding; the bottom gap
-   (links → closing rule) is .foot__links' margin — both are --foot-gap */
-.foot__inner {
+@font-face {
+  font-family: "Inter Medium";
+  font-weight: 500;
+  font-display: swap;
+  src: url("images/fonts/inter-500-latin.woff2") format("woff2");
+}
+
+/* Explorations: the label, then one row of large titles, each with its picture
+   beside it. The row runs past the right edge and scrolls sideways */
+.foot__ex {
   position: relative;
   z-index: 1;
-  max-width: min(620px, calc(48 * var(--vw)));
-  padding-top: var(--foot-gap);
+  padding-top: 26px;
 }
-
-.foot__lead {
-  font-family: var(--mark);        /* same hand as the ERL logo and hero */
-  font-size: clamp(34px, calc(3.9 * var(--vw)), 58px);
-  font-weight: 400;
-  letter-spacing: .005em;
-  line-height: 1.08;
-  color: #6E716C;                  /* same grey + glow as the hero headers */
-  text-shadow: 0 0 18px rgba(110,113,108,.45);
-  margin: 0 0 26px;
+.foot__label { margin: 0 0 22px; }
+/* the row drifts from left to right and loops. The track holds the list twice (the
+   script adds the copy) and slides by exactly one list's width, so the restart is
+   invisible. Transform only, so it runs on the compositor like the hero's carousel. */
+.foot__strip {
+  margin: 0 calc(-1 * clamp(24px, calc(3.4 * var(--vw)), 56px)) 0 0;   /* runs to the window's right edge */
+  overflow: hidden;
+  padding: 2px 0 4px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
 }
-
-.foot__links { display: flex; gap: 26px; flex-wrap: wrap; margin: 0 0 var(--foot-gap); }
-
-.foot__links a {
-  font-size: 15px;
-  color: var(--ink-soft);
-  text-decoration: none;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0% 1px;
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  padding-bottom: 3px;
-  transition: background-size .45s cubic-bezier(.22,1,.36,1), color .25s ease;
+.foot__track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  width: max-content;
+  will-change: transform;
 }
+.foot__track.is-looping { animation: foot-drift var(--foot-dur, 60s) linear infinite; }
+@keyframes foot-drift {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+/* it only runs while the footer is uncovered, and rests under the pointer */
+html:not(.foot-live) .foot__track { animation-play-state: paused; }
+.foot__strip:hover .foot__track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .foot__track.is-looping { animation: none; } }
+.foot__item {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, calc(1.2 * var(--vw)), 20px);
+  margin-right: clamp(32px, calc(3 * var(--vw)), 52px);   /* a margin, not a gap, so the two lists are exactly equal */
+}
+.foot__title {
+  font-family: "Inter Medium", var(--sans);
+  font-size: clamp(20px, calc(1.75 * var(--vw)), 26px);
+  font-weight: 500;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+/* the picture: a fixed height, its width from --r (width / height) */
+.foot__thumb {
+  flex: none;
+  height: clamp(44px, calc(3.6 * var(--vw)), 54px);
+  aspect-ratio: var(--r, 1.3);
+  overflow: hidden;
+  background: #ECECEA;
+}
+.foot__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.foot__links a:hover { color: var(--ink); background-size: 100% 1px; }
-
-/* just the closing rule now — the name and year that sat under it are gone */
+/* the closing rule, with the name on the left and the year on the right */
 .foot__base {
   position: relative;
   z-index: 1;
+  margin-top: clamp(48px, calc(4.6 * var(--vw)), 68px);
+  padding-top: 22px;
   border-top: 1px solid var(--hair);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--ink-soft);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1427,7 +1464,6 @@ body.is-handoff .row--name .big { visibility: hidden; }
   }
   .note--r { text-align: left; margin-left: 0; }
   .big { font-size: clamp(32px, 9.5vw, 56px); }
-  .foot__inner { max-width: none; }
   .grid { align-items: stretch; }
   .col, .col > .tile { width: 100%; }
 }
@@ -1641,7 +1677,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
         <a class="tile" id="bitewise" href="#">
           <div class="tile__vis r-short">
-            <iframe class="tile__mock" src="../Bitewise/Bitewise_Card/index.html" title="Bitewise app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+            <iframe class="tile__mock" src="Bitewise/Bitewise_Card/index.html" title="Bitewise app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
@@ -1653,7 +1689,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <div class="col">
         <a class="tile" id="pikspot" href="preview/pikspot.html">
           <div class="tile__vis r-xtall">
-            <iframe class="tile__mock" src="../Pikspot/Pikspot_Card/index.html" title="Pikspot app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+            <iframe class="tile__mock" src="Pikspot/Pikspot_Card/index.html" title="Pikspot app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
@@ -1663,7 +1699,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
         <a class="tile" id="jass" href="#">
           <div class="tile__vis r-short">
-            <iframe class="tile__mock" src="../JASS/JASS_Card/index.html" title="JASS website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+            <iframe class="tile__mock" src="JASS/JASS_Card/index.html" title="JASS website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Japanese American Student Society</span><span class="tile__year">2024</span></h3>
@@ -1675,7 +1711,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <div class="col">
         <a class="tile" id="jvmc" href="preview/jvmc.html">
           <div class="tile__vis r-short">
-            <iframe class="tile__mock" src="../JVMC/JVMC_Card/index.html" title="JVMC website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+            <iframe class="tile__mock" src="JVMC/JVMC_Card/index.html" title="JVMC website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
@@ -1705,16 +1741,28 @@ body.is-handoff .row--name .big { visibility: hidden; }
   </div>
   -->
 
-  <div class="foot__inner">
-    <p class="foot__lead">Let's make something worth sitting with.</p>
-    <div class="foot__links">
-      <a href="mailto:emersonrylo@gmail.com">emersonrylo@gmail.com</a>
-      <a href="https://www.linkedin.com/in/emerson-lo" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://drive.google.com/file/d/1cuFnkDeGFxUhMmO6HalkI4RZM-2yYmgN/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+  <!-- Explorations: side projects, each a title with a small picture beside it.
+       The pictures are placeholders for now: to add one, put an <img> inside its
+       .foot__thumb (it fills the box). The row drifts left to right
+       and loops (see the script at the bottom). -->
+  <div class="foot__ex">
+    <p class="sec-head foot__label">Explorations</p>
+    <div class="foot__strip">
+      <ul class="foot__track">
+        <li class="foot__item"><span class="foot__title">Probabilistic Premium</span><span class="foot__thumb" style="--r:1.6" aria-hidden="true"></span></li>
+        <li class="foot__item"><span class="foot__title">Design System Tooling</span><span class="foot__thumb" style="--r:1" aria-hidden="true"></span></li>
+        <li class="foot__item"><span class="foot__title">Cognitive Heuristics</span><span class="foot__thumb" style="--r:1.3" aria-hidden="true"></span></li>
+        <li class="foot__item"><span class="foot__title">Watch Craft</span><span class="foot__thumb" style="--r:1.15" aria-hidden="true"></span></li>
+        <li class="foot__item"><span class="foot__title">Financial Instruments</span><span class="foot__thumb" style="--r:1.5" aria-hidden="true"></span></li>
+        <li class="foot__item"><span class="foot__title">Bucolic</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/FaroeIsland.jpg" alt="" loading="lazy"></span></li>
+      </ul>
     </div>
   </div>
 
-  <div class="foot__base" aria-hidden="true"></div>
+  <div class="foot__base">
+    <span>Emerson Lo</span>
+    <span>&copy; 2026</span>
+  </div>
 </footer>
 
 <script>
@@ -1765,6 +1813,40 @@ body.is-handoff .row--name .big { visibility: hidden; }
       /* the frame may finish loading after the card is already in view */
       frame.addEventListener('load', function () { sync(c); });
     });
+  })();
+
+  /* Explorations carousel: copy the list once so the loop has no seam, set the speed
+     from the list's width (~40px a second), and run it only while the footer is
+     uncovered, i.e. when the page is scrolled to within the footer's height of the end */
+  (function () {
+    var track = document.querySelector('.foot__track');
+    if (!track) return;
+    var root = document.documentElement;
+    var copied = false;
+    function build() {
+      if (!copied) {
+        [].slice.call(track.children).forEach(function (li) {
+          var c = li.cloneNode(true);
+          c.setAttribute('aria-hidden', 'true');
+          track.appendChild(c);
+        });
+        copied = true;
+      }
+      var one = track.scrollWidth / 2;
+      track.style.setProperty('--foot-dur', Math.max(20, one / 40).toFixed(1) + 's');
+      track.classList.add('is-looping');
+    }
+    build();
+    var ticking = false;
+    function live() {
+      ticking = false;
+      var foot = document.querySelector('.foot');
+      var uncovered = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - (foot ? foot.offsetHeight : 300) - 40;
+      root.classList.toggle('foot-live', uncovered);
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(live); } }, { passive: true });
+    window.addEventListener('resize', function () { track.style.setProperty('--foot-dur', Math.max(20, track.scrollWidth / 2 / 40).toFixed(1) + 's'); });
+    live();
   })();
 
   /* the footer is fixed and sized by its content, but the sheet above

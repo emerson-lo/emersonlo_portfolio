@@ -574,7 +574,7 @@ a, button, .nv, [role="button"],
   user-select: none;
 }
 /* every part is placed in the canvas's own proportions */
-.hero__hand > img { position: absolute; display: block; }
+.hero__hand > img, .hero__hand > iframe { position: absolute; display: block; }
 .hero__frame { left: 23.5%; top: 17.893%; width: 63%; height: 82.107%; z-index: 1; }
 .hero__screen {
   left: 31.1%;
@@ -585,13 +585,8 @@ a, button, .nv, [role="button"],
   object-position: top;
   border-radius: 12% / 5.6%;
 }
-/* the home screen fades in and out over the map: 4s each, a 0.6s crossfade */
-.hero__screen--home { animation: heroSwap 9.2s ease-in-out infinite; }
-@keyframes heroSwap {
-  0%, 43.5%  { opacity: 1; }
-  50%, 93.5% { opacity: 0; }
-  100%       { opacity: 1; }
-}
+/* the live prototype in the cut-out: an iframe, clipped to the screen's corners */
+.hero__live { border: 0; overflow: hidden; background: #F8F8F8; }
 
 /* the faded blue glow, kept from the reference — it sits behind the
    device shot, anchoring the right side of the band */
@@ -2201,6 +2196,70 @@ a, button, .nv, [role="button"],
   filter: drop-shadow(0 0 6px rgba(0,0,0,.22)) drop-shadow(0 0 14px rgba(20,22,20,.14));
 }
 
+/* --- 06 final prototype: two live phones a row, notes and callout lines in the
+       mid-fi "Final iteration" style. Notes are centred on their --y. --- */
+#final { scroll-margin-top: 48px; }   /* the hero's View prototype jumps here */
+.fp-scroll { margin-top: clamp(28px, 4vh, 44px); }
+.fp-scroll + .fp-scroll { margin-top: clamp(40px, 6vw, 72px); }
+.fp-stage { container-type: inline-size; }
+.fp-label {
+  margin: 0;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.fp-phone {
+  aspect-ratio: 421 / 880;
+  border: 0;
+  background: transparent;
+  /* the same shadow as the mid-fi final phones, following the phone's shape */
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.22)) drop-shadow(0 0 14px rgba(20,22,20,.14));
+}
+/* the note: a dashed, blue-gradient outline (as in the mid-fi text boxes) */
+.fp-note {
+  translate: 0 -50%;
+  box-sizing: border-box;
+  padding: calc(9 / 784 * 100cqw) calc(11 / 784 * 100cqw);
+  font-size: calc(9.6 / 784 * 100cqw);
+  line-height: 1.32;
+  color: #484C48;
+  transition: opacity .3s ease;
+}
+.fp-note b { font-weight: 600; color: var(--ink); }
+.fp-note__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.fp-note__ring rect { fill: none; stroke: url(#fpNoteGrad); stroke-width: 1; stroke-dasharray: 6 6; vector-effect: non-scaling-stroke; }
+.fp-stage .final-lines [data-for] { transition: opacity .3s ease; }
+/* while a phone plays (or someone is using it) its notes step back */
+.fp-stage.is-live-a [data-for="a"],
+.fp-stage.is-live-b [data-for="b"] { opacity: .12; }
+/* the play pill under each phone, in the hero's "View prototype" style */
+.fp-play { appearance: none; margin: 0; padding: 0; border: 0; background: none; font: inherit; color: inherit; display: flex; justify-content: center; cursor: pointer; }
+.fp-play__in {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  transition: color .2s ease, border-color .2s ease;
+}
+.fp-play:hover .fp-play__in, .fp-play:focus-visible .fp-play__in { color: var(--ink); border-color: #C9CBC7; }
+.fp-play svg { width: 12px; height: 12px; fill: currentColor; }
+/* narrow screens: the stage keeps its layout and scrolls sideways */
+@media (max-width: 760px) {
+  .fp-scroll { overflow-x: auto; scrollbar-width: none; }
+  .fp-stage { min-width: 680px; }
+}
+
 /* =========================== BACK TO TOP =========================== */
 
 /* rises out of the foot of the nav once the reader reaches Overview.
@@ -2410,14 +2469,13 @@ a, button, .nv, [role="button"],
 
   <header class="hero">
     <div class="hero__bg" aria-hidden="true"></div>
-    <!-- the hand photo with its screen cut out; the two app screens sit behind
-         the cut-out and take turns showing through it -->
+    <!-- the hand photo with its screen cut out; the live prototype runs behind the
+         cut-out: the home page, then a tap over to the photo map, on a loop -->
     <div class="hero__hand" aria-hidden="true">
-      <img class="hero__screen hero__screen--map" src="images/hero/screen-map.jpg" width="600" height="1301" alt="">
-      <img class="hero__screen hero__screen--home" src="images/hero/screen-home.jpg" width="600" height="1301" alt="">
+      <iframe class="hero__screen hero__live" src="../Pikspot/Pikspot_Prototype/index.html?screen=tour&amp;frame=0&amp;autoplay=0" title="Pikspot prototype: home and photo map" tabindex="-1"></iframe>
       <img class="hero__frame" src="images/hero/hand-frame.png" width="945" height="1239" alt="">
     </div>
-    <a class="hero__proto" href="https://www.figma.com/proto/wPXX58P0pZhD61IaQTYuFi/Pikspot-Prototype?page-id=0%3A1&amp;node-id=1-4685&amp;viewport=1903%2C1175%2C0.17&amp;t=w1KX134RMH0PaIUD-1&amp;scaling=scale-down&amp;content-scaling=fixed&amp;starting-point-node-id=1%3A5776" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.8v6.4l5.2-3.2z"/></svg>View prototype</a>
+    <a class="hero__proto" href="#final"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6.5 13.5L12 19l5.5-5.5"/></svg>View prototype</a>
   </header>
 
   <section class="meta" id="overview">
@@ -3108,6 +3166,112 @@ a, button, .nv, [role="button"],
         </div>
       </figure>
     </div>
+<!-- FINAL:START -->
+    <!-- final prototypes: the last part of 05 Hi-Fi Prototyping -->
+    <p class="prompt__cue research-sub" id="final">Final Prototypes</p>
+    <h3 class="research__heading">Welcome to Pikspot</h3>
+    <p class="research__body">Everything we learned came together here: the <strong>surveys</strong> and <strong>interviews</strong> that showed people discover spots spontaneously and guard their favorites, the <strong>mid-fi</strong> layouts users preferred, and the friction <strong>usability testing</strong> surfaced. Each screen below is the working prototype. Press <strong>Play demo</strong> to watch its flow, or tap a phone to try it yourself.</p>
+    <!-- one shared gradient for every note's dashed outline -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="fpNoteGrad" x1="1" y1="0" x2="0" y2=".2"><stop stop-color="#96CDFA"/><stop offset="1" stop-color="#597994"/></linearGradient></defs></svg>
+    <!-- generated: each stage is 784 x 580 units; the phones are the live prototype,
+         paused on their first frame, and the notes point at what that frame shows -->
+    <div class="fp-scroll">
+    <div class="final-stage fp-stage" style="--x0:0;--y0:0;--sw:784;--sh:580">
+      <p class="final-p fp-label" style="--x:150;--y:6;--w:234">Onboarding</p>
+      <iframe class="final-p fp-phone" data-key="a" style="--x:150;--y:34;--w:234" src="../Pikspot/Pikspot_Prototype/index.html?screen=onboarding&amp;autoplay=0" title="Pikspot onboarding: a wall of community photos, then Sign up or Log in" loading="lazy"></iframe>
+      <button class="final-p fp-play" type="button" data-key="a" style="--x:150;--y:537;--w:234"><span class="fp-play__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span class="fp-play__label">Play demo</span></span></button>
+      <div class="final-p fp-note" data-for="a" style="--x:0;--y:200.75;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>A wall of community photos sets the tone before any form: <b>inspiration first</b>.</div>
+      <div class="final-p fp-note" data-for="a" style="--x:0;--y:421.96;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>Sign up asks for your <b>city and interests</b>, so Near You and the feed fit you from day one.</div>
+      <p class="final-p fp-label" style="--x:400;--y:6;--w:234">Home</p>
+      <iframe class="final-p fp-phone" data-key="b" style="--x:400;--y:34;--w:234" src="../Pikspot/Pikspot_Prototype/index.html?screen=home&amp;autoplay=0" title="Pikspot home: tip of the day, weekly photo challenge, filter chips and the photo feed" loading="lazy"></iframe>
+      <button class="final-p fp-play" type="button" data-key="b" style="--x:400;--y:537;--w:234"><span class="fp-play__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span class="fp-play__label">Play demo</span></span></button>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:136.83;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Tip of the Day</b> refreshes daily; tap for the next. Learning for every skill level.</div>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:278.56;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>The <b>weekly photo challenge</b> sits up top, one tap from home.</div>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:363.58;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Near You, Friends and Explore</b> chips: the filter users preferred in mid-fi.</div>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:448.61;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Edge-to-edge photos</b> keep visual quality the focus. Double-tap to like.</div>
+      <svg class="final-lines" viewBox="0 0 784 580" aria-hidden="true">
+        <defs><linearGradient id="fpg0a0" gradientUnits="userSpaceOnUse" x1="172.23" y1="0" x2="116.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg0a1" gradientUnits="userSpaceOnUse" x1="172.23" y1="0" x2="116.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg0b0" gradientUnits="userSpaceOnUse" x1="615.66" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg0b1" gradientUnits="userSpaceOnUse" x1="615.66" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg0b2" gradientUnits="userSpaceOnUse" x1="617.88" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg0b3" gradientUnits="userSpaceOnUse" x1="615.66" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient></defs>
+        <path data-for="a" d="M172.23 200.75H116.00" stroke="url(#fpg0a0)"/>
+        <path data-for="a" d="M172.23 421.96H116.00" stroke="url(#fpg0a1)"/>
+        <path data-for="b" d="M615.66 136.83H668.00" stroke="url(#fpg0b0)"/>
+        <path data-for="b" d="M615.66 278.56H668.00" stroke="url(#fpg0b1)"/>
+        <path data-for="b" d="M617.88 351.93H645.17Q651.00 351.93 651.00 357.76V357.76Q651.00 363.58 656.83 363.58H668.00" stroke="url(#fpg0b2)"/>
+        <path data-for="b" d="M615.66 429.74H643.00Q651.00 429.74 651.00 437.74V440.61Q651.00 448.61 659.00 448.61H668.00" stroke="url(#fpg0b3)"/>
+        <path class="final-lines__dot" data-for="a" d="M112.50 200.75L116.00 197.25L119.50 200.75L116.00 204.25Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="a" d="M112.50 421.96L116.00 418.46L119.50 421.96L116.00 425.46Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 136.83L668.00 133.33L671.50 136.83L668.00 140.33Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 278.56L668.00 275.06L671.50 278.56L668.00 282.06Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 363.58L668.00 360.08L671.50 363.58L668.00 367.08Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 448.61L668.00 445.11L671.50 448.61L668.00 452.11Z" fill="#96CDFA"/>
+      </svg>
+    </div>
+    </div>
+    <div class="fp-scroll">
+    <div class="final-stage fp-stage" style="--x0:0;--y0:0;--sw:784;--sh:580">
+      <p class="final-p fp-label" style="--x:150;--y:6;--w:234">Photo Map</p>
+      <iframe class="final-p fp-phone" data-key="a" style="--x:150;--y:34;--w:234" src="../Pikspot/Pikspot_Prototype/index.html?screen=map&amp;autoplay=0" title="Pikspot photo map: location search, photo pins with counts, zoom and locate" loading="lazy"></iframe>
+      <button class="final-p fp-play" type="button" data-key="a" style="--x:150;--y:537;--w:234"><span class="fp-play__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span class="fp-play__label">Play demo</span></span></button>
+      <div class="final-p fp-note" data-for="a" style="--x:0;--y:87.36;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Search</b> any place to jump to its photo spots.</div>
+      <div class="final-p fp-note" data-for="a" style="--x:0;--y:172.38;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>Pins show each spot&rsquo;s <b>own photo and a count</b>, replacing the unlabeled icons testers guessed at.</div>
+      <div class="final-p fp-note" data-for="a" style="--x:0;--y:294.12;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>Tap a pin to see <b>every photo taken there</b>, then head out and shoot it.</div>
+      <p class="final-p fp-label" style="--x:400;--y:6;--w:234">Community Events</p>
+      <iframe class="final-p fp-phone" data-key="b" style="--x:400;--y:34;--w:234" src="../Pikspot/Pikspot_Prototype/index.html?screen=events&amp;autoplay=0" title="Pikspot community events: header actions, weekly challenge with time left, filter chips and event cards" loading="lazy"></iframe>
+      <button class="final-p fp-play" type="button" data-key="b" style="--x:400;--y:537;--w:234"><span class="fp-play__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span class="fp-play__label">Play demo</span></span></button>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:84.58;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Create, Saved and Past</b> events moved into the header, each with a clear icon.</div>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:253.55;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>Challenges show their <b>prompt and time left</b>, the countdown users found crucial.</div>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:338.57;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>The <b>same chips as home</b>, plus filters for time and distance.</div>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:436.41;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Blue event titles</b> and a vertical scroll set this page apart from home.</div>
+      <svg class="final-lines" viewBox="0 0 784 580" aria-hidden="true">
+        <defs><linearGradient id="fpg1a0" gradientUnits="userSpaceOnUse" x1="170.01" y1="0" x2="116.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg1a1" gradientUnits="userSpaceOnUse" x1="219.48" y1="0" x2="116.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg1a2" gradientUnits="userSpaceOnUse" x1="211.14" y1="0" x2="116.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg1b0" gradientUnits="userSpaceOnUse" x1="617.88" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg1b1" gradientUnits="userSpaceOnUse" x1="615.66" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg1b2" gradientUnits="userSpaceOnUse" x1="617.88" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg1b3" gradientUnits="userSpaceOnUse" x1="615.66" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient></defs>
+        <path data-for="a" d="M170.01 87.36H116.00" stroke="url(#fpg1a0)"/>
+        <path data-for="a" d="M219.48 149.05H141.00Q133.00 149.05 133.00 157.05V164.38Q133.00 172.38 125.00 172.38H116.00" stroke="url(#fpg1a1)"/>
+        <path data-for="a" d="M211.14 294.12H116.00" stroke="url(#fpg1a2)"/>
+        <path data-for="b" d="M617.88 84.58H668.00" stroke="url(#fpg1b0)"/>
+        <path data-for="b" d="M615.66 253.55H668.00" stroke="url(#fpg1b1)"/>
+        <path data-for="b" d="M617.88 306.35H643.00Q651.00 306.35 651.00 314.35V330.57Q651.00 338.57 659.00 338.57H668.00" stroke="url(#fpg1b2)"/>
+        <path data-for="b" d="M615.66 436.41H668.00" stroke="url(#fpg1b3)"/>
+        <path class="final-lines__dot" data-for="a" d="M112.50 87.36L116.00 83.86L119.50 87.36L116.00 90.86Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="a" d="M112.50 172.38L116.00 168.88L119.50 172.38L116.00 175.88Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="a" d="M112.50 294.12L116.00 290.62L119.50 294.12L116.00 297.62Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 84.58L668.00 81.08L671.50 84.58L668.00 88.08Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 253.55L668.00 250.05L671.50 253.55L668.00 257.05Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 338.57L668.00 335.07L671.50 338.57L668.00 342.07Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 436.41L668.00 432.91L671.50 436.41L668.00 439.91Z" fill="#96CDFA"/>
+      </svg>
+    </div>
+    </div>
+    <div class="fp-scroll">
+    <div class="final-stage fp-stage" style="--x0:0;--y0:0;--sw:784;--sh:580">
+      <p class="final-p fp-label" style="--x:150;--y:6;--w:234">Photo Upload</p>
+      <iframe class="final-p fp-phone" data-key="a" style="--x:150;--y:34;--w:234" src="../Pikspot/Pikspot_Prototype/index.html?screen=upload&amp;autoplay=0" title="Pikspot photo upload: preview, camera roll and drafts" loading="lazy"></iframe>
+      <button class="final-p fp-play" type="button" data-key="a" style="--x:150;--y:537;--w:234"><span class="fp-play__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span class="fp-play__label">Play demo</span></span></button>
+      <div class="final-p fp-note" data-for="a" style="--x:0;--y:81.80;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>Next, tag the location as an <b>exact pin or a wider radius</b>, so hidden gems stay protected.</div>
+      <div class="final-p fp-note" data-for="a" style="--x:0;--y:186.85;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg>Your pick previews full width; title, location, <b>event</b> and tags follow on one page.</div>
+      <div class="final-p fp-note" data-for="a" style="--x:0;--y:290.79;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Drafts</b> keep unfinished posts, so sharing stays casual, with no pressure to be perfect.</div>
+      <p class="final-p fp-label" style="--x:400;--y:6;--w:234">Profile</p>
+      <iframe class="final-p fp-phone" data-key="b" style="--x:400;--y:34;--w:234" src="../Pikspot/Pikspot_Prototype/index.html?screen=profile&amp;autoplay=0" title="Pikspot profile: edit profile, saved and liked, featured achievements and posts" loading="lazy"></iframe>
+      <button class="final-p fp-play" type="button" data-key="b" style="--x:400;--y:537;--w:234"><span class="fp-play__in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span class="fp-play__label">Play demo</span></span></button>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:174.07;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Edit profile</b> gathers bio, banner and featured achievements in one place.</div>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:261.89;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Saved and Liked</b> keep the spots you want to visit close at hand.</div>
+      <div class="final-p fp-note" data-for="b" style="--x:672;--y:346.91;--w:112"><svg class="fp-note__ring" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" rx="15" ry="15"/></svg><b>Achievements</b> now have names and icons; See all explains how to unlock each.</div>
+      <svg class="final-lines" viewBox="0 0 784 580" aria-hidden="true">
+        <defs><linearGradient id="fpg2a0" gradientUnits="userSpaceOnUse" x1="168.90" y1="0" x2="116.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg2a1" gradientUnits="userSpaceOnUse" x1="158.89" y1="0" x2="116.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg2a2" gradientUnits="userSpaceOnUse" x1="158.89" y1="0" x2="116.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg2b0" gradientUnits="userSpaceOnUse" x1="616.77" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg2b1" gradientUnits="userSpaceOnUse" x1="615.66" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient><linearGradient id="fpg2b2" gradientUnits="userSpaceOnUse" x1="583.42" y1="0" x2="668.00" y2="0"><stop stop-color="#597994"/><stop offset="1" stop-color="#96CDFA"/></linearGradient></defs>
+        <path data-for="a" d="M168.90 81.80H116.00" stroke="url(#fpg2a0)"/>
+        <path data-for="a" d="M158.89 186.85H116.00" stroke="url(#fpg2a1)"/>
+        <path data-for="a" d="M158.89 290.79H116.00" stroke="url(#fpg2a2)"/>
+        <path data-for="b" d="M616.77 174.07H668.00" stroke="url(#fpg2b0)"/>
+        <path data-for="b" d="M615.66 261.89H668.00" stroke="url(#fpg2b1)"/>
+        <path data-for="b" d="M583.42 320.25H643.00Q651.00 320.25 651.00 328.25V338.91Q651.00 346.91 659.00 346.91H668.00" stroke="url(#fpg2b2)"/>
+        <path class="final-lines__dot" data-for="a" d="M112.50 81.80L116.00 78.30L119.50 81.80L116.00 85.30Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="a" d="M112.50 186.85L116.00 183.35L119.50 186.85L116.00 190.35Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="a" d="M112.50 290.79L116.00 287.29L119.50 290.79L116.00 294.29Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 174.07L668.00 170.57L671.50 174.07L668.00 177.57Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 261.89L668.00 258.39L671.50 261.89L668.00 265.39Z" fill="#96CDFA"/>
+        <path class="final-lines__dot" data-for="b" d="M664.50 346.91L668.00 343.41L671.50 346.91L668.00 350.41Z" fill="#96CDFA"/>
+      </svg>
+    </div>
+    </div>
+<!-- FINAL:END -->
   </section>
 
 </main>
@@ -3124,6 +3288,82 @@ a, button, .nv, [role="button"],
   <a class="tracker__item" href="#midfi"><span class="tracker__label">04. Mid-Fi Prototyping &amp; Usability Testing</span><span class="tracker__tick"></span></a>
   <a class="tracker__item" href="#hifi"><span class="tracker__label">05. Hi-Fi Prototyping</span><span class="tracker__tick"></span></a>
 </nav>
+
+<script>
+  /* the live prototypes. The hero's tour plays while the hero is on screen.
+     Each final-prototype phone waits on its first frame until Play demo; while
+     it plays, or someone taps through it, its notes step back. Play again (or
+     Reset after tapping) puts it back on the first frame with its notes. */
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function send(frame, cmd) { if (frame.contentWindow) frame.contentWindow.postMessage({ pk: cmd }, '*'); }
+
+    var hero = document.querySelector('.hero__live');
+    if (hero && !reduce) {
+      var heroSeen = true;
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          heroSeen = es[0].isIntersecting;
+          send(hero, heroSeen ? 'play' : 'stop');
+        }).observe(hero);
+      }
+      hero.addEventListener('load', function () { if (heroSeen) send(hero, 'play'); });
+    }
+
+    var phones = [];
+    document.querySelectorAll('.fp-stage').forEach(function (stage) {
+      stage.querySelectorAll('.fp-phone').forEach(function (frame) {
+        var key = frame.dataset.key;
+        var btn = stage.querySelector('.fp-play[data-key="' + key + '"]');
+        var p = { frame: frame, stage: stage, key: key, btn: btn, playing: false, touched: false };
+        phones.push(p);
+        btn.addEventListener('click', function () { send(frame, p.playing || p.touched ? 'reset' : 'play'); });
+      });
+      /* scrolled away: put its phones back on their first frame */
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          if (es[0].isIntersecting) return;
+          phones.forEach(function (p) { if (p.stage === stage && (p.playing || p.touched)) send(p.frame, 'reset'); });
+        }).observe(stage);
+      }
+    });
+
+    var ICON = {
+      play: '<path d="M8 5.5v13l10.5-6.5z"/>',
+      stop: '<rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/>',
+      reset: '<path d="M12 5a7 7 0 11-6.6 4.7l1.9.6A5 5 0 1012 7v3L7.5 6 12 2z"/>'
+    };
+    function label(p) {
+      var k = p.playing ? 'stop' : p.touched ? 'reset' : 'play';
+      p.btn.querySelector('svg').innerHTML = ICON[k];
+      p.btn.querySelector('.fp-play__label').textContent = k === 'stop' ? 'Stop demo' : k === 'reset' ? 'Reset' : 'Play demo';
+      p.stage.classList.toggle('is-live-' + p.key, p.playing || p.touched);
+    }
+    window.addEventListener('message', function (e) {
+      var d = e.data;
+      if (!d || d.pk !== 'state') return;
+      phones.forEach(function (p) {
+        if (p.frame.contentWindow !== e.source) return;
+        p.playing = !!d.playing; p.touched = !!d.touched;
+        label(p);
+      });
+    });
+  })();
+</script>
+
+<script>
+  /* View prototype in the hero: glide down to the final prototypes */
+  (function () {
+    var link = document.querySelector('.hero__proto');
+    var target = document.getElementById('final');
+    if (!link || !target) return;
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  })();
+</script>
 
 <script>
   /* reading tracker — highlights the section crossing the middle of the
