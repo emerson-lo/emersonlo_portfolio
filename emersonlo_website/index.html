@@ -48,6 +48,7 @@
 <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="images/favicon.png" type="image/png" sizes="180x180">
 <link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="preload" href="images/fonts/inter-500-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
@@ -93,25 +94,25 @@ body {
 }
 
 /* ============================================================
-   CURSOR — a green dot in place of the arrow.  Whole feature
+   CURSOR — a coral dot in place of the arrow.  Whole feature
    lives in this block; delete it to get the system cursor back.
 
-   The colour is baked into the SVG (#4CC46A = --green): a data
-   URI can't read a custom property, so if --green changes these
-   two need changing with it.  The pair of numbers after the url
+   The colour is baked into the SVG (#F28B82, the coral dot in
+   the logo): a data URI can't read a custom property, so to
+   change it, change both.  The pair of numbers after the url
    is the hotspot — the dot's centre, so the click point sits
    where the dot appears to be.
    ============================================================ */
 
 body {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5' fill='%234CC46A'/%3E%3C/svg%3E") 7 7, auto;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Ccircle cx='7' cy='7' r='5' fill='%23F28B82'/%3E%3C/svg%3E") 7 7, auto;
 }
 
 /* anything clickable gets a bigger dot, so the hover affordance the
    pointer used to carry isn't lost */
 a, button, .nv, .tile, [role="button"],
 .nav__toggle, .nv--hint {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='9' fill='%234CC46A'/%3E%3C/svg%3E") 12 12, pointer;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='9' fill='%23F28B82'/%3E%3C/svg%3E") 12 12, pointer;
 }
 
 /* a coarse pointer has no cursor to restyle, and forcing one there
@@ -724,6 +725,41 @@ a, button, .nv, .tile, [role="button"],
 /* hover: the glow spreads and deepens; the box itself never changes size */
 .tile:hover .tile__vis { box-shadow: 0 0 0 1px rgba(20,22,20,.06), 0 10px 40px rgba(20,22,20,.14); }
 
+/* case studies still being built (Bitewise, JASS): the pointer becomes a coral
+   "Currently building!" tag that follows it. The script at the bottom creates
+   .cursor-tag and moves it; on touch screens, with no hover, nothing changes. */
+@media (hover: hover) and (pointer: fine) {
+  .tile--wip, .tile--wip * { cursor: none; }
+}
+.cursor-tag {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  padding: 8px calc(13px - .2em) 8px 13px;   /* the right is trimmed by the letter-spacing trailing the last letter */
+  border-radius: 7px;
+  background: #F28B82;   /* the coral dot in the logo, like the cursor dot */
+  color: #2E312E;        /* the logo's ink, so the text stays readable on the coral */
+  /* eyebrow style, as in PRODUCT / WEBSITE / CONTACT and MY WORK (ink instead of grey, for the coral) */
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  /* fade only: any scale or move on this element would shift it away from the pointer
+     as it goes (a scale here pulls the whole offset toward the page's corner) */
+  transition: opacity .12s ease;
+  will-change: transform;
+}
+.cursor-tag.is-on { opacity: 1; }
+
+/* the blank "Coming soon" card: no link, so no pointer and no hover glow */
+.tile--soon { cursor: default; }
+.tile--soon:hover .tile__vis { box-shadow: 0 0 0 1px rgba(20,22,20,.03), 0 1px 10px rgba(20,22,20,.05); }
+
 .r-wide   { aspect-ratio: 4 / 3; }
 .r-tall   { aspect-ratio: 3 / 2; }
 .r-short  { aspect-ratio: 13 / 10; }   /* JVMC, JASS, Bitewise — a touch taller than the 7:5 mockup, which scales to the height and trims only empty grey at the sides */
@@ -760,7 +796,7 @@ a, button, .nv, .tile, [role="button"],
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
-  font-family: var(--sans);        /* matches the body copy, not the ERL mark */
+  font-family: "Inter Medium", var(--sans);   /* a real medium weight (see @font-face below), not the ERL mark */
   font-weight: 500;
   font-size: 21px;
   letter-spacing: -.005em;
@@ -781,7 +817,7 @@ a, button, .nv, .tile, [role="button"],
 }
 
 .tile__sub {
-  font-family: var(--sans);
+  font-family: "Inter Medium", var(--sans);
   font-weight: 500;        /* same thickness as the title, just lighter in colour */
   font-size: 21px;
   line-height: 1.2;
@@ -853,52 +889,69 @@ a, button, .nv, .tile, [role="button"],
   padding-top: 26px;
 }
 .foot__label { margin: 0 0 22px; }
-/* the row drifts from left to right and loops. The track holds the list twice (the
-   script adds the copy) and slides by exactly one list's width, so the restart is
-   invisible. Transform only, so it runs on the compositor like the hero's carousel. */
-.foot__strip {
-  margin: 0 calc(-1 * clamp(24px, calc(3.4 * var(--vw)), 56px)) 0 0;   /* runs to the window's right edge */
-  overflow: hidden;
-  padding: 2px 0 4px;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
-}
+/* STATIC (used when LOOP is false in the script): the row fills the footer, first item on the left margin and the
+   last picture ending on the right margin. The type and pictures scale with the window
+   width (see .foot__title and .foot__thumb), so all four always fit on one line. */
+/* sized from the row's own width (cqw), not the window's, so the row fits however
+   wide the nav is */
+.foot__strip { padding: 2px 0 4px; container-type: inline-size; }
 .foot__track {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 16px;
+}
+.foot__item {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1cqw, 14px);
+}
+
+/* CAROUSEL (on): the row drifts from left to right and loops.
+   To turn it off, set LOOP = false in the "Exploration carousel" script at the bottom
+   of the page. The script then copies the list once and adds .foot__strip--loop, which
+   switches on everything below: the track holds the list twice and slides by exactly
+   one list's width, so the restart is invisible. Transform only, so it runs on the
+   compositor like the hero's carousel. */
+.foot__strip--loop {
+  margin: 0 calc(-1 * clamp(24px, calc(3.4 * var(--vw)), 56px)) 0 0;   /* runs to the window's right edge */
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
+}
+.foot__strip--loop .foot__track {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 0;
   width: max-content;
   will-change: transform;
 }
+.foot__strip--loop .foot__item { margin-right: clamp(24px, 2.8cqw, 42px); }   /* a margin, not a gap, so the two lists are exactly equal */
 .foot__track.is-looping { animation: foot-drift var(--foot-dur, 60s) linear infinite; }
 @keyframes foot-drift {
   from { transform: translate3d(-50%, 0, 0); }
   to   { transform: translate3d(0, 0, 0); }
 }
-/* it only runs while the footer is uncovered, and rests under the pointer */
+/* it only runs while the footer is uncovered (hovering doesn't stop it) */
 html:not(.foot-live) .foot__track { animation-play-state: paused; }
-.foot__strip:hover .foot__track { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .foot__track.is-looping { animation: none; } }
-.foot__item {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: clamp(14px, calc(1.2 * var(--vw)), 20px);
-  margin-right: clamp(32px, calc(3 * var(--vw)), 52px);   /* a margin, not a gap, so the two lists are exactly equal */
-}
 .foot__title {
   font-family: "Inter Medium", var(--sans);
-  font-size: clamp(20px, calc(1.75 * var(--vw)), 26px);
+  font-size: clamp(16px, 2.5cqw, 32px);
   font-weight: 500;
-  letter-spacing: -.02em;
+  letter-spacing: -.025em;
   color: var(--ink);
   white-space: nowrap;
 }
 /* the picture: a fixed height, its width from --r (width / height) */
 .foot__thumb {
   flex: none;
-  height: clamp(44px, calc(3.6 * var(--vw)), 54px);
+  height: clamp(34px, 5cqw, 64px);
   aspect-ratio: var(--r, 1.3);
   overflow: hidden;
   background: #ECECEA;
@@ -1412,7 +1465,11 @@ body.is-handoff .row--name .big { visibility: hidden; }
   display: inline-block;
   overflow: hidden;
   overflow: clip;   /* clips the same, but keeps the word's baseline so the note lines up with it */
-  height: 1.06em;
+  /* each word gets a 1.3em slot, so descenders (the g in Digital) and the glow
+     around the letters fit inside the clip; the negative margins hand the extra
+     .24em back, so the row is laid out exactly as before */
+  height: 1.3em;
+  margin: -.12em 0;
   vertical-align: bottom;
 }
 
@@ -1430,16 +1487,16 @@ body.is-handoff .row--name .big { visibility: hidden; }
    loop restart is invisible without any snap-back bookkeeping. */
 @keyframes roll-words {
   0%,  17.5% { transform: translate3d(0, 0, 0); }
-  25%, 42.5% { transform: translate3d(0, -1.06em, 0); }
-  50%, 67.5% { transform: translate3d(0, -2.12em, 0); }
-  75%, 92.5% { transform: translate3d(0, -3.18em, 0); }
-  100%       { transform: translate3d(0, -4.24em, 0); }
+  25%, 42.5% { transform: translate3d(0, -1.3em, 0); }
+  50%, 67.5% { transform: translate3d(0, -2.6em, 0); }
+  75%, 92.5% { transform: translate3d(0, -3.9em, 0); }
+  100%       { transform: translate3d(0, -5.2em, 0); }
 }
 
 .roll__word {
   display: block;
-  height: 1.06em;
-  line-height: 1.06em;
+  height: 1.3em;
+  line-height: 1.3em;
   white-space: nowrap;
 }
 
@@ -1675,9 +1732,9 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
         </a>
 
-        <a class="tile" id="bitewise" href="#">
+        <a class="tile tile--wip" id="bitewise" href="#">
           <div class="tile__vis r-short">
-            <iframe class="tile__mock" src="Bitewise/Bitewise_Card/index.html" title="Bitewise app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+            <iframe class="tile__mock" data-src="Bitewise/Bitewise_Card/index.html" title="Bitewise app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Bitewise</span><span class="tile__year">2025</span></h3>
@@ -1689,7 +1746,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <div class="col">
         <a class="tile" id="pikspot" href="preview/pikspot.html">
           <div class="tile__vis r-xtall">
-            <iframe class="tile__mock" src="Pikspot/Pikspot_Card/index.html" title="Pikspot app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+            <iframe class="tile__mock" data-src="Pikspot/Pikspot_Card/index.html" title="Pikspot app walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Pikspot</span><span class="tile__year">2025</span></h3>
@@ -1697,9 +1754,9 @@ body.is-handoff .row--name .big { visibility: hidden; }
           </div>
         </a>
 
-        <a class="tile" id="jass" href="#">
+        <a class="tile tile--wip" id="jass" href="#">
           <div class="tile__vis r-short">
-            <iframe class="tile__mock" src="JASS/JASS_Card/index.html" title="JASS website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+            <iframe class="tile__mock" data-src="JASS/JASS_Card/index.html" title="JASS website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Japanese American Student Society</span><span class="tile__year">2024</span></h3>
@@ -1711,13 +1768,22 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <div class="col">
         <a class="tile" id="jvmc" href="preview/jvmc.html">
           <div class="tile__vis r-short">
-            <iframe class="tile__mock" src="JVMC/JVMC_Card/index.html" title="JVMC website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
+            <iframe class="tile__mock" data-src="JVMC/JVMC_Card/index.html" title="JVMC website walkthrough" aria-hidden="true" tabindex="-1" loading="lazy"></iframe>
           </div>
           <div class="tile__meta">
             <h3 class="tile__title"><span class="tile__name">Joan Viteri Memorial Clinic</span><span class="tile__year">2024–2025</span></h3>
             <p class="tile__sub">Clinic Website</p>
           </div>
         </a>
+
+        <!-- a blank card for the next case study; not a link yet -->
+        <div class="tile tile--soon">
+          <div class="tile__vis r-short"></div>
+          <div class="tile__meta">
+            <h3 class="tile__title"><span class="tile__name">Next Project</span></h3>
+            <p class="tile__sub">Coming soon</p>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -1743,18 +1809,17 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
   <!-- Explorations: side projects, each a title with a small picture beside it.
        The pictures are placeholders for now: to add one, put an <img> inside its
-       .foot__thumb (it fills the box). The row drifts left to right
-       and loops (see the script at the bottom). -->
+       .foot__thumb (it fills the box). The row drifts left to right and
+       loops (see the script at the bottom). -->
   <div class="foot__ex">
-    <p class="sec-head foot__label">Explorations</p>
+    <p class="sec-head foot__label">Exploration</p>
     <div class="foot__strip">
       <ul class="foot__track">
-        <li class="foot__item"><span class="foot__title">Probabilistic Premium</span><span class="foot__thumb" style="--r:1.6" aria-hidden="true"></span></li>
-        <li class="foot__item"><span class="foot__title">Design System Tooling</span><span class="foot__thumb" style="--r:1" aria-hidden="true"></span></li>
-        <li class="foot__item"><span class="foot__title">Cognitive Heuristics</span><span class="foot__thumb" style="--r:1.3" aria-hidden="true"></span></li>
-        <li class="foot__item"><span class="foot__title">Watch Craft</span><span class="foot__thumb" style="--r:1.15" aria-hidden="true"></span></li>
-        <li class="foot__item"><span class="foot__title">Financial Instruments</span><span class="foot__thumb" style="--r:1.5" aria-hidden="true"></span></li>
-        <li class="foot__item"><span class="foot__title">Bucolic</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/FaroeIsland.jpg" alt="" loading="lazy"></span></li>
+        <li class="foot__item"><span class="foot__title">Cognitive Heuristics</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/cognitive-heuristics.webp" alt="" loading="lazy" decoding="async"></span></li>
+        <li class="foot__item"><span class="foot__title">Watch Craft</span><span class="foot__thumb" style="--r:1.526" aria-hidden="true"><img src="images/thumbs/watch-craft.webp" alt="" loading="lazy" decoding="async"></span></li>
+        <li class="foot__item"><span class="foot__title">Ergonomics</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/ergonomics.webp" alt="" loading="lazy" decoding="async"></span></li>
+        <li class="foot__item"><span class="foot__title">Game Art</span><span class="foot__thumb" style="--r:1.778" aria-hidden="true"><img src="images/thumbs/game-art.webp" alt="" loading="lazy" decoding="async"></span></li>
+        <li class="foot__item"><span class="foot__title">Bucolic</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/bucolic.webp" alt="" loading="lazy" decoding="async"></span></li>
       </ul>
     </div>
   </div>
@@ -1815,12 +1880,76 @@ body.is-handoff .row--name .big { visibility: hidden; }
     });
   })();
 
-  /* Explorations carousel: copy the list once so the loop has no seam, set the speed
-     from the list's width (~40px a second), and run it only while the footer is
-     uncovered, i.e. when the page is scrolled to within the footer's height of the end */
+  /* The card mockups are iframes running React on this page's own main thread. Loaded
+     at once, all four start up during the intro and the hero's rolling word, which is
+     what made both stutter. So their src waits until the intro has finished (the
+     body loses .is-booting) and the page has faded in, then they load one at a time
+     when the browser is idle. */
   (function () {
+    var frames = [].slice.call(document.querySelectorAll('.tile__mock[data-src]'));
+    if (!frames.length) return;
+    var body = document.body;
+    function load() {
+      frames.forEach(function (f, i) {
+        setTimeout(function () { f.src = f.dataset.src; }, i * 350);
+      });
+    }
+    function soon() {
+      var idle = window.requestIdleCallback || function (cb) { return setTimeout(cb, 200); };
+      setTimeout(function () { idle(load, { timeout: 1500 }); }, 900);   /* after .main's fade-in */
+    }
+    if (!body.classList.contains('is-booting')) { soon(); return; }
+    new MutationObserver(function (m, obs) {
+      if (body.classList.contains('is-booting')) return;
+      obs.disconnect();
+      soon();
+    }).observe(body, { attributes: true, attributeFilter: ['class'] });
+  })();
+
+  /* "Currently building!" cursor over the unfinished case studies (.tile--wip). One tag
+     follows the pointer, moved with a transform. The page can be zoomed (see --unzoom),
+     so a probe measures how a CSS pixel maps to the pointer's coordinates first. */
+  (function () {
+    var tiles = document.querySelectorAll('.tile--wip');
+    if (!tiles.length || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    var tag = document.createElement('div');
+    tag.className = 'cursor-tag';
+    tag.setAttribute('aria-hidden', 'true');
+    tag.textContent = 'Currently building!';
+    document.body.appendChild(tag);
+    var k = 1, x = 0, y = 0, queued = false;
+    function measure() {
+      var p = document.createElement('div');
+      p.style.cssText = 'position:fixed;left:100px;top:0;width:1px;height:1px;visibility:hidden;pointer-events:none';
+      document.body.appendChild(p);
+      k = p.getBoundingClientRect().left / 100 || 1;
+      p.remove();
+    }
+    function place() {
+      queued = false;
+      tag.style.transform = 'translate3d(' + (x / k - tag.offsetWidth / 2) + 'px,' + (y / k - tag.offsetHeight / 2) + 'px,0)';
+    }
+    function move(e) {
+      x = e.clientX; y = e.clientY;
+      if (!queued) { queued = true; requestAnimationFrame(place); }
+    }
+    tiles.forEach(function (t) {
+      t.addEventListener('mouseenter', function (e) { measure(); move(e); place(); tag.classList.add('is-on'); });
+      t.addEventListener('mousemove', move);
+      t.addEventListener('mouseleave', function () { tag.classList.remove('is-on'); });
+      t.addEventListener('click', function (e) { e.preventDefault(); });   /* no jump to the top */
+    });
+  })();
+
+  /* Exploration carousel (ON; set LOOP = false for a static row). With LOOP = true
+     it copies the list once so the loop has no seam, sets the speed from
+     the list's width (~40px a second), and runs only while the footer is uncovered,
+     i.e. when the page is scrolled to within the footer's height of the end */
+  (function () {
+    var LOOP = true;
     var track = document.querySelector('.foot__track');
-    if (!track) return;
+    if (!LOOP || !track) return;
+    track.parentNode.classList.add('foot__strip--loop');
     var root = document.documentElement;
     var copied = false;
     function build() {
@@ -2128,16 +2257,24 @@ body.is-handoff .row--name .big { visibility: hidden; }
     word.style.letterSpacing = cs.letterSpacing;
     word.style.lineHeight    = cs.lineHeight;
     word.style.color         = cs.color;
+    /* the same soft grey glow as the heading, so nothing changes when the real
+       name swaps in under it. It's drawn once at full size on the stage's own
+       layer and only scaled by the transform, so it costs nothing per frame */
+    word.style.textShadow    = cs.textShadow;
 
     /* the mask needs headroom for ascenders/descenders that sit outside
-       the (very tight) line box, so pad it and pull the stage back up by
-       the same amount — the glyphs then land exactly on the target */
+       the (very tight) line box, and side room for the glow, so pad it and
+       pull the stage back by the same amounts — the glyphs then land
+       exactly on the target */
     var padTop = fs * 0.34;
-    var padBot = fs * 0.16;
+    var padBot = fs * 0.16 + 20;
+    var padX   = 40;   /* more than the glow's 18px blur reaches */
     clip.style.paddingTop    = padTop + 'px';
     clip.style.paddingBottom = padBot + 'px';
+    clip.style.paddingLeft   = padX + 'px';
+    clip.style.paddingRight  = padX + 'px';
 
-    stage.style.left = r.left + 'px';
+    stage.style.left = (r.left - padX) + 'px';
     stage.style.top  = (r.top - padTop) + 'px';
 
     /* … then inversely transformed to sit small and centred (FLIP) */
