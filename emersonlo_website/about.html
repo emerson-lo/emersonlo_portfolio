@@ -506,12 +506,11 @@ body {
 .nav-tip.is-shown { opacity: 1; translate: 0 -50%; }
 
 /* =========================== CANVAS ===========================
-   An endless canvas you drag around. There is one tile of cards
-   (.tile, a fixed W x H set in the script); the script lays nine copies
-   of it out 3 x 3 and moves them all with a single transform, wrapping
-   the offset by the tile's size, so dragging in any direction keeps
-   bringing the same cards back. Transform only, so panning runs on the
-   compositor. Cards are placed inside the tile with --x, --y, --w (px).
+   An endless canvas you drag around. The cards sit in one tile (a fixed
+   W x H set in the script) at --x, --y, --w (px). The script moves each
+   card with its own transform and wraps it by the tile's size, copying it
+   where it shows twice, so dragging any way keeps bringing the same cards
+   back. Transform only, so panning runs on the compositor.
    ============================================================ */
 
 @font-face {
@@ -535,13 +534,15 @@ html, body { overflow: hidden; height: 100%; }
   user-select: none;
   -webkit-user-select: none;
   outline: none;
+  background: #F1F1EF;           /* pale, so the white fog around each card shows */
   transition: left .3s cubic-bezier(.22,1,.36,1);
 }
 .nav--open ~ .canvas { left: 196px; }
 .canvas.is-dragging { cursor: grabbing; }
 
-.world { position: absolute; left: 0; top: 0; will-change: transform; }
+.world { position: absolute; left: 0; top: 0; }
 .tile { position: absolute; left: 0; top: 0; }
+.world .card { will-change: transform; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
@@ -604,11 +605,125 @@ html, body { overflow: hidden; height: 100%; }
   height: auto;
   aspect-ratio: var(--ar, auto);
   object-fit: cover;
-  border-radius: 4px;
-  box-shadow: 0 0 0 1px rgba(20,22,20,.04), 0 18px 40px -22px rgba(20,22,20,.28);
+  border-radius: 6px;
   -webkit-user-drag: none;
   pointer-events: none;
+  /* fog: the picture melts into the mist at its foot and outer edge */
+  -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(var(--fog-side, to left), #000 70%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(var(--fog-side, to left), #000 70%, transparent 100%);
+  mask-composite: intersect;
 }
+/* side pictures fade toward the outside, away from their text */
+.card--side .card__fig { --fog-side: to right; }
+.card--flip .card__fig { --fog-side: to left; }
+.card--stack .card__fig { --fog-side: to left; }
+
+/* ---- fog: a soft white mist behind every card, so text and pictures sit in
+   a pocket of light on the pale canvas (as on Ethan Chng's about page).
+   A painted gradient, not a blur filter, so panning stays cheap. ---- */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -110px -130px;
+  z-index: -1;
+  background: radial-gradient(closest-side, #fff 45%, rgba(255,255,255,.75) 68%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+.card { isolation: isolate; }
+/* the hairline fades out at both ends */
+.card:not(.card--name) {
+  border-top: 0;
+  background: linear-gradient(90deg, transparent, var(--hair) 18%, var(--hair) 82%, transparent) top / 100% 1px no-repeat;
+}
+
+/* ---- the name, where the page opens ---- */
+/* "Emerson" across the top; "Lo" below with the line beside it */
+.card--name {
+  padding-top: 0;
+  border-top: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 44px;
+  align-items: center;
+}
+.name { display: contents; margin: 0; }
+.name__word {
+  font-family: "Inter Medium", var(--sans);
+  font-weight: 500;
+  font-size: 176px;
+  line-height: .9;
+  letter-spacing: -.045em;
+  padding-bottom: .1em;              /* keeps the gradient-filled letters from clipping at the foot */
+  /* one gradient across the whole name: each word shows its slice of it */
+  background: linear-gradient(105deg, #A6A9A5 0%, #7C7F7B 45%, #4E514D 100%) 0 0 / 700px 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.name__word:first-child { grid-column: 1 / -1; }
+.name__tag {
+  margin: 0;
+  max-width: 420px;
+  font-family: "Inter Medium", var(--sans);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -.01em;
+  color: #8A8D8A;
+}
+
+/* ---- text sections: Info, Things I love to do ---- */
+.card__lede {
+  margin: 0;
+  font-family: "Inter Medium", var(--sans);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+.card__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: "Inter Medium", var(--sans);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.25;
+  letter-spacing: -.02em;
+  color: var(--ink-soft);
+}
+/* stand-in copy to replace: shown lighter so it reads as a placeholder */
+.card__todo, .card__todo li { color: #B4B7B3; }
+
+/* ---- Design Foundations: four projects in a row ---- */
+.found { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.found__item { display: flex; flex-direction: column; color: inherit; text-decoration: none; }
+.found__item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
+}
+.found__title {
+  font-family: "Inter Medium", var(--sans);
+  font-weight: 500;
+  font-size: 19px;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+.found__sub { margin-top: 4px; font-size: 14px; color: #8A8D8A; }
+.found__date { margin-top: 8px; font-size: 13px; color: #A2A5A1; }
+a.found__item:hover .found__title { text-decoration: underline; text-decoration-color: #C9CBC7; text-underline-offset: 3px; }
 .card__fig figcaption { margin-top: 16px; font-size: 14px; color: var(--ink-soft); }
 
 /* a quiet hint at the foot of the canvas, gone after the first drag */
@@ -695,16 +810,34 @@ html, body { overflow: hidden; height: 100%; }
 
 
 <main class="canvas" tabindex="0" aria-label="About Emerson Lo. Drag, scroll or use the arrow keys to explore.">
-  <h1 class="sr-only">About Emerson Lo</h1>
-
-  <!-- the world: the script copies this one tile 3 x 3 and moves the copies together.
-       Each card sits in the tile at --x / --y (px), --w wide. Card types:
+  <!-- the world: one tile of cards; the script wraps and copies each card.
+       Each card sits in the tile at --x / --y (px), --w wide. The page opens
+       centred on the card marked data-home. Card types:
        card--side (picture right), card--side card--flip (picture left),
        card--stack (picture on top). --ar sets a picture's crop (width / height). -->
   <div class="world">
     <div class="tile">
 
-      <article class="card card--side" style="--x:120;--y:110;--w:760">
+      <!-- the name, where the page opens, with a line beside "Lo" -->
+      <div class="card card--name" data-home style="--x:900;--y:780;--w:820">
+        <h1 class="name"><span class="name__word">Emerson</span> <span class="name__word">Lo</span></h1>
+        <p class="name__tag">Currently designing at &hellip; with a love for storytelling and user-centric visual crafts.</p>
+      </div>
+
+      <!-- info: a short introduction -->
+      <article class="card card--text" style="--x:120;--y:640;--w:600">
+        <p class="card__eyebrow">Info</p>
+        <div class="card__body">
+          <div class="card__text">
+            <p class="card__lede">I&rsquo;m a product designer based in Los Angeles, California.</p>
+            <p class="card__copy card__todo">Add a few lines about who you are, how you came to design and what you care about.</p>
+            <p class="card__copy">Say hello at <a href="mailto:emersonrylo@gmail.com">emersonrylo@gmail.com</a>.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- education -->
+      <article class="card card--side" style="--x:120;--y:120;--w:760">
         <p class="card__eyebrow">Education</p>
         <div class="card__body">
           <div class="card__text">
@@ -717,115 +850,53 @@ html, body { overflow: hidden; height: 100%; }
         </div>
       </article>
 
-      <article class="card card--stack" style="--x:1020;--y:140;--w:330">
-        <p class="card__eyebrow">Now</p>
-        <div class="card__body">
-          <div class="card__text">
-            <h2 class="card__title">Product Designer</h2>
-            <p class="card__sub">Los Angeles, California</p>
-            <p class="card__copy">Open to new opportunities. Say hello at <a href="mailto:emersonrylo@gmail.com">emersonrylo@gmail.com</a>.</p>
+      <!-- things I love to do: a short list in big type -->
+      <article class="card card--text" style="--x:1860;--y:820;--w:420">
+        <p class="card__eyebrow">Things I love to do</p>
+        <ul class="card__list card__todo">
+          <li>Something you love</li>
+          <li>Another thing you love</li>
+          <li>And one more</li>
+        </ul>
+      </article>
+
+      <!-- design foundations: the projects that shaped how I design -->
+      <article class="card card--found" style="--x:400;--y:1280;--w:1100">
+        <p class="card__eyebrow">Design Foundations</p>
+        <div class="found">
+          <a class="found__item" href="preview/pikspot.html">
+            <img src="images/about/pikspot.webp" width="461" height="1000" alt="" style="object-position:50% 22%" loading="lazy" decoding="async">
+            <span class="found__title">Pikspot</span>
+            <span class="found__sub">Design Interactive &middot; UI/UX Designer</span>
+            <span class="found__date">April &ndash; June 2025</span>
+          </a>
+          <a class="found__item" href="preview/hackdavis.html">
+            <img src="images/about/hackdavis.webp" width="584" height="285" alt="" loading="lazy" decoding="async">
+            <span class="found__title">HackDavis</span>
+            <span class="found__sub">Collegiate Hackathon</span>
+            <span class="found__date">2026</span>
+          </a>
+          <a class="found__item" href="preview/jvmc.html">
+            <img src="images/about/jvmc.webp" width="750" height="1000" alt="" loading="lazy" decoding="async">
+            <span class="found__title">Joan Viteri Memorial Clinic</span>
+            <span class="found__sub">Clinic Website</span>
+            <span class="found__date">2024 &ndash; 2025</span>
+          </a>
+          <div class="found__item">
+            <img src="images/about/jass.webp" width="1000" height="666" alt="" loading="lazy" decoding="async">
+            <span class="found__title">Japanese American Student Society</span>
+            <span class="found__sub">Club Website</span>
+            <span class="found__date">2024</span>
           </div>
         </div>
       </article>
 
-      <article class="card card--stack" style="--x:1480;--y:100;--w:320">
-        <p class="card__eyebrow">Design Interactive &middot; UC Davis</p>
-        <div class="card__body">
-          <figure class="card__fig"><img src="images/about/pikspot.webp" width="461" height="1000" alt="Pikspot's home page on a phone" style="--ar:4/5;object-position:50% 30%" loading="lazy" decoding="async"><figcaption>Pikspot&rsquo;s home page</figcaption></figure>
-          <div class="card__text">
-            <h2 class="card__title">Pikspot</h2>
-            <p class="card__sub">UI/UX Designer, Mid-Fi &amp; Prototype Lead</p>
-            <p class="card__date">April &ndash; June 2025</p>
-            <p class="card__copy">An app for discovering photo spots, made with four designers and a mentor.</p>
-            <a class="card__link" href="preview/pikspot.html">Read the case study</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card card--stack" style="--x:1980;--y:300;--w:300">
-        <p class="card__eyebrow">Exploration</p>
-        <div class="card__body">
-          <figure class="card__fig"><img src="images/about/watch.webp" width="1000" height="656" alt="A mechanical watch movement" style="--ar:3/2" loading="lazy" decoding="async"></figure>
-          <div class="card__text"><h2 class="card__title">Watch Craft</h2></div>
-        </div>
-      </article>
-
-      <article class="card card--side card--flip" style="--x:140;--y:840;--w:700">
-        <p class="card__eyebrow">Website</p>
-        <div class="card__body">
-          <div class="card__text">
-            <h2 class="card__title">Joan Viteri Memorial Clinic</h2>
-            <p class="card__sub">Clinic Website</p>
-            <p class="card__date">2024 &ndash; 2025</p>
-            <p class="card__copy">The site for a clinic offering unbiased healthcare to the Oak Park community in Sacramento.</p>
-            <a class="card__link" href="preview/jvmc.html">Read the case study</a>
-          </div>
-          <figure class="card__fig"><img src="images/about/jvmc.webp" width="750" height="1000" alt="Photo from the Joan Viteri Memorial Clinic site" style="--ar:4/5" loading="lazy" decoding="async"><figcaption>From the clinic&rsquo;s site</figcaption></figure>
-        </div>
-      </article>
-
-      <article class="card card--stack" style="--x:1000;--y:680;--w:400">
-        <p class="card__eyebrow">Exploration</p>
-        <div class="card__body">
-          <figure class="card__fig"><img src="images/about/gameart.webp" width="1000" height="563" alt="Game art: a hero overlooking a wide valley at dusk" style="--ar:16/9" loading="lazy" decoding="async"></figure>
-          <div class="card__text"><h2 class="card__title">Game Art</h2></div>
-        </div>
-      </article>
-
-      <article class="card card--side" style="--x:1540;--y:990;--w:740">
-        <p class="card__eyebrow">Website</p>
-        <div class="card__body">
-          <div class="card__text">
-            <h2 class="card__title">Japanese American Student Society</h2>
-            <p class="card__sub">Club Website</p>
-            <p class="card__date">2024</p>
-            <p class="card__copy">The club&rsquo;s home at UC Davis: who they are, the calendar, the cabinet and how to join.</p>
-          </div>
-          <figure class="card__fig"><img src="images/about/jass.webp" width="1000" height="666" alt="Members of the Japanese American Student Society" style="--ar:3/2" loading="lazy" decoding="async"><figcaption>JASS @ UC Davis</figcaption></figure>
-        </div>
-      </article>
-
-      <article class="card card--stack" style="--x:1040;--y:1180;--w:270">
-        <p class="card__eyebrow">Exploration</p>
-        <div class="card__body">
-          <figure class="card__fig"><img src="images/about/bucolic.webp" width="562" height="1000" alt="A small house on a misty green hillside in the Faroe Islands" style="--ar:4/5" loading="lazy" decoding="async"></figure>
-          <div class="card__text"><h2 class="card__title">Bucolic</h2></div>
-        </div>
-      </article>
-
-      <article class="card card--side" style="--x:1460;--y:1460;--w:600">
-        <p class="card__eyebrow">Hackathon</p>
-        <div class="card__body">
-          <div class="card__text">
-            <h2 class="card__title">HackDavis</h2>
-            <p class="card__sub">Collegiate Hackathon</p>
-            <p class="card__date">2026</p>
-            <a class="card__link" href="preview/hackdavis.html">Read the case study</a>
-          </div>
-          <figure class="card__fig"><img src="images/about/hackdavis.webp" width="584" height="285" alt="The HackDavis cow riding a colourful wave" style="--ar:2/1" loading="lazy" decoding="async"></figure>
-        </div>
-      </article>
-
-      <article class="card card--stack" style="--x:2160;--y:1430;--w:190">
-        <p class="card__eyebrow">Exploration</p>
-        <div class="card__body">
-          <figure class="card__fig"><img src="images/about/ergonomics.webp" width="1000" height="1000" alt="A white sculptural chair on black" style="--ar:1/1" loading="lazy" decoding="async"></figure>
-          <div class="card__text"><h2 class="card__title">Ergonomics</h2></div>
-        </div>
-      </article>
-
-      <article class="card card--stack" style="--x:180;--y:1390;--w:240">
-        <p class="card__eyebrow">Exploration</p>
-        <div class="card__body">
-          <figure class="card__fig"><img src="images/about/cognitive.webp" width="1000" height="1000" alt="A glass brain on black" style="--ar:1/1" loading="lazy" decoding="async"></figure>
-          <div class="card__text"><h2 class="card__title">Cognitive Heuristics</h2></div>
-        </div>
-      </article>
+      <!-- room for one more section, top right (about x 1200 to 2200, y 120 to 620) -->
 
     </div>
   </div>
 
-  <p class="canvas__hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg>Drag to explore</p>
+  <p class="canvas__hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg>Scroll or drag to move</p>
 </main>
 
 <script>
@@ -882,65 +953,115 @@ html, body { overflow: hidden; height: 100%; }
 </script>
 
 <script>
-  /* The endless canvas. One tile (W x H) holds the cards; it's copied to make a
-     3 x 3 block, and the block is moved by one transform. The offset is wrapped
-     by the tile's size, so whichever way you drag, a copy is always under the
-     window and the same cards keep coming back. A fling keeps gliding and
-     slows to a stop; trackpads, mouse wheels and the arrow keys pan it too. */
+  /* The endless canvas. One tile (W x H) holds the cards. Each card wraps on
+     its own by the tile's size, so whichever way you go the same cards keep
+     coming back. Dragging, trackpads, mouse wheels and the arrow keys all
+     move a target; the view eases after it. */
   (function () {
     var canvas = document.querySelector('.canvas');
     var world = canvas && canvas.querySelector('.world');
     var tile = world && world.querySelector('.tile');
     if (!tile) return;
-    var W = 2400, H = 1800;
+    var W = 2450, H = 2000;
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    /* the copies: the original stays in place (and is the only one screen
-       readers and the Tab key reach); the eight around it are look-alikes */
-    tile.style.width = W + 'px';
-    tile.style.height = H + 'px';
-    for (var j = 0; j < 3; j++) {
-      for (var i = 0; i < 3; i++) {
-        var t = (i === 1 && j === 1) ? tile : tile.cloneNode(true);
-        t.style.left = (i * W) + 'px';
-        t.style.top = (j * H) + 'px';
-        if (t !== tile) {
-          t.setAttribute('aria-hidden', 'true');
-          t.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
-          world.appendChild(t);
-        }
+    /* the feel (matched to Emmi Wu's playground): the view eases toward where
+       you dragged or scrolled, 2.9% of the way each frame, so it floats and
+       settles instead of flinging. While it moves, each card trails by its own
+       random amount, and the cursor's position nudges every card a little. */
+    var EASE = reduce ? 1 : 0.029;     /* per 60fps frame */
+    var SPEED = 1.16;                  /* drag and scroll distance multiplier */
+    var LAG = reduce ? 0 : 5;          /* how far cards trail the motion */
+    var PARALLAX = reduce ? 0 : 0.3;   /* cursor nudge, as a share of the card's width */
+
+    /* each card: its spot in the tile, its own trail amount, and its copies.
+       The original is the copy screen readers and the Tab key reach. */
+    var cards = Array.prototype.map.call(tile.querySelectorAll('.card'), function (el) {
+      var cs = el.style;
+      var c = {
+        x: parseFloat(cs.getPropertyValue('--x')) || 0,
+        y: parseFloat(cs.getPropertyValue('--y')) || 0,
+        w: el.offsetWidth, h: el.offsetHeight,
+        e: Math.random() * 0.5 + 0.5,
+        els: [el], used: 1
+      };
+      cs.left = '0'; cs.top = '0';
+      return c;
+    });
+    function copyOf(c, n) {
+      while (c.els.length <= n) {
+        var k = c.els[0].cloneNode(true);
+        k.setAttribute('aria-hidden', 'true');
+        k.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
+        tile.appendChild(k);
+        c.els.push(k);
       }
+      return c.els[n];
+    }
+    function measure() { cards.forEach(function (c) { c.w = c.els[0].offsetWidth; c.h = c.els[0].offsetHeight; }); }
+
+    var cur = { x: 0, y: 0 }, tgt = { x: 0, y: 0 }, lastPos = { x: 0, y: 0 };
+    var vel = { x: 0, y: 0 };                         /* smoothed motion per frame */
+    var mouse = { x: .5, y: .5, tx: .5, ty: .5 };      /* cursor across the window, 0..1 */
+    var vw = canvas.clientWidth, vh = canvas.clientHeight;
+    function mod(a, n) { return ((a % n) + n) % n; }
+
+    function draw() {
+      cards.forEach(function (c) {
+        var ox = LAG * vel.x * c.e + (mouse.x - .5) * c.w * PARALLAX;
+        var oy = LAG * vel.y * c.e + (mouse.y - .5) * c.h * PARALLAX;
+        /* every place this card shows in the window: one per tile it overlaps */
+        var x0 = mod(c.x + cur.x + ox + c.w, W) - c.w;
+        var y0 = mod(c.y + cur.y + oy + c.h, H) - c.h;
+        var n = 0;
+        for (var y = y0; y < vh; y += H) {
+          for (var x = x0; x < vw; x += W) {
+            var el = copyOf(c, n);
+            if (n >= c.used) el.style.display = '';
+            el.style.transform = 'translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,0)';
+            n++;
+          }
+        }
+        for (var i = n; i < c.used; i++) c.els[i].style.display = 'none';
+        c.used = n;
+      });
     }
 
-    var x = 0, y = 0, vx = 0, vy = 0, raf = 0, last = 0;
-    function mod(a, n) { return ((a % n) + n) % n; }
-    function draw() {
-      world.style.transform = 'translate3d(' + (mod(x, W) - W).toFixed(2) + 'px,' + (mod(y, H) - H).toFixed(2) + 'px,0)';
+    /* one loop, running only while something is still settling */
+    var raf = 0, then = 0;
+    function frame(now) {
+      var f = Math.min(4, (now - (then || now - 16.7)) / 16.7);
+      then = now;
+      var a = 1 - Math.pow(1 - EASE, f), s = 1 - Math.pow(1 - 0.04, f);
+      cur.x += (tgt.x - cur.x) * a; cur.y += (tgt.y - cur.y) * a;
+      vel.x += ((cur.x - lastPos.x) / f - vel.x) * s;
+      vel.y += ((cur.y - lastPos.y) / f - vel.y) * s;
+      lastPos.x = cur.x; lastPos.y = cur.y;
+      mouse.x += (mouse.tx - mouse.x) * s; mouse.y += (mouse.ty - mouse.y) * s;
+      draw();
+      var busy = Math.abs(tgt.x - cur.x) + Math.abs(tgt.y - cur.y) > 0.05 ||
+                 Math.abs(vel.x) + Math.abs(vel.y) > 0.01 ||
+                 Math.abs(mouse.tx - mouse.x) + Math.abs(mouse.ty - mouse.y) > 0.0005;
+      if (busy) raf = requestAnimationFrame(frame);
+      else { raf = 0; then = 0; }
     }
+    function wake() { if (!raf) raf = requestAnimationFrame(frame); }
     function moved() { canvas.classList.add('has-moved'); }
 
-    /* the glide after a fling: time-based, so it feels the same at any frame rate */
-    function glide(now) {
-      var dt = Math.min(48, now - (last || now));
-      last = now;
-      x += vx * dt; y += vy * dt;
-      var f = Math.pow(0.94, dt / 16.7);
-      vx *= f; vy *= f;
-      draw();
-      if (Math.abs(vx) + Math.abs(vy) > 0.01) raf = requestAnimationFrame(glide);
-      else raf = 0;
-    }
-    function stopGlide() { if (raf) cancelAnimationFrame(raf); raf = 0; }
-
-    /* dragging, with any pointer */
-    var down = false, sx = 0, sy = 0, px = 0, py = 0, pt = 0, dragged = false, samples = [];
+    /* dragging, with any pointer: the target follows the pointer, the view eases after it */
+    var down = false, sx = 0, sy = 0, startT = { x: 0, y: 0 }, dragged = false;
     canvas.addEventListener('pointerdown', function (e) {
       if (e.button !== 0) return;
-      down = true; dragged = false; stopGlide();
-      sx = px = e.clientX; sy = py = e.clientY; pt = performance.now();
-      samples = [];
+      down = true; dragged = false;
+      sx = e.clientX; sy = e.clientY;
+      startT.x = tgt.x; startT.y = tgt.y;
     });
     window.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'mouse' && PARALLAX) {
+        mouse.tx = e.clientX / window.innerWidth;
+        mouse.ty = e.clientY / window.innerHeight;
+        wake();
+      }
       if (!down) return;
       if (!dragged && Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 5) {
         dragged = true;
@@ -948,22 +1069,15 @@ html, body { overflow: hidden; height: 100%; }
         try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
         moved();
       }
-      var now = performance.now();
-      x += e.clientX - px; y += e.clientY - py;
-      samples.push({ t: now, x: e.clientX, y: e.clientY });
-      while (samples.length && now - samples[0].t > 100) samples.shift();
-      px = e.clientX; py = e.clientY; pt = now;
-      if (dragged) draw();
+      if (!dragged) return;
+      tgt.x = startT.x + (e.clientX - sx) * SPEED;
+      tgt.y = startT.y + (e.clientY - sy) * SPEED;
+      wake();
     });
     function release() {
       if (!down) return;
       down = false;
       canvas.classList.remove('is-dragging');
-      if (!dragged || reduce || samples.length < 2) return;
-      var a = samples[0], b = samples[samples.length - 1], dt = b.t - a.t;
-      if (dt <= 0 || performance.now() - b.t > 80) return;   /* held still before letting go: no fling */
-      vx = (b.x - a.x) / dt; vy = (b.y - a.y) / dt;
-      last = 0; raf = requestAnimationFrame(glide);
     }
     window.addEventListener('pointerup', release);
     window.addEventListener('pointercancel', release);
@@ -975,22 +1089,36 @@ html, body { overflow: hidden; height: 100%; }
     /* trackpads and mouse wheels */
     canvas.addEventListener('wheel', function (e) {
       e.preventDefault();
-      stopGlide();
       var k = e.deltaMode === 1 ? 32 : e.deltaMode === 2 ? canvas.clientHeight : 1;
-      x -= e.deltaX * k; y -= e.deltaY * k;
-      draw(); moved();
+      tgt.x -= e.deltaX * k * SPEED; tgt.y -= e.deltaY * k * SPEED;
+      wake(); moved();
     }, { passive: false });
 
     /* arrow keys, once the canvas has focus */
     canvas.addEventListener('keydown', function (e) {
-      var s = 140, d = { ArrowLeft: [s, 0], ArrowRight: [-s, 0], ArrowUp: [0, s], ArrowDown: [0, -s] }[e.key];
+      var s = 240, d = { ArrowLeft: [s, 0], ArrowRight: [-s, 0], ArrowUp: [0, s], ArrowDown: [0, -s] }[e.key];
       if (!d) return;
       e.preventDefault();
-      stopGlide();
-      if (reduce) { x += d[0]; y += d[1]; draw(); }
-      else { vx = d[0] / 120; vy = d[1] / 120; last = 0; raf = requestAnimationFrame(glide); }
-      moved();
+      tgt.x += d[0]; tgt.y += d[1];
+      wake(); moved();
     });
+
+    /* the window or the nav changes size: re-measure and redraw */
+    function resize() { vw = canvas.clientWidth; vh = canvas.clientHeight; measure(); home(); draw(); }
+
+    /* open centred on the name; until someone moves, keep it centred as fonts
+       load and the window settles */
+    var homeCard = cards.filter(function (c) { return c.els[0].hasAttribute('data-home'); })[0];
+    function home() {
+      if (!homeCard || canvas.classList.contains('has-moved')) return;
+      tgt.x = cur.x = lastPos.x = vw / 2 - (homeCard.x + homeCard.w / 2);
+      tgt.y = cur.y = lastPos.y = vh / 2 - (homeCard.y + homeCard.h / 2);
+    }
+    home();
+    if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
+    else window.addEventListener('resize', resize);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
+    window.addEventListener('load', resize);
 
     draw();
   })();
