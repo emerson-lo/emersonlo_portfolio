@@ -570,7 +570,21 @@ html, body { overflow: hidden; height: 100%; }
 .card__body { display: flex; flex-direction: column; gap: 22px; }
 /* picture on the right (default side card), on the left (--flip) or on top (--stack) */
 .card--side .card__body { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; }
+/* every section: its eyebrow (and any short text) sits in a column beside the
+   pictures, level with their top, under a hairline that spans both */
+.card__split { display: grid; grid-template-columns: max-content 1fr; column-gap: 44px; align-items: start; }
 .card--flip .card__fig { order: -1; }
+/* Education: the text, then the picture beside it */
+.card--edu .card__body { grid-template-columns: max-content 400px; align-items: start; }
+/* like the Athens picture, mirrored: the side fog runs on a slant, deep toward
+   the bottom right and light at the top right */
+.card--edu .card__fig img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(to top left, transparent 0%, #000 42%);
+  mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(to top left, transparent 0%, #000 42%);
+}
+/* Info: a smaller picture on the left; the eyebrow sits beside it, level with
+   its top, and the hairline runs from the picture's left edge across */
+.card--info .card__body { grid-template-columns: 300px 1fr; align-items: start; }
 .card--stack .card__fig { order: -1; }
 
 .card__title {
@@ -592,6 +606,7 @@ html, body { overflow: hidden; height: 100%; }
   color: #A2A5A1;
 }
 .card--stack .card__title, .card--stack .card__sub { font-size: 22px; }
+.card__title--nowrap { white-space: nowrap; }
 .card__date { margin: 16px 0 0; font-size: 15px; color: #9A9D99; }
 .card__copy { margin: 22px 0 0; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
 .card__copy a, .card__link { color: var(--ink); text-decoration: underline; text-decoration-color: #C9CBC7; text-underline-offset: 3px; }
@@ -631,10 +646,10 @@ html, body { overflow: hidden; height: 100%; }
   pointer-events: none;
 }
 .card { isolation: isolate; }
-/* the hairline fades out at both ends */
+/* the hairline runs solid from the title's left edge to the far edge of the picture */
 .card:not(.card--name) {
   border-top: 0;
-  background: linear-gradient(90deg, transparent, var(--hair) 18%, var(--hair) 82%, transparent) top / 100% 1px no-repeat;
+  background: linear-gradient(var(--hair), var(--hair)) top / 100% 1px no-repeat;
 }
 
 /* ---- the name, where the page opens ---- */
@@ -661,12 +676,46 @@ html, body { overflow: hidden; height: 100%; }
   background-clip: text;
   color: transparent;
 }
-.name__word:first-child { grid-column: 1 / -1; }
+/* the landing: the name, then the portrait. The portrait is as tall as both
+   lines of the name and centred on them, a little apart from the name; it
+   fades into the fog on every edge, most toward the name and at its foot. Sized so it all fits
+   a laptop screen when the page opens. */
+.card--name { grid-template-columns: auto 1fr 340px; }
+.name__word { position: relative; z-index: 1; }   /* the name stays over the portrait's fog */
+.name__word:first-child { grid-column: 1 / 3; grid-row: 2; width: max-content; }   /* full width, so its gradient fill reaches the last letter */
+.name__word:last-child { grid-column: 1; grid-row: 3; }
+.card--name .name__tag { grid-column: 2; grid-row: 3; }
+/* a greeting above the name: "hello" in Japanese, then "my name is" in Chinese */
+.name__hello {
+  grid-column: 1 / 3; grid-row: 1;
+  margin: 0 0 6px 6px;
+  font-family: "Hiragino Sans", "PingFang SC", "Noto Sans CJK JP", "Noto Sans CJK SC", "Yu Gothic", "Microsoft YaHei", sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  color: #8A8D8A;
+}
+.name__pic { grid-column: 3; grid-row: 2 / span 2; align-self: stretch; position: relative; margin: -50px 0 -50px -20px; }   /* a little space from the name, centred on it, and a bit taller than it */
+.name__pic img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 58%;
+  border-radius: 10px;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 80%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 18%, #000 66%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent 0%, #000 30%, #000 80%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 18%, #000 66%, transparent 100%);
+  mask-composite: intersect;
+}
 .name__tag {
   margin: 0;
   max-width: 420px;
-  font-family: "Inter Medium", var(--sans);
-  font-weight: 500;
+  font-family: var(--sans);
+  font-weight: 400;
   font-size: 24px;
   line-height: 1.3;
   letter-spacing: -.01em;
@@ -698,7 +747,9 @@ html, body { overflow: hidden; height: 100%; }
 .card__todo, .card__todo li { color: #B4B7B3; }
 
 /* ---- Design Foundations: four projects in a row ---- */
-.found { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.found { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.found .found__title { margin: 0; font-size: 22px; }
+.found .card__copy { margin-top: 14px; }
 .found__item { display: flex; flex-direction: column; color: inherit; text-decoration: none; }
 .found__item img {
   display: block;
@@ -725,6 +776,30 @@ html, body { overflow: hidden; height: 100%; }
 .found__date { margin-top: 8px; font-size: 13px; color: #A2A5A1; }
 a.found__item:hover .found__title { text-decoration: underline; text-decoration-color: #C9CBC7; text-underline-offset: 3px; }
 .card__fig figcaption { margin-top: 16px; font-size: 14px; color: var(--ink-soft); }
+
+/* ---- Traveling: three photos in a row; Things I love: a photo under the list ---- */
+/* Traveling: where I've been and where I want to go, beside the photos */
+.trips__group + .trips__group { margin-top: 28px; }
+.trips__label { margin: 0 0 8px; font-size: 13px; color: #9A9D99; }
+.trips__list { margin: 0; padding: 0; list-style: none; font-size: 15px; line-height: 1.6; color: var(--ink); }
+.trips__list--next { color: var(--ink-soft); }
+/* one tall photo on the left; two stacked on the right, together as tall as it */
+.travel { display: grid; grid-template-columns: 1.15fr 1fr; gap: 32px; }
+.travel__main { grid-row: span 2; position: relative; }
+.travel__main img { position: absolute; top: 0; left: 0; height: calc(100% - 36px); }
+.travel__main figcaption { position: absolute; left: 0; bottom: 0; margin: 0; }
+/* fog: every photo fades at its foot; the stacked pair also at the right edge, the tall one at the left */
+.travel .card__fig { --fog-side: to right; }
+/* the tall one's left fog runs on a slant: deep toward the bottom left, light at the top left */
+.travel .travel__main img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(to top right, transparent 0%, #000 42%);
+  mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(to top right, transparent 0%, #000 42%);
+}
+.card__fig--love img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
+}
+.love { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 
 /* a quiet hint at the foot of the canvas, gone after the first drag */
 .canvas__hint {
@@ -819,79 +894,113 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
     <div class="tile">
 
       <!-- the name, where the page opens, with a line beside "Lo" -->
-      <div class="card card--name" data-home style="--x:900;--y:780;--w:820">
+      <div class="card card--name" data-home style="--x:1080;--y:900;--w:1120">
+        <p class="name__hello"><span lang="ja">こんにちは</span>，<span lang="zh">我叫</span></p>
         <h1 class="name"><span class="name__word">Emerson</span> <span class="name__word">Lo</span></h1>
         <p class="name__tag">Currently designing at &hellip; with a love for storytelling and user-centric visual crafts.</p>
+        <figure class="name__pic"><img src="images/about/name-portrait.jpg" width="931" height="1400" alt="Portrait of me in a HackDavis Director shirt, autumn trees behind" decoding="async"></figure>
       </div>
 
       <!-- info: a short introduction -->
-      <article class="card card--text" style="--x:120;--y:640;--w:600">
-        <p class="card__eyebrow">Info</p>
+      <article class="card card--side card--flip card--info" style="--x:20;--y:1040;--w:920">
         <div class="card__body">
           <div class="card__text">
+            <p class="card__eyebrow">Info</p>
             <p class="card__lede">I&rsquo;m a product designer based in Los Angeles, California.</p>
-            <p class="card__copy card__todo">Add a few lines about who you are, how you came to design and what you care about.</p>
-            <p class="card__copy">Say hello at <a href="mailto:emersonrylo@gmail.com">emersonrylo@gmail.com</a>.</p>
+            <p class="card__copy">My interest in design and craft started early. Growing up, I took classes in ceramics, silkscreen printing, photography and video editing at ArtCenter College of Design and the Armory Center for the Arts in Pasadena. That&rsquo;s where I first began exploring art, and where I fell in love with making things by hand.</p>
+            <p class="card__copy">At UC Davis, I kept following that pull toward creativity and design, and found something new alongside it: a fascination with how people think, perceive and interact with the things around them, especially in digital spaces. As technology keeps evolving, I want to build intuitive products that are both functional and beautiful, that improve people&rsquo;s lives, and that make the time we spend with screens feel more humane.</p>
           </div>
+          <figure class="card__fig"><img src="images/about/name-paintings.jpg" width="1120" height="1400" alt="Framed paintings piled on a table at a flea market" style="--ar:4/5" loading="lazy" decoding="async"></figure>
         </div>
       </article>
 
       <!-- education -->
-      <article class="card card--side" style="--x:120;--y:120;--w:760">
-        <p class="card__eyebrow">Education</p>
+      <article class="card card--side card--edu" style="--x:120;--y:446;--w:840">
         <div class="card__body">
           <div class="card__text">
-            <h2 class="card__title">University of California, Davis</h2>
-            <p class="card__sub">Your degree goes here</p>
-            <p class="card__date">Years to come</p>
-            <p class="card__copy">Add your degree, minors and certificates here.</p>
+            <p class="card__eyebrow">Education</p>
+            <h2 class="card__title card__title--nowrap">University of California, Davis</h2>
+            <p class="card__sub">College of Letters and Science</p>
+            <p class="card__date">2022 &ndash; 2026</p>
+            <p class="card__copy">Bachelor of Science in Computational Cognitive Science</p>
           </div>
-          <figure class="card__fig"><img src="images/about/davis.webp" width="1000" height="750" alt="A tree-lined park in Davis in the fall" style="--ar:4/3" loading="lazy" decoding="async"><figcaption>Davis, California</figcaption></figure>
+          <figure class="card__fig"><img src="images/about/edu-davis-gang.jpg" width="1400" height="1050" alt="Me and friends in graduation stoles on the UC Davis sign at dusk" style="--ar:4/3" loading="lazy" decoding="async"></figure>
         </div>
       </article>
 
       <!-- things I love to do: a short list in big type -->
-      <article class="card card--text" style="--x:1860;--y:820;--w:420">
+      <article class="card card--text" style="--x:1080;--y:1467;--w:880">
+        <div class="card__split">
+        <div>
         <p class="card__eyebrow">Things I love to do</p>
         <ul class="card__list card__todo">
           <li>Something you love</li>
           <li>Another thing you love</li>
           <li>And one more</li>
         </ul>
+        </div>
+        <div class="love">
+          <figure class="card__fig card__fig--love"><img src="images/about/love-snowboard.jpg" width="1050" height="1400" alt="Me sitting in the snow strapped into a snowboard" style="--ar:4/5" loading="lazy" decoding="async"><figcaption>Snowboarding</figcaption></figure>
+          <figure class="card__fig card__fig--love"><img src="images/about/love-streethoops.jpg" width="1400" height="1050" alt="Two friends dribbling basketballs on a street at night, lit by car headlights" style="--ar:4/5" loading="lazy" decoding="async"><figcaption>Street hoops</figcaption></figure>
+        </div>
+        </div>
       </article>
 
       <!-- design foundations: the projects that shaped how I design -->
-      <article class="card card--found" style="--x:400;--y:1280;--w:1100">
+      <article class="card card--found" style="--x:0;--y:1726;--w:960">
         <p class="card__eyebrow">Design Foundations</p>
         <div class="found">
-          <a class="found__item" href="preview/pikspot.html">
-            <img src="images/about/pikspot.webp" width="461" height="1000" alt="" style="object-position:50% 22%" loading="lazy" decoding="async">
-            <span class="found__title">Pikspot</span>
-            <span class="found__sub">Design Interactive &middot; UI/UX Designer</span>
-            <span class="found__date">April &ndash; June 2025</span>
-          </a>
-          <a class="found__item" href="preview/hackdavis.html">
-            <img src="images/about/hackdavis.webp" width="584" height="285" alt="" loading="lazy" decoding="async">
-            <span class="found__title">HackDavis</span>
-            <span class="found__sub">Collegiate Hackathon</span>
-            <span class="found__date">2026</span>
-          </a>
-          <a class="found__item" href="preview/jvmc.html">
-            <img src="images/about/jvmc.webp" width="750" height="1000" alt="" loading="lazy" decoding="async">
-            <span class="found__title">Joan Viteri Memorial Clinic</span>
-            <span class="found__sub">Clinic Website</span>
-            <span class="found__date">2024 &ndash; 2025</span>
-          </a>
           <div class="found__item">
-            <img src="images/about/jass.webp" width="1000" height="666" alt="" loading="lazy" decoding="async">
-            <span class="found__title">Japanese American Student Society</span>
-            <span class="found__sub">Club Website</span>
-            <span class="found__date">2024</span>
+            <h3 class="found__title">Cultivated Intuition</h3>
+            <p class="card__copy">I believe that strong design intuition is developed through a diverse, interdisciplinary exploration of the world around us. Traveling, absorbing new environments, and experiencing different cultures profoundly shape how the human brain perceives, understands, and ultimately produces design. Beyond screens and interfaces, observing how things look, feel, and function in the physical world helps me develop a deeper cognitive intuition for what feels right. I&rsquo;m not afraid of trying new things, always strive toward being &lsquo;best-in-class&rsquo;, and always strive to be curious about the unknown.</p>
+          </div>
+          <div class="found__item">
+            <h3 class="found__title">Intelligent Interfaces</h3>
+            <p class="card__copy">The future of personal computing is astounding to me as our interfaces seamlessly blend with and understand our daily intentions. As artificial intelligence advances, I believe it will fundamentally elevate technology from a static tool into a proactive, adaptive partner. This shift transforms design by allowing us to craft highly personalized experiences that anticipate user needs rather than just reacting to them. Ultimately, I am curious about how AI can help us interact more fluidly with the physical world, making complex technology feel completely natural and invisible.</p>
           </div>
         </div>
       </article>
 
-      <!-- room for one more section, top right (about x 1200 to 2200, y 120 to 620) -->
+      <!-- traveling: three photos in a row -->
+      <article class="card card--travel" style="--x:1080;--y:80;--w:990">
+        <div class="card__split">
+        <div class="trips">
+          <p class="card__eyebrow">Circumnavigate</p>
+          <div class="trips__group">
+            <p class="trips__label">Been to</p>
+            <ul class="trips__list">
+              <li>Japan</li>
+              <li>England</li>
+              <li>France</li>
+              <li>Spain</li>
+              <li>Portugal</li>
+              <li>Italy</li>
+              <li>Greece</li>
+              <li>Canada</li>
+              <li>Mexico</li>
+            </ul>
+          </div>
+          <div class="trips__group">
+            <p class="trips__label">Bucket list</p>
+            <ul class="trips__list trips__list--next">
+              <li>China</li>
+              <li>Vietnam</li>
+              <li>Iceland</li>
+              <li>Netherlands</li>
+              <li>Switzerland</li>
+              <li>Turkey</li>
+              <li>Peru</li>
+              <li>Singapore</li>
+            </ul>
+          </div>
+        </div>
+        <div class="travel">
+          <figure class="card__fig travel__main"><img src="images/about/travel-greece.jpg" width="1050" height="1400" alt="Me standing on the rocks in front of the Parthenon" loading="lazy" decoding="async"><figcaption>Athens, Greece</figcaption></figure>
+          <figure class="card__fig"><img src="images/about/travel-shibuya.jpg" width="1050" height="1400" alt="Crowds and neon billboards at the Shibuya crossing at night" style="--ar:4/3" loading="lazy" decoding="async"><figcaption>Shibuya, Tokyo</figcaption></figure>
+          <figure class="card__fig"><img src="images/about/travel-jeronimo.jpg" width="1050" height="1400" alt="The carved stone cloister of the Jer&oacute;nimos Monastery" style="--ar:4/3" loading="lazy" decoding="async"><figcaption>Lisbon, Portugal</figcaption></figure>
+        </div>
+        </div>
+      </article>
 
     </div>
   </div>
@@ -962,7 +1071,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
     var world = canvas && canvas.querySelector('.world');
     var tile = world && world.querySelector('.tile');
     if (!tile) return;
-    var W = 2450, H = 2000;
+    var W = 2330, H = 1900;
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* the feel (matched to Emmi Wu's playground): the view eases toward where
@@ -998,7 +1107,17 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
       }
       return c.els[n];
     }
-    function measure() { cards.forEach(function (c) { c.w = c.els[0].offsetWidth; c.h = c.els[0].offsetHeight; }); }
+    /* a card scrolled out of view is hidden (display: none) and would measure
+       0 x 0, which made it vanish as soon as its corner left the window; show
+       it for the moment it's measured */
+    function measure() {
+      cards.forEach(function (c) {
+        var el = c.els[0], was = el.style.display;
+        el.style.display = '';
+        c.w = el.offsetWidth; c.h = el.offsetHeight;
+        el.style.display = was;
+      });
+    }
 
     var cur = { x: 0, y: 0 }, tgt = { x: 0, y: 0 }, lastPos = { x: 0, y: 0 };
     var vel = { x: 0, y: 0 };                         /* smoothed motion per frame */
