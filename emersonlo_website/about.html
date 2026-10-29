@@ -25,6 +25,7 @@
   --ink-soft: #4A4E4A;
   --gray: #8A8D8A;
   --hair: #E6E6E2;
+  --rule: #CACAC5;          /* the line above each section, a step darker than --hair */
   --paper: #FFFFFF;
   --nav-w: 72px;           /* the rail collapsed; 196px open, as on the home page */
 
@@ -579,8 +580,8 @@ html, body { overflow: hidden; height: 100%; }
 /* like the Athens picture, mirrored: the side fog runs on a slant, deep toward
    the bottom right and light at the top right */
 .card--edu .card__fig img {
-  -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(to top left, transparent 0%, #000 42%);
-  mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(to top left, transparent 0%, #000 42%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%), linear-gradient(to top left, transparent 0%, #000 22%);
+  mask-image: linear-gradient(to bottom, #000 74%, transparent 100%), linear-gradient(to top left, transparent 0%, #000 22%);
 }
 /* Info: a smaller picture on the left; the eyebrow sits beside it, level with
    its top, and the hairline runs from the picture's left edge across */
@@ -649,7 +650,7 @@ html, body { overflow: hidden; height: 100%; }
 /* the hairline runs solid from the title's left edge to the far edge of the picture */
 .card:not(.card--name) {
   border-top: 0;
-  background: linear-gradient(var(--hair), var(--hair)) top / 100% 1px no-repeat;
+  background: linear-gradient(var(--rule), var(--rule)) top / 100% 1px no-repeat;
 }
 
 /* ---- the name, where the page opens ---- */
@@ -778,29 +779,72 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
 .card__fig figcaption { margin-top: 16px; font-size: 14px; color: var(--ink-soft); }
 
 /* ---- Traveling: three photos in a row; Things I love: a photo under the list ---- */
+/* Most likely listening to: the Spotify card, uncropped, with the same fog as
+   the Things I love tiles, melting toward its top and left edges (the foot
+   stays clear so the minutes line reads) */
+.card--music .card__fig img {
+  border-radius: 12px;
+  -webkit-mask-image: linear-gradient(to top, #000 76%, transparent 100%), linear-gradient(to left, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 76%, transparent 100%), linear-gradient(to left, #000 70%, transparent 100%);
+}
 /* Traveling: where I've been and where I want to go, beside the photos */
 .trips__group + .trips__group { margin-top: 28px; }
 .trips__label { margin: 0 0 8px; font-size: 13px; color: #9A9D99; }
 .trips__list { margin: 0; padding: 0; list-style: none; font-size: 15px; line-height: 1.6; color: var(--ink); }
 .trips__list--next { color: var(--ink-soft); }
 /* one tall photo on the left; two stacked on the right, together as tall as it */
-.travel { display: grid; grid-template-columns: 1.15fr 1fr; gap: 32px; }
+.travel { display: grid; grid-template-columns: 327px 285px; gap: 32px; }   /* sized so the photos end level with the last place in the lists */
 .travel__main { grid-row: span 2; position: relative; }
-.travel__main img { position: absolute; top: 0; left: 0; height: calc(100% - 36px); }
-.travel__main figcaption { position: absolute; left: 0; bottom: 0; margin: 0; }
+.travel__main img { position: absolute; top: 0; left: 0; height: 100%; }
+/* captions sit inside each photo, bottom left, where it has faded into the fog */
+.travel .card__fig { position: relative; }
+.travel .card__fig figcaption, .love .card__fig figcaption {
+  position: absolute; left: 16px; right: auto; bottom: 14px; margin: 0; padding: 0;
+  font-size: 13px; color: var(--ink);
+  background: none; text-shadow: 0 0 10px rgba(255,255,255,.9);
+}
 /* fog: every photo fades at its foot; the stacked pair also at the right edge, the tall one at the left */
 .travel .card__fig { --fog-side: to right; }
+.travel .card__fig img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 76%, transparent 100%), linear-gradient(to right, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 76%, transparent 100%), linear-gradient(to right, #000 70%, transparent 100%);
+}
 /* the tall one's left fog runs on a slant: deep toward the bottom left, light at the top left */
 .travel .travel__main img {
-  -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(to top right, transparent 0%, #000 42%);
-  mask-image: linear-gradient(to bottom, #000 52%, transparent 100%), linear-gradient(to top right, transparent 0%, #000 42%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 76%, transparent 100%), linear-gradient(to top right, transparent 0%, #000 42%);
+  mask-image: linear-gradient(to bottom, #000 76%, transparent 100%), linear-gradient(to top right, transparent 0%, #000 42%);
 }
 .card__fig--love img {
   -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
 }
-.love { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-
+/* Things I love: a bento grid, wide enough to sit under the name. Snowboarding
+   runs tall on the left; oysters and paintings sit side by side at the top
+   right, with basketball spanning beneath them. Captions sit bottom left. */
+.love {
+  display: grid;
+  width: 869px;
+  grid-template-columns: 379px 235px 235px;   /* the first column is 3:4 with the grid's height, so the whole snowboard photo shows */
+  grid-template-rows: 248px 247px;
+  gap: 10px;
+}
+.love .card__fig { position: relative; margin: 0; overflow: hidden; border-radius: 12px; }
+.love [data-tile="snow"]  { grid-column: 1; grid-row: 1 / 3; --fog-a: to top;    --fog-b: to left; }
+.love [data-tile="oyster"]{ grid-column: 2; grid-row: 1;     --fog-a: to top;    --fog-b: to right; }
+.love [data-tile="paint"] { grid-column: 3; grid-row: 1;     --fog-a: to top;    --fog-b: to right; }
+.love [data-tile="ball"]  { grid-column: 2 / 4; grid-row: 2; --fog-a: to bottom; --fog-b: to left; }
+/* these tiles' bottom-left corners stay solid and dark, so their captions go white */
+.love [data-tile="oyster"] figcaption, .love [data-tile="paint"] figcaption { color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+.love .card__fig img {
+  width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; border-radius: 0;
+  /* the same fog as the travel photos, but each tile melts toward its own
+     pair of outer edges, so the mist wraps the whole grid */
+  -webkit-mask-image: linear-gradient(var(--fog-a), #000 76%, transparent 100%), linear-gradient(var(--fog-b), #000 70%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(var(--fog-a), #000 76%, transparent 100%), linear-gradient(var(--fog-b), #000 70%, transparent 100%);
+  mask-composite: intersect;
+}
+.love [data-tile="ball"] img { object-position: 50% 62%; }
 /* a quiet hint at the foot of the canvas, gone after the first drag */
 .canvas__hint {
   position: absolute;
@@ -894,7 +938,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
     <div class="tile">
 
       <!-- the name, where the page opens, with a line beside "Lo" -->
-      <div class="card card--name" data-home style="--x:1080;--y:900;--w:1120">
+      <div class="card card--name" data-home style="--x:1100;--y:738;--w:1120">
         <p class="name__hello"><span lang="ja">こんにちは</span>，<span lang="zh">我叫</span></p>
         <h1 class="name"><span class="name__word">Emerson</span> <span class="name__word">Lo</span></h1>
         <p class="name__tag">Currently designing at &hellip; with a love for storytelling and user-centric visual crafts.</p>
@@ -902,20 +946,20 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
       </div>
 
       <!-- info: a short introduction -->
-      <article class="card card--side card--flip card--info" style="--x:20;--y:1040;--w:920">
+      <article class="card card--side card--flip card--info" style="--x:40;--y:426;--w:920">
         <div class="card__body">
           <div class="card__text">
             <p class="card__eyebrow">Info</p>
-            <p class="card__lede">I&rsquo;m a product designer based in Los Angeles, California.</p>
+            <p class="card__lede">I&rsquo;m a product designer<br>based in Los Angeles, California.</p>
             <p class="card__copy">My interest in design and craft started early. Growing up, I took classes in ceramics, silkscreen printing, photography and video editing at ArtCenter College of Design and the Armory Center for the Arts in Pasadena. That&rsquo;s where I first began exploring art, and where I fell in love with making things by hand.</p>
             <p class="card__copy">At UC Davis, I kept following that pull toward creativity and design, and found something new alongside it: a fascination with how people think, perceive and interact with the things around them, especially in digital spaces. As technology keeps evolving, I want to build intuitive products that are both functional and beautiful, that improve people&rsquo;s lives, and that make the time we spend with screens feel more humane.</p>
           </div>
-          <figure class="card__fig"><img src="images/about/name-paintings.jpg" width="1120" height="1400" alt="Framed paintings piled on a table at a flea market" style="--ar:4/5" loading="lazy" decoding="async"></figure>
+          <figure class="card__fig"><img src="images/about/info-lacma.jpg" width="755" height="1000" alt="Me in a hoodie among the lit lamp posts of Urban Light at LACMA" style="--ar:4/5;object-position:50% 40%" loading="lazy" decoding="async"></figure>
         </div>
       </article>
 
       <!-- education -->
-      <article class="card card--side card--edu" style="--x:120;--y:446;--w:840">
+      <article class="card card--side card--edu" style="--x:120;--y:0;--w:840">
         <div class="card__body">
           <div class="card__text">
             <p class="card__eyebrow">Education</p>
@@ -928,27 +972,26 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
         </div>
       </article>
 
-      <!-- things I love to do: a short list in big type -->
-      <article class="card card--text" style="--x:1080;--y:1467;--w:880">
-        <div class="card__split">
-        <div>
+      <!-- things I love to do: a collage of photos -->
+      <article class="card card--text" style="--x:1226;--y:1325;--w:869">
         <p class="card__eyebrow">Things I love to do</p>
-        <ul class="card__list card__todo">
-          <li>Something you love</li>
-          <li>Another thing you love</li>
-          <li>And one more</li>
-        </ul>
-        </div>
         <div class="love">
-          <figure class="card__fig card__fig--love"><img src="images/about/love-snowboard.jpg" width="1050" height="1400" alt="Me sitting in the snow strapped into a snowboard" style="--ar:4/5" loading="lazy" decoding="async"><figcaption>Snowboarding</figcaption></figure>
-          <figure class="card__fig card__fig--love"><img src="images/about/love-streethoops.jpg" width="1400" height="1050" alt="Two friends dribbling basketballs on a street at night, lit by car headlights" style="--ar:4/5" loading="lazy" decoding="async"><figcaption>Street hoops</figcaption></figure>
-        </div>
+          <figure class="card__fig card__fig--love" data-tile="snow"><img src="images/about/love-snowboard.jpg" width="1050" height="1400" alt="Me sitting in the snow strapped into a snowboard" loading="lazy" decoding="async"><figcaption>Snowboarding</figcaption></figure>
+          <figure class="card__fig card__fig--love" data-tile="oyster"><img src="images/about/love-oysters.jpg" width="1238" height="1400" alt="Two raw oysters on a metal tray, each with a pair of toothpicks" loading="lazy" decoding="async"><figcaption>Eating oysters</figcaption></figure>
+          <figure class="card__fig card__fig--love" data-tile="ball"><img src="images/about/love-streethoops.jpg" width="1400" height="1050" alt="Two friends dribbling basketballs on a street at night, lit by car headlights" loading="lazy" decoding="async"><figcaption>Basketball</figcaption></figure>
+          <figure class="card__fig card__fig--love" data-tile="paint"><img src="images/about/name-paintings.jpg" width="1120" height="1400" alt="Framed paintings piled on a table at a flea market" loading="lazy" decoding="async"><figcaption>Looking at paintings</figcaption></figure>
         </div>
       </article>
 
+      <!-- music: most streamed artist -->
+      <article class="card card--music" style="--x:350;--y:945;--w:300">
+        <p class="card__eyebrow">Most Likely Listening to&hellip;</p>
+        <figure class="card__fig"><img src="images/about/music-yeat.jpg" width="641" height="1000" alt="Spotify card: my all-time most streamed artist is Yeat, with 22,786 minutes listened" loading="lazy" decoding="async"></figure>
+      </article>
+
       <!-- design foundations: the projects that shaped how I design -->
-      <article class="card card--found" style="--x:0;--y:1726;--w:960">
-        <p class="card__eyebrow">Design Foundations</p>
+      <article class="card card--found" style="--x:0;--y:1586;--w:960">
+        <p class="card__eyebrow">Design Philosophy</p>
         <div class="found">
           <div class="found__item">
             <h3 class="found__title">Cultivated Intuition</h3>
@@ -962,7 +1005,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
       </article>
 
       <!-- traveling: three photos in a row -->
-      <article class="card card--travel" style="--x:1080;--y:80;--w:990">
+      <article class="card card--travel" style="--x:1100;--y:0;--w:824">
         <div class="card__split">
         <div class="trips">
           <p class="card__eyebrow">Circumnavigate</p>
@@ -996,8 +1039,8 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
         </div>
         <div class="travel">
           <figure class="card__fig travel__main"><img src="images/about/travel-greece.jpg" width="1050" height="1400" alt="Me standing on the rocks in front of the Parthenon" loading="lazy" decoding="async"><figcaption>Athens, Greece</figcaption></figure>
-          <figure class="card__fig"><img src="images/about/travel-shibuya.jpg" width="1050" height="1400" alt="Crowds and neon billboards at the Shibuya crossing at night" style="--ar:4/3" loading="lazy" decoding="async"><figcaption>Shibuya, Tokyo</figcaption></figure>
-          <figure class="card__fig"><img src="images/about/travel-jeronimo.jpg" width="1050" height="1400" alt="The carved stone cloister of the Jer&oacute;nimos Monastery" style="--ar:4/3" loading="lazy" decoding="async"><figcaption>Lisbon, Portugal</figcaption></figure>
+          <figure class="card__fig"><img src="images/about/travel-shibuya.jpg" width="1050" height="1400" alt="Crowds and neon billboards at the Shibuya crossing at night" style="--ar:8/7" loading="lazy" decoding="async"><figcaption>Shibuya, Tokyo</figcaption></figure>
+          <figure class="card__fig"><img src="images/about/travel-jeronimo.jpg" width="1050" height="1400" alt="The carved stone cloister of the Jer&oacute;nimos Monastery" style="--ar:8/7" loading="lazy" decoding="async"><figcaption>Lisbon, Portugal</figcaption></figure>
         </div>
         </div>
       </article>
@@ -1068,10 +1111,11 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
      move a target; the view eases after it. */
   (function () {
     var canvas = document.querySelector('.canvas');
+    var hint = document.querySelector('.canvas__hint');
     var world = canvas && canvas.querySelector('.world');
     var tile = world && world.querySelector('.tile');
     if (!tile) return;
-    var W = 2330, H = 1900;
+    var W = 2360, H = 2039;   /* every section sits 140px from its neighbours, across the wrap too */
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* the feel (matched to Emmi Wu's playground): the view eases toward where
@@ -1142,6 +1186,8 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
           }
         }
         for (var i = n; i < c.used; i++) c.els[i].style.display = 'none';
+        /* the hint sits centred under the name, drifting with it as the cursor moves */
+        if (hint && c === homeCard) hint.style.left = (x0 + c.w / 2).toFixed(2) + 'px';
         c.used = n;
       });
     }
