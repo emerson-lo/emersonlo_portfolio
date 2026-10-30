@@ -869,7 +869,15 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
 .canvas__hint svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .canvas.has-moved .canvas__hint { opacity: 0; }
 
+/* the landing is all that shows when the page opens: the other sections
+   wait out of sight (and, on very large screens where the clear zone around
+   the name isn't enough, invisible) until the first drag, scroll or key,
+   then fade in out of the fog */
+.canvas .card:not(.card--name) { transition: opacity .9s ease; }
+.canvas:not(.has-moved) .card:not(.card--name) { opacity: 0; }
+
 </style>
+<link rel="stylesheet" href="site-mobile.css" media="(max-width: 640px)">
 </head>
 <body>
 
@@ -938,7 +946,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
     <div class="tile">
 
       <!-- the name, where the page opens, with a line beside "Lo" -->
-      <div class="card card--name" data-home style="--x:1100;--y:738;--w:1120">
+      <div class="card card--name" data-home style="--x:1150;--y:800;--w:1120">
         <p class="name__hello"><span lang="ja">こんにちは</span>，<span lang="zh">我叫</span></p>
         <h1 class="name"><span class="name__word">Emerson</span> <span class="name__word">Lo</span></h1>
         <p class="name__tag">Currently designing at &hellip; with a love for storytelling and user-centric visual crafts.</p>
@@ -946,7 +954,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
       </div>
 
       <!-- info: a short introduction -->
-      <article class="card card--side card--flip card--info" style="--x:40;--y:426;--w:920">
+      <article class="card card--side card--flip card--info" style="--x:0;--y:793;--w:920">
         <div class="card__body">
           <div class="card__text">
             <p class="card__eyebrow">Info</p>
@@ -959,7 +967,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
       </article>
 
       <!-- education -->
-      <article class="card card--side card--edu" style="--x:120;--y:0;--w:840">
+      <article class="card card--side card--edu" style="--x:100;--y:103;--w:840">
         <div class="card__body">
           <div class="card__text">
             <p class="card__eyebrow">Education</p>
@@ -973,7 +981,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
       </article>
 
       <!-- things I love to do: a collage of photos -->
-      <article class="card card--text" style="--x:1226;--y:1325;--w:869">
+      <article class="card card--text" style="--x:1446;--y:1430;--w:869">
         <p class="card__eyebrow">Things I love to do</p>
         <div class="love">
           <figure class="card__fig card__fig--love" data-tile="snow"><img src="images/about/love-snowboard.jpg" width="1050" height="1400" alt="Me sitting in the snow strapped into a snowboard" loading="lazy" decoding="async"><figcaption>Snowboarding</figcaption></figure>
@@ -984,13 +992,13 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
       </article>
 
       <!-- music: most streamed artist -->
-      <article class="card card--music" style="--x:350;--y:945;--w:300">
+      <article class="card card--music" style="--x:2122;--y:34;--w:300">
         <p class="card__eyebrow">Most Likely Listening to&hellip;</p>
-        <figure class="card__fig"><img src="images/about/music-yeat.jpg" width="641" height="1000" alt="Spotify card: my all-time most streamed artist is Yeat, with 22,786 minutes listened" loading="lazy" decoding="async"></figure>
+        <figure class="card__fig"><img src="images/about/music-yeat.jpg" width="641" height="1000" style="--ar:641/1000" alt="Spotify card: my all-time most streamed artist is Yeat, with 22,786 minutes listened" loading="lazy" decoding="async"></figure>
       </article>
 
       <!-- design foundations: the projects that shaped how I design -->
-      <article class="card card--found" style="--x:0;--y:1586;--w:960">
+      <article class="card card--found" style="--x:150;--y:1576;--w:960">
         <p class="card__eyebrow">Design Philosophy</p>
         <div class="found">
           <div class="found__item">
@@ -1005,24 +1013,10 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
       </article>
 
       <!-- traveling: three photos in a row -->
-      <article class="card card--travel" style="--x:1100;--y:0;--w:824">
+      <article class="card card--travel" style="--x:1119;--y:17;--w:824">
         <div class="card__split">
         <div class="trips">
           <p class="card__eyebrow">Circumnavigate</p>
-          <div class="trips__group">
-            <p class="trips__label">Been to</p>
-            <ul class="trips__list">
-              <li>Japan</li>
-              <li>England</li>
-              <li>France</li>
-              <li>Spain</li>
-              <li>Portugal</li>
-              <li>Italy</li>
-              <li>Greece</li>
-              <li>Canada</li>
-              <li>Mexico</li>
-            </ul>
-          </div>
           <div class="trips__group">
             <p class="trips__label">Bucket list</p>
             <ul class="trips__list trips__list--next">
@@ -1115,7 +1109,13 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
     var world = canvas && canvas.querySelector('.world');
     var tile = world && world.querySelector('.tile');
     if (!tile) return;
-    var W = 2360, H = 2039;   /* every section sits 140px from its neighbours, across the wrap too */
+    /* phones get a plain scrolling page instead (site-mobile.css stacks the
+       sections); crossing the breakpoint reloads into the other layout */
+    var phone = window.matchMedia('(max-width: 640px)');
+    function flip() { location.reload(); }
+    if (phone.addEventListener) phone.addEventListener('change', flip); else if (phone.addListener) phone.addListener(flip);
+    if (phone.matches) return;
+    var W = 2500, H = 2166;   /* three rows around the name; neighbours sit 180–370px apart, across the wrap too */
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* the feel (matched to Emmi Wu's playground): the view eases toward where
@@ -1284,6 +1284,12 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
     else window.addEventListener('resize', resize);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
     window.addEventListener('load', resize);
+    /* pictures load lazily, once their section first comes into view; a section
+       measured before its picture arrived was too short, so it wrapped away
+       (vanished) while still on screen. Re-measure whenever any picture lands. */
+    tile.addEventListener('load', function (e) {
+      if (e.target.tagName === 'IMG') { measure(); draw(); }
+    }, true);
 
     draw();
   })();
@@ -1309,5 +1315,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
   })();
 </script>
 
+<script src="site-mobile.js"></script>
+<script src="local-links.js"></script>
 </body>
 </html>

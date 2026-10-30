@@ -1,0 +1,320 @@
+/* ============================================================
+   PHONES (640px and under), every page.
+   Loaded with media="(max-width: 640px)", so desktops never read it.
+
+   The side rail becomes a slim top bar: the logo on the left, a menu
+   button on the right. The button opens the same links as a full-screen
+   sheet. On phones the bar ignores the rail's open/collapsed state
+   (nav--open), so a page script toggling that can't leave it stuck; the
+   sheet is its own class, nav--sheet, set by site-mobile.js.
+   ============================================================ */
+
+:root {
+  --bar-h: 56px;
+  --m-gutter: 20px;
+}
+
+/* ---- the bar ---- */
+.nav,
+.nav.nav--open {
+  inset: 0 0 auto 0;
+  width: auto;
+  height: var(--bar-h);
+  zoom: 1;
+  padding: 0 calc(var(--m-gutter) - 12px) 0 var(--m-gutter);
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-right: 0;
+  border-bottom: 1px solid var(--hair);
+  background: rgba(255, 255, 255, .94);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  backdrop-filter: saturate(1.4) blur(14px);
+  box-shadow: none;
+  overflow: visible;
+  transition: none;
+}
+.nav:not(.nav--sheet) > :not(.nav__mark):not(.nav__toggle) { display: none; }
+
+.nav .nav__mark,
+.nav.nav--open .nav__mark,
+.nav:not(.nav--open) .nav__mark {
+  width: 46px;
+  height: 34px;
+  margin: 0;
+  transition: none;
+}
+
+/* the menu button: two lines that turn into a cross */
+.nav .nav__toggle {
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  color: var(--ink);
+}
+.nav .nav__toggle svg,
+.nav .nav__toggle::after { display: none; }
+.nav .nav__toggle::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  background: currentColor;
+  -webkit-mask: var(--menu-ic) center / contain no-repeat;
+          mask: var(--menu-ic) center / contain no-repeat;
+}
+.nav { --menu-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M1 7.5h20M1 14.5h20' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.nav.nav--sheet { --menu-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M4 4l14 14M18 4L4 18' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.nav-tip { display: none !important; }
+
+/* ---- the sheet ---- */
+.nav.nav--sheet {
+  height: 100vh;
+  height: 100dvh;
+  padding: 0 0 calc(32px + env(safe-area-inset-bottom));
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-bottom: 0;
+  background: #fff;
+}
+.nav.nav--sheet > * { display: flex; }
+.nav.nav--sheet > .nav__top { display: none; }
+.nav.nav--sheet .nav__mark { flex: none; margin: 11px 0 0 var(--m-gutter); display: grid; }
+.nav.nav--sheet .nav__toggle { display: grid; position: absolute; top: 6px; right: calc(var(--m-gutter) - 12px); }
+
+/* the groups: one left edge, roomy rows that are easy to tap */
+.nav.nav--sheet .nav__group {
+  width: auto;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 var(--m-gutter);
+}
+.nav.nav--sheet .nav__links { margin-top: 36px; gap: 6px; }
+.nav.nav--sheet .nav__sep { width: auto; margin: 22px var(--m-gutter); }
+.nav.nav--sheet .nav__sep--blank { margin: 10px var(--m-gutter); }
+.nav.nav--sheet .nav__work,
+.nav.nav--sheet .nav__contact { gap: 2px; }
+
+.nav.nav--sheet .nv {
+  width: auto;
+  height: auto;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.nav.nav--sheet .nv--hint { min-height: 0; margin-bottom: 8px; }
+.nav.nav--sheet .nv__label {
+  position: static;
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  width: auto;
+  padding: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: normal;
+  pointer-events: auto;
+  transition: none;
+}
+.nav.nav--sheet .nv__br { display: none; }
+.nav.nav--sheet .nav__links .nv { min-height: 48px; }
+.nav.nav--sheet .nav__links .nv__label {
+  font-size: 30px;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  -webkit-text-stroke: .35px currentColor;
+}
+.nav.nav--sheet .nav__links svg,
+.nav.nav--sheet .nv--hint svg { display: none; }
+.nav.nav--sheet .nv--hint .nv__label {
+  color: var(--gray);
+  font-size: 11.5px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.nav.nav--sheet .nv__chip { margin: 0; }
+.nav.nav--sheet .nv--contact svg { margin: 0; }
+.nav.nav--sheet .nv[aria-current="page"] .nv__label { color: var(--ink); }
+
+/* the page underneath stays put while the sheet is open */
+html.has-sheet, html.has-sheet body { overflow: hidden; }
+
+/* ---- content clears the bar instead of the rail ---- */
+.main,
+.nav--open ~ .main,
+.hero--sign,
+.nav--open ~ .hero--sign { margin-left: 0; }
+.foot,
+.nav--open ~ .foot { left: 0; }
+
+/* the case studies' back arrow: the logo in the bar already goes home */
+.page-back { display: none; }
+
+/* ============================================================
+   HOME
+   ============================================================ */
+/* one 20px gutter for the hero, the work grid and the footer */
+.work { padding-left: var(--m-gutter); padding-right: var(--m-gutter); }
+.work__head { padding-left: 0; padding-right: 0; }
+.foot { padding-left: var(--m-gutter); padding-right: var(--m-gutter); }
+.foot__strip--loop { margin-right: calc(-1 * var(--m-gutter)); }
+.hero--sign { padding-top: calc(var(--bar-h) + 40px); padding-left: var(--m-gutter); }
+.rows { padding-right: var(--m-gutter); }
+.grid { gap: 36px; }   /* the same space as between cards within a column */
+
+/* ============================================================
+   ABOUT: on phones the drag canvas becomes a plain scrolling page.
+   The canvas script stands down at this width, so the sections keep
+   their place in the markup; here they're stacked full width, in
+   reading order, on one 20px gutter.
+   ============================================================ */
+html:has(.canvas), html:has(.canvas) body { overflow-x: hidden; overflow-y: visible; height: auto; }
+.canvas,
+.nav--open ~ .canvas {
+  position: static;
+  overflow: visible;
+  cursor: auto;
+  touch-action: auto;
+  user-select: auto;
+  -webkit-user-select: auto;
+  padding: calc(var(--bar-h) + 36px) var(--m-gutter) 64px;
+  background: #F1F1EF;
+  overflow-x: clip;             /* the fog behind each section reaches past the edges */
+}
+.canvas .world,
+.canvas .tile { position: static; }
+.canvas .tile { display: flex; flex-direction: column; gap: 64px; }
+.canvas__hint { display: none; }
+.canvas:not(.has-moved) .card:not(.card--name) { opacity: 1; }   /* the desktop waits for a first drag; a list has nothing to wait for */
+
+.canvas .card {
+  position: relative;
+  left: auto; top: auto;
+  width: auto;
+  transform: none !important;
+  will-change: auto;
+}
+.canvas .card::before { inset: -40px -60px; }
+
+/* reading order: name, info, education, travel, things I love, music, philosophy */
+.canvas .card--name   { order: 0; }
+.canvas .card--info   { order: 1; }
+.canvas .card--edu    { order: 2; }
+.canvas .card--travel { order: 3; }
+.canvas .card--text   { order: 4; }
+.canvas .card--music  { order: 5; }
+.canvas .card--found  { order: 6; }
+
+/* the name: greeting, name, line, then the portrait under them */
+.canvas .card--name { display: block; }
+.canvas .name { display: block; }
+.canvas .name__word { display: block; font-size: clamp(64px, 21vw, 96px); background-size: 100% 100%; width: max-content; max-width: 100%; }
+.canvas .name__hello { margin: 0 0 4px 2px; font-size: 18px; }
+.canvas .name__tag { margin-top: 18px; max-width: none; font-size: 19px; }
+.canvas .name__pic { position: relative; margin: 28px 0 0; aspect-ratio: 4 / 5; }
+
+/* every two-column section stacks: words first, then pictures */
+.canvas .card__body,
+.canvas .card--side .card__body,
+.canvas .card--info .card__body,
+.canvas .card--edu .card__body,
+.canvas .card__split { display: flex; flex-direction: column; gap: 24px; }
+.canvas .card--flip .card__fig { order: 0; }
+.canvas .card__eyebrow { margin-bottom: 22px; }
+.canvas .card__title, .canvas .card__sub { font-size: 24px; }
+.canvas .card__title--nowrap { white-space: normal; }
+.canvas .card__lede { font-size: 21px; }
+
+.canvas .card__copy { font-size: 16px; }
+.canvas .card--info .card__fig { max-width: 300px; }
+
+/* travel: the lists side by side, then the photos (tall one, then the pair) */
+.canvas .trips { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
+.canvas .trips > .card__eyebrow { grid-column: 1 / -1; }
+.canvas .trips__group + .trips__group { margin-top: 0; }
+.canvas .travel { grid-template-columns: 1fr 1fr; gap: 10px; }
+.canvas .travel__main { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 4 / 5; }
+
+/* things I love: the bento shrinks to the screen, same arrangement */
+.canvas .love {
+  width: auto;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 8px;
+}
+.canvas .love [data-tile="snow"]   { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 4 / 5; }
+.canvas .love [data-tile="oyster"] { grid-column: 1; grid-row: auto; aspect-ratio: 3 / 4; }
+.canvas .love [data-tile="paint"]  { grid-column: 2; grid-row: auto; aspect-ratio: 3 / 4; }
+.canvas .love [data-tile="ball"]   { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 4 / 3; }
+
+.canvas .card--music .card__fig { max-width: 260px; }
+
+/* philosophy: the two essays one after the other */
+.canvas .found { grid-template-columns: 1fr; gap: 36px; }
+
+/* ============================================================
+   CASE STUDIES
+   ============================================================ */
+/* mid-fi "Final iteration" boards: the two phones side by side, then
+   their notes in a grid below at a readable size (the callout lines
+   only make sense in the wide layout) */
+.final-stage:not(.fp-stage) {
+  aspect-ratio: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 12px;
+  align-items: start;
+}
+.final-stage:not(.fp-stage) .final-p { position: static; width: 100%; }
+.final-stage:not(.fp-stage) .final-phone { margin-bottom: 6px; }
+.final-stage .final-lines { display: none; }
+
+/* final prototypes: each phone on its own, label above, play button
+   under it, its notes stacked below at full size */
+.fp-scroll { overflow: visible; }
+.fp-stage {
+  min-width: 0;
+  aspect-ratio: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  container-type: normal;
+}
+.fp-stage .final-p { position: static; width: auto; left: auto; top: auto; }
+.fp-stage .fp-label { margin-top: 8px; }
+.fp-stage .fp-label ~ .fp-label { margin-top: 48px; }
+.fp-stage .fp-phone { width: min(260px, 72vw); margin-top: 14px; }
+.fp-stage .fp-play { margin-top: 18px; margin-bottom: 8px; }
+.fp-stage .fp-note {
+  translate: none;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  font-size: 15px;
+  line-height: 1.45;
+  position: relative;
+}
+
+/* the same 20px gutter as the home and about pages */
+.hero:not(.hero--sign),
+.meta,
+.prompt,
+.research { padding-left: var(--m-gutter); padding-right: var(--m-gutter); }
+.meta__intro { max-width: none; }
+.sec-rule { width: calc(100% - 2 * var(--m-gutter)); }
+
+/* a case study whose hero is still an empty band (no picture yet) doesn't
+   need a whole screen of it */
+.hero:not(.hero--sign):not(:has(.hero__hand)) { height: 44vh; height: 44svh; min-height: 280px; }
+
+/* Role / Team / Timeline / Skills / Tools / Read time: two to a row */
+.meta__grid { grid-template-columns: 1fr 1fr; gap: 28px 16px; }
