@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta charset="utf-8">
+<!-- before the sizing script below: a phone only reports its real width once it has read this -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
   /* The boot animation measures where "Emerson.Lo" belongs on the
      landing page and flies the loader's copy there (a FLIP) — that
@@ -40,10 +43,9 @@
     }
     fit();
     window.addEventListener('resize', fit);
+    document.addEventListener('DOMContentLoaded', fit);   /* re-check once the page is in, in case the width settled late */
   })();
 </script>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Emerson Lo</title>
 <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="images/favicon.png" type="image/png" sizes="180x180">
@@ -150,7 +152,7 @@ a, button, .nv, .tile, [role="button"],
 /* ---- expanded rail ---- */
 
 .nav--open {
-  width: 196px;
+  width: 228px;
   align-items: flex-start;
   box-shadow: none;           /* no shadow — the right edge is just the 1px hairline */
 }
@@ -183,7 +185,7 @@ a, button, .nv, .tile, [role="button"],
   pointer-events: auto;
   transition: color .2s ease;
   white-space: normal;        /* long project names wrap instead of overflowing */
-  width: 148px;
+  width: 180px;
   line-height: 1.2;           /* tightened so two-line names clear each other */
 }
 
@@ -360,7 +362,7 @@ a, button, .nv, .tile, [role="button"],
 
 /* a full-width hairline between nav groups — a sibling of .nav__group
    rather than nested inside it, so 100% resolves against the rail's
-   own width (72px collapsed, 196px open) and runs edge to edge in
+   own width (72px collapsed, 228px open) and runs edge to edge in
    both states with no separate open/collapsed rule needed */
 .nav__sep {
   width: 100%;
@@ -495,7 +497,7 @@ a, button, .nv, .tile, [role="button"],
   font-weight: 500;
   line-height: 1.2;
   white-space: normal;
-  width: 148px;
+  width: 180px;
   opacity: 0;
   visibility: hidden;
   transition: opacity .15s ease, visibility 0s linear .15s;
@@ -601,7 +603,7 @@ a, button, .nv, .tile, [role="button"],
   transition: margin-left .3s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .main { margin-left: calc(196px * var(--unzoom, 1)); }
+.nav--open ~ .main { margin-left: calc(228px * var(--unzoom, 1)); }
 
 .hero {
   position: relative;
@@ -861,7 +863,7 @@ a, button, .nv, .tile, [role="button"],
   transition: left .3s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .foot { left: calc(196px * var(--unzoom, 1)); }
+.nav--open ~ .foot { left: calc(228px * var(--unzoom, 1)); }
 
 .foot__art {
   position: absolute;
@@ -997,7 +999,7 @@ html:not(.foot-live) .foot__track { animation-play-state: paused; }
   transition: margin-left .3s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .hero--sign { margin-left: calc(196px * var(--unzoom, 1)); }
+.nav--open ~ .hero--sign { margin-left: calc(228px * var(--unzoom, 1)); }
 
 /* nav--open is the resting default now (the rail ships expanded), so
    this can no longer pause only during the toggle's transition — it
@@ -1406,8 +1408,8 @@ body.is-booting .foot { opacity: 0; }
    reveals together with the rest of the hero's text */
 body.is-booting .row--name .note { opacity: 0; translate: 0 24px; }
 .row--name .note {
-  transition: opacity .55s cubic-bezier(.22,1,.36,1) .1s,
-              translate .55s cubic-bezier(.22,1,.36,1) .1s;
+  transition: opacity .55s cubic-bezier(.22,1,.36,1) .35s,
+              translate .55s cubic-bezier(.22,1,.36,1) .35s;   /* after the sword starts */
 }
 
 /* staggered rather than simultaneous: .metal is a cold first paint
@@ -1419,6 +1421,12 @@ body.is-booting .main  { transition: opacity .5s ease .18s; }
 body.is-booting .foot  { transition: opacity .5s ease .26s; }
 
 body.is-booting .row--sub { opacity: 0; translate: 0 24px; }
+
+/* the sword stays out of sight while the name travels in, then fades in the
+   moment the name lands, a beat ahead of the rest of the hero's text (whose
+   delays below start after it) */
+body.is-booting .sign__bg { opacity: 0; }
+.sign__bg { transition: opacity .7s cubic-bezier(.22,1,.36,1); }
 
 /* during the hand-off the page is coming in, but the real name stays
    hidden until the travelling one has landed on top of it */
@@ -1525,6 +1533,13 @@ body.is-handoff .row--name .big { visibility: hidden; }
   .col, .col > .tile { width: 100%; }
 }
 
+</style>
+<style>
+/* the nav names (projects and contacts) in Inter Medium, like the work
+   cards titles; the section labels and top links keep their own styles */
+@font-face { font-family: "Inter Medium"; font-weight: 500; font-display: swap; src: url("images/fonts/inter-500-latin.woff2") format("woff2"); }
+.nav__work .nv:not(.nv--hint) .nv__label,
+.nav__contact .nv:not(.nv--hint) .nv__label { font-family: "Inter Medium", var(--sans); font-weight: 500; }
 </style>
 <link rel="stylesheet" href="site-mobile.css" media="(max-width: 640px)">
 </head>
@@ -1643,7 +1658,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
 </nav>
 <script>
   /* phones start with the rail collapsed to its icon column — the open
-     196px rail would cover half the screen. Runs right after the nav is
+     228px rail would cover half the screen. Runs right after the nav is
      parsed, so it never flashes open. */
   (function () {
     if (!document.documentElement.classList.contains('is-phone')) return;
@@ -1688,7 +1703,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <p class="note note--r">Delivering user-centric experiences</p>
     </div>
 
-    <div class="row row--sub" style="--d:90ms">
+    <div class="row row--sub" style="--d:340ms">
       <span class="big roll" aria-label="Product designer">
         <span class="roll__track">
           <span class="roll__word">Product</span>
@@ -1701,7 +1716,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       <p class="note note--r">Los Angeles, California</p>
     </div>
 
-    <div class="row row--last row--sub" style="--d:170ms">
+    <div class="row row--last row--sub" style="--d:420ms">
       <span class="big">Designer</span>
       <p class="hero__status"><span class="hero__dot"></span> Open to new opportunities</p>
     </div>
@@ -2009,10 +2024,10 @@ body.is-handoff .row--name .big { visibility: hidden; }
     function freezeMetal() {
       if (!metal) return;
       clearTimeout(release);
-      /* closing widens the hero by the rail's difference (196 − 72), so
+      /* closing widens the hero by the rail's difference (228 − 72), so
          pin it at the wider, final size up front — that way no strip of
          the hero is ever left uncovered mid-slide */
-      var grow = nav.classList.contains('nav--open') ? 124 : 0;
+      var grow = nav.classList.contains('nav--open') ? 156 : 0;
       metal.style.left = 'auto';
       metal.style.width = (metal.offsetWidth + grow) + 'px';
       release = setTimeout(function () {
@@ -2038,7 +2053,7 @@ body.is-handoff .row--name .big { visibility: hidden; }
       sign.style.transition = 'none';
       sign.style.left = ''; sign.style.width = ''; sign.style.translate = ''; sign.style.scale = '';
       var W1 = sign.offsetWidth, H = sign.offsetHeight;
-      var W2 = W1 + (nav.classList.contains('nav--open') ? 124 : -124);
+      var W2 = W1 + (nav.classList.contains('nav--open') ? 156 : -156);
       var R = 2752 / 1536;
       var SHIFT = (parseFloat(getComputedStyle(sign).getPropertyValue('--sword-shift')) || 0) / 100;   /* the art's sideways shift, in widths */
       var A = -3 * Math.PI / 180, C = Math.cos(A) * 1.2, S = Math.sin(A) * 1.2;
@@ -2213,6 +2228,45 @@ body.is-handoff .row--name .big { visibility: hidden; }
 })();
 </script>
 <script>
+/* The hero's two rules (under "Emerson Lo", and under the rotating word) sit
+   level with the nav's two rules (under Resume, and above Contact), without
+   touching them. Each row keeps its own spacing above its rule; only where
+   the rows start, and the gap before the second row, change. The hero is
+   scaled to the window and the nav isn't, so this is measured, not set in
+   CSS. Runs before the boot sequence measures where the name lands. Phones
+   have the nav as a top bar, so the hero keeps its own layout there. */
+(function () {
+  var rows = document.querySelector('.hero--sign .rows');
+  var row1 = rows && rows.querySelector('.row--name');
+  var row2 = row1 && row1.nextElementSibling;
+  var seps = [].filter.call(document.querySelectorAll('.nav .nav__sep'), function (e) {
+    return !e.classList.contains('nav__sep--blank');
+  });
+  if (!rows || !row2 || seps.length < 2) return;
+  var phone = window.matchMedia('(max-width: 640px)');
+
+  function align() {
+    rows.style.justifyContent = rows.style.paddingTop = row2.style.marginTop = '';
+    if (phone.matches) return;
+    rows.style.justifyContent = 'flex-start';
+    rows.style.paddingTop = '0px';
+    var z = rows.getBoundingClientRect().width / (rows.offsetWidth || 1) || 1;   /* screen px per CSS px */
+    var top = rows.getBoundingClientRect().top - document.documentElement.getBoundingClientRect().top;
+    var a = seps[0].getBoundingClientRect().bottom;   /* the nav is fixed: these are page positions at the top */
+    var b = seps[1].getBoundingClientRect().bottom;
+    var pad = (a - top) / z - row1.offsetHeight;
+    var gap = (b - a) / z - row2.offsetHeight;
+    if (pad < 0 || gap < 0) { rows.style.justifyContent = rows.style.paddingTop = ''; return; }
+    rows.style.paddingTop = pad.toFixed(2) + 'px';
+    row2.style.marginTop = gap.toFixed(2) + 'px';
+  }
+  align();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(align);
+  window.addEventListener('load', align);
+  window.addEventListener('resize', align);
+})();
+</script>
+<script>
 /* ============================================================
    BOOT SEQUENCE — loading screen → landing page, one motion.
    ============================================================ */
@@ -2231,11 +2285,16 @@ body.is-handoff .row--name .big { visibility: hidden; }
 
   var EASE_REVEAL = 'cubic-bezier(.22,1,.36,1)';
   var EASE_TRAVEL = 'cubic-bezier(.65,0,.2,1)';
-  var SMALL_PX    = 32;      /* how large the name reads on the loader */
+  var PHONE       = window.innerWidth <= 640;
+  var SMALL_PX    = PHONE ? 40 : 32;   /* how large the name reads on the loader (bigger on phones) */
 
   function finish() {
     body.classList.remove('is-booting', 'is-handoff');
     if (boot) boot.remove();
+    /* everything sized against the window (the page scale, the sword, the
+       hero's height) re-measures now, so a phone whose width settled while
+       the intro played never needs a touch to straighten the page out */
+    window.dispatchEvent(new Event('resize'));
   }
 
   /* if anything stalls, never leave the visitor staring at a blank field */
@@ -2275,16 +2334,37 @@ body.is-handoff .row--name .big { visibility: hidden; }
     clip.style.paddingLeft   = padX + 'px';
     clip.style.paddingRight  = padX + 'px';
 
-    stage.style.left = (r.left - padX) + 'px';
-    stage.style.top  = (r.top - padTop) + 'px';
+    /* the page can be scaled down to fit the window (see <head>), so work out how
+       many screen pixels one CSS pixel is: the loader covers the screen exactly */
+    var screen = boot.getBoundingClientRect();
+    var z = screen.width / (boot.offsetWidth || screen.width) || 1;
+
+    stage.style.left = (r.left / z - padX) + 'px';
+    stage.style.top  = (r.top / z - padTop) + 'px';
 
     /* … then inversely transformed to sit small and centred (FLIP) */
-    var s  = Math.max(0.08, Math.min(0.4, SMALL_PX / fs));
-    var dx = (window.innerWidth  - r.width  * s) / 2 - r.left;
-    var dy = (window.innerHeight - r.height * s) / 2 - r.top;
-    var from = 'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px) scale(' + s.toFixed(4) + ')';
+    /* the loader name reads SMALL_PX on screen, whatever the hero size or page
+       scale (so a phone or tablet gets the same size as a laptop) */
+    var s = Math.max(0.08, Math.min(0.9, SMALL_PX / (fs * z)));
 
-    stage.style.transform = from;
+    /* first guess, then measure where the name really sits and nudge it onto the
+       screen's centre (padding for the glow, the page scale and the scrollbar
+       all shift it a little, differently on every device) */
+    var dx = 0, dy = 0, from;
+    function place() {
+      from = 'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px) scale(' + s.toFixed(4) + ')';
+      stage.style.transform = from;
+    }
+    place();
+    for (var i = 0; i < 2; i++) {
+      var cr = clip.getBoundingClientRect();
+      var k  = cr.width / clip.offsetWidth;          /* on-screen pixels per word pixel */
+      var cx = cr.left + (padX   + word.offsetWidth  / 2) * k;
+      var cy = cr.top  + (padTop + word.offsetHeight / 2) * k;
+      dx += (screen.left + screen.width  / 2 - cx) / z;
+      dy += (screen.top  + screen.height / 2 - cy) / z;
+      place();
+    }
 
     requestAnimationFrame(function () {
       /* 1 — the name is masked in from below */

@@ -39,8 +39,8 @@
 .nav .nav__mark,
 .nav.nav--open .nav__mark,
 .nav:not(.nav--open) .nav__mark {
-  width: 46px;
-  height: 34px;
+  width: 54px;
+  height: 40px;
   margin: 0;
   transition: none;
 }
@@ -63,7 +63,7 @@
           mask: var(--menu-ic) center / contain no-repeat;
 }
 .nav { --menu-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M1 7.5h20M1 14.5h20' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E"); }
-.nav.nav--sheet { --menu-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M4 4l14 14M18 4L4 18' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.nav.nav--sheet { --menu-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 12H5M11 6l-6 6 6 6' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
 .nav-tip { display: none !important; }
 
 /* ---- the sheet ---- */
@@ -81,7 +81,7 @@
 }
 .nav.nav--sheet > * { display: flex; }
 .nav.nav--sheet > .nav__top { display: none; }
-.nav.nav--sheet .nav__mark { flex: none; margin: 11px 0 0 var(--m-gutter); display: grid; }
+.nav.nav--sheet .nav__mark { flex: none; margin: 8px 0 0 var(--m-gutter); display: grid; }
 .nav.nav--sheet .nav__toggle { display: grid; position: absolute; top: 6px; right: calc(var(--m-gutter) - 12px); }
 
 /* the groups: one left edge, roomy rows that are easy to tap */
@@ -92,8 +92,8 @@
   padding: 0 var(--m-gutter);
 }
 .nav.nav--sheet .nav__links { margin-top: 36px; gap: 6px; }
-.nav.nav--sheet .nav__sep { width: auto; margin: 22px var(--m-gutter); }
-.nav.nav--sheet .nav__sep--blank { margin: 10px var(--m-gutter); }
+.nav.nav--sheet .nav__sep { width: 100%; margin: 22px 0; }   /* edge to edge, as on the desktop rail */
+.nav.nav--sheet .nav__sep--blank { margin: 10px 0; }
 .nav.nav--sheet .nav__work,
 .nav.nav--sheet .nav__contact { gap: 2px; }
 
@@ -186,7 +186,7 @@ html:has(.canvas), html:has(.canvas) body { overflow-x: hidden; overflow-y: visi
   user-select: auto;
   -webkit-user-select: auto;
   padding: calc(var(--bar-h) + 36px) var(--m-gutter) 64px;
-  background: #F1F1EF;
+  background: var(--paper, #FFFFFF);
   overflow-x: clip;             /* the fog behind each section reaches past the edges */
 }
 .canvas .world,
@@ -216,7 +216,7 @@ html:has(.canvas), html:has(.canvas) body { overflow-x: hidden; overflow-y: visi
 /* the name: greeting, name, line, then the portrait under them */
 .canvas .card--name { display: block; }
 .canvas .name { display: block; }
-.canvas .name__word { display: block; font-size: clamp(64px, 21vw, 96px); background-size: 100% 100%; width: max-content; max-width: 100%; }
+.canvas .name__word { display: block; font-size: clamp(56px, 18vw, 84px); width: max-content; max-width: 100%; }
 .canvas .name__hello { margin: 0 0 4px 2px; font-size: 18px; }
 .canvas .name__tag { margin-top: 18px; max-width: none; font-size: 19px; }
 .canvas .name__pic { position: relative; margin: 28px 0 0; aspect-ratio: 4 / 5; }
@@ -234,28 +234,38 @@ html:has(.canvas), html:has(.canvas) body { overflow-x: hidden; overflow-y: visi
 .canvas .card__lede { font-size: 21px; }
 
 .canvas .card__copy { font-size: 16px; }
-.canvas .card--info .card__fig { max-width: 300px; }
+.canvas .card--info .card__fig { max-width: none; }   /* the picture spans the text's full width */
 
-/* travel: the lists side by side, then the photos (tall one, then the pair) */
-.canvas .trips { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
-.canvas .trips > .card__eyebrow { grid-column: 1 / -1; }
-.canvas .trips__group + .trips__group { margin-top: 0; }
-.canvas .travel { grid-template-columns: 1fr 1fr; gap: 10px; }
-.canvas .travel__main { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 4 / 5; }
+/* travel: the bucket list with Athens beside it, then Shibuya and Lisbon
+   side by side under both */
+.canvas .card--travel .card__split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  column-gap: 12px;
+  align-items: start;
+}
+.canvas .card--travel .travel { display: contents; }
+.canvas .card--travel .trips { grid-column: 1; grid-row: 1; }
+.canvas .card--travel .travel__main { grid-column: 2; grid-row: 1; aspect-ratio: 4 / 5; }
+.canvas .card--travel .travel > .card__fig:nth-child(2) { grid-column: 1; grid-row: 2; }
+.canvas .card--travel .travel > .card__fig:nth-child(3) { grid-column: 2; grid-row: 2; }
 
-/* things I love: the bento shrinks to the screen, same arrangement */
+/* things I love: snowboarding across the top, oysters and paintings side by
+   side, basketball across the bottom (rows set outright, so a full-width
+   tile can't push paintings onto a row of its own) */
 .canvas .love {
   width: auto;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto;
   gap: 8px;
 }
-.canvas .love [data-tile="snow"]   { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 4 / 5; }
-.canvas .love [data-tile="oyster"] { grid-column: 1; grid-row: auto; aspect-ratio: 3 / 4; }
-.canvas .love [data-tile="paint"]  { grid-column: 2; grid-row: auto; aspect-ratio: 3 / 4; }
-.canvas .love [data-tile="ball"]   { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 4 / 3; }
+.canvas .love [data-tile="snow"]   { grid-column: 1 / -1; grid-row: 1; aspect-ratio: 4 / 5; }
+.canvas .love [data-tile="oyster"] { grid-column: 1; grid-row: 2; aspect-ratio: 3 / 4; }
+.canvas .love [data-tile="paint"]  { grid-column: 2; grid-row: 2; aspect-ratio: 3 / 4; }
+.canvas .love [data-tile="ball"]   { grid-column: 1 / -1; grid-row: 3; aspect-ratio: 4 / 3; }
 
-.canvas .card--music .card__fig { max-width: 260px; }
+.canvas .card--music .card__fig { max-width: 260px; margin: 0 auto; }   /* centred under its heading */
 
 /* philosophy: the two essays one after the other */
 .canvas .found { grid-template-columns: 1fr; gap: 36px; }
@@ -318,3 +328,89 @@ html:has(.canvas), html:has(.canvas) body { overflow-x: hidden; overflow-y: visi
 
 /* Role / Team / Timeline / Skills / Tools / Read time: two to a row */
 .meta__grid { grid-template-columns: 1fr 1fr; gap: 28px 16px; }
+
+/* ============================================================
+   HOME: the work cards in one column, in this order:
+   HackDavis, Pikspot, JVMC, Bitewise, JASS, then Next Project.
+   The three desktop columns dissolve so the cards can be ordered
+   one by one.
+   ============================================================ */
+.grid { display: flex; flex-direction: column; }
+.grid > .col { display: contents; }
+.grid #hackdavis   { order: 1; }
+.grid #pikspot     { order: 2; }
+.grid #jvmc        { order: 3; }
+.grid #bitewise    { order: 4; }
+.grid #jass        { order: 5; }
+.grid .tile--soon  { order: 6; }
+
+/* ============================================================
+   ABOUT: the home page's footer, closing the stacked page.
+   Same look as the home footer at this width; it simply sits at
+   the end of the page instead of being uncovered.
+   ============================================================ */
+.foot--about {
+  display: block;
+  padding: 0 var(--m-gutter) 38px;
+  background: var(--paper, #fff);
+  color: var(--gray);
+}
+.foot--about .foot__ex { padding-top: 26px; }
+.foot--about .foot__label {
+  margin: 0 0 22px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.foot--about .foot__strip {
+  container-type: inline-size;
+  padding: 2px 0 4px;
+  margin-right: calc(-1 * var(--m-gutter));
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
+}
+.foot--about .foot__track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  will-change: transform;
+  animation: about-foot-drift var(--foot-dur, 60s) linear infinite;
+}
+@keyframes about-foot-drift {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+.foot--about .foot__item { flex: none; display: flex; align-items: center; gap: clamp(8px, 1cqw, 14px); margin-right: clamp(24px, 2.8cqw, 42px); }
+.foot--about .foot__title {
+  font-family: "Inter Medium", var(--sans);
+  font-size: clamp(16px, 2.5cqw, 32px);
+  font-weight: 500;
+  letter-spacing: -.025em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.foot--about .foot__thumb { flex: none; height: clamp(34px, 5cqw, 64px); aspect-ratio: var(--r, 1.3); overflow: hidden; background: #ECECEA; }
+.foot--about .foot__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.foot--about .foot__base {
+  margin-top: 48px;
+  padding-top: 22px;
+  border-top: 1px solid var(--hair);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+@media (prefers-reduced-motion: reduce) { .foot--about .foot__track { animation: none; } }
+
+/* ============================================================
+   HOME HERO: a bigger headline, and the sword moved right so the
+   blade stands clear of the text
+   ============================================================ */
+.big { font-size: clamp(44px, 13.5vw, 72px); }
+.sword__stage { left: calc((100cqw - var(--w)) * var(--sword-x, .5)); }

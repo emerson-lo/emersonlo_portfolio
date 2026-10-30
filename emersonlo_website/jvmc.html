@@ -106,7 +106,7 @@ a, button, .nv, [role="button"],
 /* ---- expanded rail ---- */
 
 .nav--open {
-  width: 196px;
+  width: 228px;
   align-items: flex-start;
   box-shadow: none;           /* no shadow — the right edge is just the 1px hairline */
 }
@@ -139,7 +139,7 @@ a, button, .nv, [role="button"],
   pointer-events: auto;
   transition: color .2s ease;
   white-space: normal;        /* long project names wrap instead of overflowing */
-  width: 148px;
+  width: 180px;
   line-height: 1.2;           /* tightened so two-line names clear each other */
 }
 
@@ -316,7 +316,7 @@ a, button, .nv, [role="button"],
 
 /* a full-width hairline between nav groups — a sibling of .nav__group
    rather than nested inside it, so 100% resolves against the rail's
-   own width (72px collapsed, 196px open) and runs edge to edge in
+   own width (72px collapsed, 228px open) and runs edge to edge in
    both states with no separate open/collapsed rule needed */
 .nav__sep {
   width: 100%;
@@ -452,7 +452,7 @@ a, button, .nv, [role="button"],
   font-weight: 500;
   line-height: 1.2;
   white-space: normal;
-  width: 148px;
+  width: 180px;
   opacity: 0;
   visibility: hidden;
   transition: opacity .15s ease, visibility 0s linear .15s;
@@ -511,7 +511,7 @@ a, button, .nv, [role="button"],
   transition: margin-left .5s cubic-bezier(.22,1,.36,1);
 }
 
-.nav--open ~ .main { margin-left: 196px; }
+.nav--open ~ .main { margin-left: 228px; }
 
 .hero {
   position: relative;
@@ -2225,7 +2225,7 @@ a, button, .nv, [role="button"],
   color: var(--gray);
   transition: color .2s ease, background .2s ease, left .5s cubic-bezier(.22,1,.36,1);
 }
-.nav--open ~ .page-back { left: calc(196px + clamp(18px, 2.2vw, 28px)); }
+.nav--open ~ .page-back { left: calc(228px + clamp(18px, 2.2vw, 28px)); }
 .page-back:hover { color: var(--ink); background: rgba(35,38,31,.05); }
 .page-back svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -2304,6 +2304,13 @@ a, button, .nv, [role="button"],
 /* ---- this page: the hero band is a placeholder until its artwork is chosen ---- */
 .hero__bg { background: linear-gradient(180deg, rgba(171,220,207,.38) 0%, #fff 55%, #F3F3F1 100%); }
 .main .placeholder { color: var(--gray-soft); }   /* "to come" text, until the real copy is in */
+</style>
+<style>
+/* the nav names (projects and contacts) in Inter Medium, like the work
+   cards titles; the section labels and top links keep their own styles */
+@font-face { font-family: "Inter Medium"; font-weight: 500; font-display: swap; src: url("images/fonts/inter-500-latin.woff2") format("woff2"); }
+.nav__work .nv:not(.nv--hint) .nv__label,
+.nav__contact .nv:not(.nv--hint) .nv__label { font-family: "Inter Medium", var(--sans); font-weight: 500; }
 </style>
 <link rel="stylesheet" href="site-mobile.css" media="(max-width: 640px)">
 </head>

@@ -27,7 +27,7 @@
   --hair: #E6E6E2;
   --rule: #CACAC5;          /* the line above each section, a step darker than --hair */
   --paper: #FFFFFF;
-  --nav-w: 72px;           /* the rail collapsed; 196px open, as on the home page */
+  --nav-w: 72px;           /* the rail collapsed; 228px open, as on the home page */
 
   --sans: Inter, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   --serif: "Merriweather", "Times New Roman", serif;
@@ -70,7 +70,7 @@ body {
 /* ---- expanded rail ---- */
 
 .nav--open {
-  width: 196px;
+  width: 228px;
   align-items: flex-start;
   box-shadow: none;           /* no shadow — the right edge is just the 1px hairline */
 }
@@ -103,7 +103,7 @@ body {
   pointer-events: auto;
   transition: color .2s ease;
   white-space: normal;        /* long project names wrap instead of overflowing */
-  width: 148px;
+  width: 180px;
   line-height: 1.2;           /* tightened so two-line names clear each other */
 }
 
@@ -280,7 +280,7 @@ body {
 
 /* a full-width hairline between nav groups — a sibling of .nav__group
    rather than nested inside it, so 100% resolves against the rail's
-   own width (72px collapsed, 196px open) and runs edge to edge in
+   own width (72px collapsed, 228px open) and runs edge to edge in
    both states with no separate open/collapsed rule needed */
 .nav__sep {
   width: 100%;
@@ -415,7 +415,7 @@ body {
   font-weight: 500;
   line-height: 1.2;
   white-space: normal;
-  width: 148px;
+  width: 180px;
   opacity: 0;
   visibility: hidden;
   transition: opacity .15s ease, visibility 0s linear .15s;
@@ -535,10 +535,10 @@ html, body { overflow: hidden; height: 100%; }
   user-select: none;
   -webkit-user-select: none;
   outline: none;
-  background: #F1F1EF;           /* pale, so the white fog around each card shows */
+  background: var(--paper, #FFFFFF);   /* the home page's white */
   transition: left .3s cubic-bezier(.22,1,.36,1);
 }
-.nav--open ~ .canvas { left: 196px; }
+.nav--open ~ .canvas { left: 228px; }
 .canvas.is-dragging { cursor: grabbing; }
 
 .world { position: absolute; left: 0; top: 0; }
@@ -664,18 +664,16 @@ html, body { overflow: hidden; height: 100%; }
   align-items: center;
 }
 .name { display: contents; margin: 0; }
+/* set like the home page's "Emerson Lo": Sentient, the same grey, the same soft glow */
 .name__word {
-  font-family: "Inter Medium", var(--sans);
-  font-weight: 500;
+  font-family: var(--mark);
+  font-weight: 400;
   font-size: 176px;
   line-height: .9;
-  letter-spacing: -.045em;
-  padding-bottom: .1em;              /* keeps the gradient-filled letters from clipping at the foot */
-  /* one gradient across the whole name: each word shows its slice of it */
-  background: linear-gradient(105deg, #A6A9A5 0%, #7C7F7B 45%, #4E514D 100%) 0 0 / 700px 100% no-repeat;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  letter-spacing: .005em;
+  padding-bottom: .1em;
+  color: #6E716C;
+  text-shadow: 0 0 18px rgba(110,113,108,.45);
 }
 /* the landing: the name, then the portrait. The portrait is as tall as both
    lines of the name and centred on them, a little apart from the name; it
@@ -868,6 +866,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
 }
 .canvas__hint svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .canvas.has-moved .canvas__hint { opacity: 0; }
+.foot--about { display: none; }   /* phones only: see site-mobile.css */
 
 /* the landing is all that shows when the page opens: the other sections
    wait out of sight (and, on very large screens where the clear zone around
@@ -876,6 +875,13 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
 .canvas .card:not(.card--name) { transition: opacity .9s ease; }
 .canvas:not(.has-moved) .card:not(.card--name) { opacity: 0; }
 
+</style>
+<style>
+/* the nav names (projects and contacts) in Inter Medium, like the work
+   cards titles; the section labels and top links keep their own styles */
+@font-face { font-family: "Inter Medium"; font-weight: 500; font-display: swap; src: url("images/fonts/inter-500-latin.woff2") format("woff2"); }
+.nav__work .nv:not(.nv--hint) .nv__label,
+.nav__contact .nv:not(.nv--hint) .nv__label { font-family: "Inter Medium", var(--sans); font-weight: 500; }
 </style>
 <link rel="stylesheet" href="site-mobile.css" media="(max-width: 640px)">
 </head>
@@ -1003,11 +1009,11 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
         <div class="found">
           <div class="found__item">
             <h3 class="found__title">Cultivated Intuition</h3>
-            <p class="card__copy">I believe that strong design intuition is developed through a diverse, interdisciplinary exploration of the world around us. Traveling, absorbing new environments, and experiencing different cultures profoundly shape how the human brain perceives, understands, and ultimately produces design. Beyond screens and interfaces, observing how things look, feel, and function in the physical world helps me develop a deeper cognitive intuition for what feels right. I&rsquo;m not afraid of trying new things, always strive toward being &lsquo;best-in-class&rsquo;, and always strive to be curious about the unknown.</p>
+            <p class="card__copy">I believe that strong design intuition is developed through a interdisciplinary exploration of the world around us. Traveling, absorbing new environments, and experiencing different cultures profoundly shape how the human brain perceives, understands, and ultimately produces design. Beyond screens and interfaces, observing how things look, feel, and function in the physical world helps me develop a deeper intuition for what feels right. I&rsquo;m not afraid of trying new things, and I always strive to be curious about the unknown.</p>
           </div>
           <div class="found__item">
             <h3 class="found__title">Intelligent Interfaces</h3>
-            <p class="card__copy">The future of personal computing is astounding to me as our interfaces seamlessly blend with and understand our daily intentions. As artificial intelligence advances, I believe it will fundamentally elevate technology from a static tool into a proactive, adaptive partner. This shift transforms design by allowing us to craft highly personalized experiences that anticipate user needs rather than just reacting to them. Ultimately, I am curious about how AI can help us interact more fluidly with the physical world, making complex technology feel completely natural and invisible.</p>
+            <p class="card__copy">I&rsquo;m fascinated by the future. Our interfaces are starting to blend seamlessly into our days and understand what we mean to do. As artificial intelligence advances, I believe it will fundamentally elevate technology from a static tool into a proactive, adaptive partner. This shift transforms design by allowing us to craft highly personalized experiences that anticipate user needs rather than just reacting to them. Ultimately, I am curious about how AI can help us interact more fluidly with the physical world, making complex technology feel completely natural and invisible.</p>
           </div>
         </div>
       </article>
@@ -1044,6 +1050,43 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
 
   <p class="canvas__hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg>Scroll or drag to move</p>
 </main>
+
+<!-- phones only: the about page ends as a scrolling list, so it closes with the
+     same footer as the home page (the desktop canvas has no end, so it's hidden there) -->
+<footer class="foot foot--about">
+  <div class="foot__ex">
+    <p class="foot__label">Exploration</p>
+    <div class="foot__strip">
+      <ul class="foot__track">
+        <li class="foot__item"><span class="foot__title">Cognitive Heuristics</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/cognitive-heuristics.webp" alt="" loading="lazy" decoding="async"></span></li>
+        <li class="foot__item"><span class="foot__title">Bucolic</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/bucolic.webp" alt="" loading="lazy" decoding="async"></span></li>
+        <li class="foot__item"><span class="foot__title">Ergonomics</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/ergonomics.webp" alt="" loading="lazy" decoding="async"></span></li>
+        <li class="foot__item"><span class="foot__title">Game Art</span><span class="foot__thumb" style="--r:1.778" aria-hidden="true"><img src="images/thumbs/game-art.webp" alt="" loading="lazy" decoding="async"></span></li>
+        <li class="foot__item"><span class="foot__title">Watch Craft</span><span class="foot__thumb" style="--r:1.526" aria-hidden="true"><img src="images/thumbs/watch-craft.webp" alt="" loading="lazy" decoding="async"></span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot__base">
+    <span>Emerson Lo</span>
+    <span>&copy; 2026</span>
+  </div>
+</footer>
+<script>
+  /* the footer's Exploration row drifts and loops, as on the home page: the
+     list is copied once so the loop has no seam, at about 40px a second */
+  (function () {
+    var track = document.querySelector('.foot--about .foot__track');
+    if (!track) return;
+    [].slice.call(track.children).forEach(function (li) {
+      var c = li.cloneNode(true);
+      c.setAttribute('aria-hidden', 'true');
+      track.appendChild(c);
+    });
+    function speed() { track.style.setProperty('--foot-dur', Math.max(20, track.scrollWidth / 2 / 40).toFixed(1) + 's'); }
+    speed();
+    window.addEventListener('resize', speed);
+  })();
+</script>
 
 <script>
   /* the rail's toggle — same behaviour as the home page */
