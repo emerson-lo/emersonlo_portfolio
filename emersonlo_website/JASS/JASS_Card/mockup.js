@@ -113,53 +113,59 @@
     lift = 0,
     press = 0
   }) {
-    return /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: w,
-        height: h,
-        borderRadius: 15,
-        background: '#fff',
-        boxShadow: lift ? `0 ${5 + 14 * lift}px ${50 + 20 * lift}px rgba(44,56,104,${0.06 + 0.1 * lift})` : SH,
-        padding: 16 * fs,
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16 * fs,
-        transform: `translateY(${-10 * lift}px)`
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        height: imgH,
-        borderRadius: 10,
-        overflow: 'hidden',
-        flexShrink: 0
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: '100%',
-        height: '100%',
-        background: `url(${e.img}) center / cover`,
-        transform: `scale(${1 + 0.05 * lift})`
-      }
-    })), /*#__PURE__*/React.createElement("span", {
-      style: g(32 * fs, 700, NAVY)
-    }, e.title), /*#__PURE__*/React.createElement("span", {
-      style: g(18 * fs * (fs < 1 ? 1.25 : 1), 400, INK, {
-        lineHeight: 1.5
-      })
-    }, e.body), fs === 1 && /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginTop: 'auto',
-        alignSelf: 'flex-start'
-      }
-    }, /*#__PURE__*/React.createElement(Pill, {
-      size: 18,
-      pad: "12px 56px",
-      bg: YEL,
-      color: "rgb(20,21,20)",
-      font: HEL,
-      press: press
-    }, "RSVP")));
+    return (
+      /*#__PURE__*/
+      /* the height is a minimum: a title that wraps to two lines (Service & Social
+         Events) grows its card, and the row stretches the others to match, so the
+         RSVP button always sits inside the card, level across all three */
+      React.createElement("div", {
+        style: {
+          width: w,
+          minHeight: h,
+          borderRadius: 15,
+          background: '#fff',
+          boxShadow: lift ? `0 ${5 + 14 * lift}px ${50 + 20 * lift}px rgba(44,56,104,${0.06 + 0.1 * lift})` : SH,
+          padding: 16 * fs,
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16 * fs,
+          transform: `translateY(${-10 * lift}px)`
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          height: imgH,
+          borderRadius: 10,
+          overflow: 'hidden',
+          flexShrink: 0
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          width: '100%',
+          height: '100%',
+          background: `url(${e.img}) center / cover`,
+          transform: `scale(${1 + 0.05 * lift})`
+        }
+      })), /*#__PURE__*/React.createElement("span", {
+        style: g(32 * fs, 700, NAVY)
+      }, e.title), /*#__PURE__*/React.createElement("span", {
+        style: g(18 * fs * (fs < 1 ? 1.25 : 1), 400, INK, {
+          lineHeight: 1.5
+        })
+      }, e.body), fs === 1 && /*#__PURE__*/React.createElement("div", {
+        style: {
+          marginTop: 'auto',
+          alignSelf: 'flex-start'
+        }
+      }, /*#__PURE__*/React.createElement(Pill, {
+        size: 18,
+        pad: "12px 56px",
+        bg: YEL,
+        color: "rgb(20,21,20)",
+        font: HEL,
+        press: press
+      }, "RSVP")))
+    );
   }
   function Footer({
     w,

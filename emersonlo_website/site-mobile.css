@@ -124,11 +124,11 @@
 }
 .nav.nav--sheet .nv__br { display: none; }
 .nav.nav--sheet .nav__links .nv { min-height: 48px; }
-.nav.nav--sheet .nav__links .nv__label {
-  font-size: 30px;
-  letter-spacing: -.02em;
-  color: var(--ink);
-  -webkit-text-stroke: .35px currentColor;
+/* set like the hero's headline (the font, grey and glow come from each page) */
+html .nav.nav--sheet .nav__links .nv .nv__label {
+  font-size: 32px;
+  letter-spacing: .005em;
+  text-shadow: 0 0 9px rgba(110,113,108,.32);
 }
 .nav.nav--sheet .nav__links svg,
 .nav.nav--sheet .nv--hint svg { display: none; }

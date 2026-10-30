@@ -214,11 +214,14 @@ function DetailScreen({ scroll, liked }) {
   );
 }
 
+// every pin stands on land, as in the final prototype's map: the south end of
+// the Golden Gate (the one tapped), the Presidio, Lands End, Sausalito and
+// the city itself. None sit out on the bay.
 const MARKERS = [
   { x: 196, y: 372, img: 'card-assets/m3.jpg', n: 24 },
-  { x: 262, y: 318, img: 'card-assets/m1.jpg', n: 9 },
-  { x: 118, y: 430, img: 'card-assets/m4.jpg', n: 6 },
-  { x: 300, y: 210, img: 'card-assets/ev3.jpg', n: 3 },
+  { x: 268, y: 423, img: 'card-assets/m1.jpg', n: 9 },
+  { x: 118, y: 507, img: 'card-assets/m4.jpg', n: 6 },
+  { x: 160, y: 206, img: 'card-assets/ev3.jpg', n: 3 },
   { x: 318, y: 530, img: 'card-assets/ladies.jpg', n: 12 },
 ];
 

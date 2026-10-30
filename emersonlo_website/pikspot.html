@@ -2413,6 +2413,16 @@ a, button, .nv, [role="button"],
 @font-face { font-family: "Inter Medium"; font-weight: 500; font-display: swap; src: url("images/fonts/inter-500-latin.woff2") format("woff2"); }
 .nav__work .nv:not(.nv--hint) .nv__label,
 .nav__contact .nv:not(.nv--hint) .nv__label { font-family: "Inter Medium", var(--sans); font-weight: 500; }
+/* About / Ideas / Resume: set like the hero's headline (Sentient, its grey and
+   its soft glow; the glow's blur scaled to this size) */
+html .nav .nav__links .nv .nv__label {
+  font-family: var(--mark);
+  font-weight: 400;
+  -webkit-text-stroke: 0;
+  color: var(--ink);   /* black, like the rest of the nav's top links before */
+  text-shadow: 0 0 6px rgba(110,113,108,.32);   /* a lighter glow than the hero's */
+}
+html .nav .nav__links .nv .nv__label:hover { color: #9A9D99; }
 </style>
 <link rel="stylesheet" href="site-mobile.css" media="(max-width: 640px)">
 </head>

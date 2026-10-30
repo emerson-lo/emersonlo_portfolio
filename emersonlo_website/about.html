@@ -882,6 +882,16 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
 @font-face { font-family: "Inter Medium"; font-weight: 500; font-display: swap; src: url("images/fonts/inter-500-latin.woff2") format("woff2"); }
 .nav__work .nv:not(.nv--hint) .nv__label,
 .nav__contact .nv:not(.nv--hint) .nv__label { font-family: "Inter Medium", var(--sans); font-weight: 500; }
+/* About / Ideas / Resume: set like the hero's headline (Sentient, its grey and
+   its soft glow; the glow's blur scaled to this size) */
+html .nav .nav__links .nv .nv__label {
+  font-family: var(--mark);
+  font-weight: 400;
+  -webkit-text-stroke: 0;
+  color: var(--ink);   /* black, like the rest of the nav's top links before */
+  text-shadow: 0 0 6px rgba(110,113,108,.32);   /* a lighter glow than the hero's */
+}
+html .nav .nav__links .nv .nv__label:hover { color: #9A9D99; }
 </style>
 <link rel="stylesheet" href="site-mobile.css" media="(max-width: 640px)">
 </head>
@@ -966,7 +976,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
             <p class="card__eyebrow">Info</p>
             <p class="card__lede">I&rsquo;m a product designer<br>based in Los Angeles, California.</p>
             <p class="card__copy">My interest in design and craft started early. Growing up, I took classes in ceramics, silkscreen printing, photography and video editing at ArtCenter College of Design and the Armory Center for the Arts in Pasadena. That&rsquo;s where I first began exploring art, and where I fell in love with making things by hand.</p>
-            <p class="card__copy">At UC Davis, I kept following that pull toward creativity and design, and found something new alongside it: a fascination with how people think, perceive and interact with the things around them, especially in digital spaces. As technology keeps evolving, I want to build intuitive products that are both functional and beautiful, that improve people&rsquo;s lives, and that make the time we spend with screens feel more humane.</p>
+            <p class="card__copy">At UC Davis, I kept following that pull toward creativity and design, and found something new alongside it: a fascination with how people think, perceive and interact with elements around them, especially in digital spaces. As technology keeps evolving, I want to build intuitive products that are both functional and beautiful, that improve people&rsquo;s lives, and that make the time we spend with screens feel more humane.</p>
           </div>
           <figure class="card__fig"><img src="images/about/info-lacma.jpg" width="755" height="1000" alt="Me in a hoodie among the lit lamp posts of Urban Light at LACMA" style="--ar:4/5;object-position:50% 40%" loading="lazy" decoding="async"></figure>
         </div>
@@ -1013,7 +1023,7 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
           </div>
           <div class="found__item">
             <h3 class="found__title">Intelligent Interfaces</h3>
-            <p class="card__copy">I&rsquo;m fascinated by the future. Our interfaces are starting to blend seamlessly into our days and understand what we mean to do. As artificial intelligence advances, I believe it will fundamentally elevate technology from a static tool into a proactive, adaptive partner. This shift transforms design by allowing us to craft highly personalized experiences that anticipate user needs rather than just reacting to them. Ultimately, I am curious about how AI can help us interact more fluidly with the physical world, making complex technology feel completely natural and invisible.</p>
+            <p class="card__copy">I&rsquo;m fascinated by the future. Our interfaces are starting to blend into our days. As artificial intelligence advances, I believe it will fundamentally elevate technology from a static tool into a proactive, adaptive partner. This shift transforms design by allowing us to craft highly personalized experiences that anticipate user needs rather than just reacting to them. Ultimately, I am curious about how AI can help us interact more fluidly with the physical world, making complex technology feel completely natural and invisible.</p>
           </div>
         </div>
       </article>

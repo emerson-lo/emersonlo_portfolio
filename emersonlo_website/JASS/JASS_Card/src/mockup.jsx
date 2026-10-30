@@ -47,7 +47,10 @@ const Pill = ({ children, size = 24, pad = '12px 24px', bg = PINK, color = NAVY,
 
 function EventCard({ e, w, h, imgH, fs, lift = 0, press = 0 }) {
   return (
-    <div style={{ width: w, height: h, borderRadius: 15, background: '#fff', boxShadow: lift ? `0 ${5 + 14 * lift}px ${50 + 20 * lift}px rgba(44,56,104,${0.06 + 0.1 * lift})` : SH, padding: 16 * fs, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 16 * fs, transform: `translateY(${-10 * lift}px)` }}>
+    /* the height is a minimum: a title that wraps to two lines (Service & Social
+       Events) grows its card, and the row stretches the others to match, so the
+       RSVP button always sits inside the card, level across all three */
+    <div style={{ width: w, minHeight: h, borderRadius: 15, background: '#fff', boxShadow: lift ? `0 ${5 + 14 * lift}px ${50 + 20 * lift}px rgba(44,56,104,${0.06 + 0.1 * lift})` : SH, padding: 16 * fs, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 16 * fs, transform: `translateY(${-10 * lift}px)` }}>
       <div style={{ height: imgH, borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
         <div style={{ width: '100%', height: '100%', background: `url(${e.img}) center / cover`, transform: `scale(${1 + 0.05 * lift})` }} />
       </div>
