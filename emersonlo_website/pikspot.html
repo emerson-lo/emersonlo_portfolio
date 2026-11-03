@@ -1268,8 +1268,22 @@ a, button, .nv, [role="button"],
   .pin-board > .pin-col { width: auto; }
 }
 
-@media (max-width: 520px) {
-  .pin-board { grid-template-columns: 1fr; }
+/* phones: the notes run small in three columns, so several show at once */
+@media (max-width: 640px) {
+  .pin-board { display: block; columns: 3; column-gap: 0; margin: 0 -6px; }
+  .pin-board > .pin-col { display: contents; }
+  .sticky { break-inside: avoid; }
+
+  /* the survey pages: sized from the screen width rather than container units,
+     which some phone browsers mishandle (the back page grew very tall and ran
+     over the text below). 64% of the text column, at the form's own proportions */
+  .survey__cards { --cw: calc((100vw - 2 * var(--m-gutter, 20px)) * .64); }
+  .survey__card.gf {
+    width: var(--cw);
+    height: calc(var(--cw) * 825 / 649);
+    aspect-ratio: auto;
+    --u: calc(var(--cw) / 430);
+  }
 }
 
 /* --- entrance, matching the landing page's restraint --- */

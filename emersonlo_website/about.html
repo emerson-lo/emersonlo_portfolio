@@ -731,6 +731,7 @@ html, body { overflow: hidden; height: 100%; }
   letter-spacing: -.01em;
   color: var(--ink);
 }
+.card__place { color: #A2A5A1; }   /* the same grey as Education's "College of Letters and Science" */
 .card__list {
   margin: 0;
   padding: 0;
@@ -791,15 +792,15 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
 .trips__list { margin: 0; padding: 0; list-style: none; font-size: 15px; line-height: 1.6; color: var(--ink); }
 .trips__list--next { color: var(--ink-soft); }
 /* one tall photo on the left; two stacked on the right, together as tall as it */
-.travel { display: grid; grid-template-columns: 327px 285px; gap: 32px; }   /* sized so the photos end level with the last place in the lists */
+.travel { display: grid; grid-template-columns: 327px 285px; gap: 32px; margin-top: 46px; }   /* starts level with "Bucket list", below the eyebrow */
 .travel__main { grid-row: span 2; position: relative; }
 .travel__main img { position: absolute; top: 0; left: 0; height: 100%; }
-/* captions sit inside each photo, bottom left, where it has faded into the fog */
 .travel .card__fig { position: relative; }
-.travel .card__fig figcaption, .love .card__fig figcaption {
+/* Things I love: captions sit inside each photo, bottom left, all in the same colour */
+.love .card__fig figcaption {
   position: absolute; left: 16px; right: auto; bottom: 14px; margin: 0; padding: 0;
   font-size: 13px; color: var(--ink);
-  background: none; text-shadow: 0 0 10px rgba(255,255,255,.9);
+  background: none; text-shadow: 0 0 2px #fff, 0 0 6px #fff, 0 0 12px rgba(255,255,255,.9);   /* a white glow keeps the dark text readable on the darker photos */
 }
 /* fog: every photo fades at its foot; the stacked pair also at the right edge, the tall one at the left */
 .travel .card__fig { --fog-side: to right; }
@@ -831,8 +832,6 @@ a.found__item:hover .found__title { text-decoration: underline; text-decoration-
 .love [data-tile="oyster"]{ grid-column: 2; grid-row: 1;     --fog-a: to top;    --fog-b: to right; }
 .love [data-tile="paint"] { grid-column: 3; grid-row: 1;     --fog-a: to top;    --fog-b: to right; }
 .love [data-tile="ball"]  { grid-column: 2 / 4; grid-row: 2; --fog-a: to bottom; --fog-b: to left; }
-/* these tiles' bottom-left corners stay solid and dark, so their captions go white */
-.love [data-tile="oyster"] figcaption, .love [data-tile="paint"] figcaption { color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
 .love .card__fig img {
   width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; border-radius: 0;
   /* the same fog as the travel photos, but each tile melts toward its own
@@ -974,7 +973,7 @@ html .nav .nav__links .nv .nv__label:hover { color: #9A9D99; }
         <div class="card__body">
           <div class="card__text">
             <p class="card__eyebrow">Info</p>
-            <p class="card__lede">I&rsquo;m a product designer<br>based in Los Angeles, California.</p>
+            <p class="card__lede">I&rsquo;m a product designer<br>based in <span class="card__place">Los Angeles, California</span>.</p>
             <p class="card__copy">My interest in design and craft started early. Growing up, I took classes in ceramics, silkscreen printing, photography and video editing at ArtCenter College of Design and the Armory Center for the Arts in Pasadena. That&rsquo;s where I first began exploring art, and where I fell in love with making things by hand.</p>
             <p class="card__copy">At UC Davis, I kept following that pull toward creativity and design, and found something new alongside it: a fascination with how people think, perceive and interact with elements around them, especially in digital spaces. As technology keeps evolving, I want to build intuitive products that are both functional and beautiful, that improve people&rsquo;s lives, and that make the time we spend with screens feel more humane.</p>
           </div>
@@ -1048,9 +1047,9 @@ html .nav .nav__links .nv .nv__label:hover { color: #9A9D99; }
           </div>
         </div>
         <div class="travel">
-          <figure class="card__fig travel__main"><img src="images/about/travel-greece.jpg" width="1050" height="1400" alt="Me standing on the rocks in front of the Parthenon" loading="lazy" decoding="async"><figcaption>Athens, Greece</figcaption></figure>
-          <figure class="card__fig"><img src="images/about/travel-shibuya.jpg" width="1050" height="1400" alt="Crowds and neon billboards at the Shibuya crossing at night" style="--ar:8/7" loading="lazy" decoding="async"><figcaption>Shibuya, Tokyo</figcaption></figure>
-          <figure class="card__fig"><img src="images/about/travel-jeronimo.jpg" width="1050" height="1400" alt="The carved stone cloister of the Jer&oacute;nimos Monastery" style="--ar:8/7" loading="lazy" decoding="async"><figcaption>Lisbon, Portugal</figcaption></figure>
+          <figure class="card__fig travel__main"><img src="images/about/travel-greece.jpg" width="1050" height="1400" alt="Me standing on the rocks in front of the Parthenon" loading="lazy" decoding="async"></figure>
+          <figure class="card__fig"><img src="images/about/travel-shibuya.jpg" width="1050" height="1400" alt="Crowds and neon billboards at the Shibuya crossing at night" style="--ar:8/7" loading="lazy" decoding="async"></figure>
+          <figure class="card__fig"><img src="images/about/travel-jeronimo.jpg" width="1050" height="1400" alt="The carved stone cloister of the Jer&oacute;nimos Monastery" style="--ar:8/7" loading="lazy" decoding="async"></figure>
         </div>
         </div>
       </article>
@@ -1062,41 +1061,13 @@ html .nav .nav__links .nv .nv__label:hover { color: #9A9D99; }
 </main>
 
 <!-- phones only: the about page ends as a scrolling list, so it closes with the
-     same footer as the home page (the desktop canvas has no end, so it's hidden there) -->
+     footer's name-and-year line (the desktop canvas has no end, so it's hidden there) -->
 <footer class="foot foot--about">
-  <div class="foot__ex">
-    <p class="foot__label">Exploration</p>
-    <div class="foot__strip">
-      <ul class="foot__track">
-        <li class="foot__item"><span class="foot__title">Cognitive Heuristics</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/cognitive-heuristics.webp" alt="" loading="lazy" decoding="async"></span></li>
-        <li class="foot__item"><span class="foot__title">Bucolic</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/bucolic.webp" alt="" loading="lazy" decoding="async"></span></li>
-        <li class="foot__item"><span class="foot__title">Ergonomics</span><span class="foot__thumb" style="--r:1" aria-hidden="true"><img src="images/thumbs/ergonomics.webp" alt="" loading="lazy" decoding="async"></span></li>
-        <li class="foot__item"><span class="foot__title">Game Art</span><span class="foot__thumb" style="--r:1.778" aria-hidden="true"><img src="images/thumbs/game-art.webp" alt="" loading="lazy" decoding="async"></span></li>
-        <li class="foot__item"><span class="foot__title">Watch Craft</span><span class="foot__thumb" style="--r:1.526" aria-hidden="true"><img src="images/thumbs/watch-craft.webp" alt="" loading="lazy" decoding="async"></span></li>
-      </ul>
-    </div>
-  </div>
   <div class="foot__base">
     <span>Emerson Lo</span>
     <span>&copy; 2026</span>
   </div>
 </footer>
-<script>
-  /* the footer's Exploration row drifts and loops, as on the home page: the
-     list is copied once so the loop has no seam, at about 40px a second */
-  (function () {
-    var track = document.querySelector('.foot--about .foot__track');
-    if (!track) return;
-    [].slice.call(track.children).forEach(function (li) {
-      var c = li.cloneNode(true);
-      c.setAttribute('aria-hidden', 'true');
-      track.appendChild(c);
-    });
-    function speed() { track.style.setProperty('--foot-dur', Math.max(20, track.scrollWidth / 2 / 40).toFixed(1) + 's'); }
-    speed();
-    window.addEventListener('resize', speed);
-  })();
-</script>
 
 <script>
   /* the rail's toggle — same behaviour as the home page */
